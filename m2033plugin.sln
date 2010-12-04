@@ -1,0 +1,17 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "m2033plugin", "m2033plugin.vcproj", "{6D454517-99DB-453B-8949-DFF679AE7B91}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		3DS Max 2009|Win32 = 3DS Max 2009|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6D454517-99DB-453B-8949-DFF679AE7B91}.3DS Max 2009|Win32.ActiveCfg = 3DSMax11|Win32
+		{6D454517-99DB-453B-8949-DFF679AE7B91}.3DS Max 2009|Win32.Build.0 = 3DSMax11|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
