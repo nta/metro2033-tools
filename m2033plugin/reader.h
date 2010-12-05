@@ -52,15 +52,16 @@ public:
 
 	const std::string& get_path();
 
-	unsigned int open_chunk();
+	void open_chunk();
 	void close_chunk();
 
 	unsigned int get_chunk_id();
+	unsigned int get_next_chunk_id();
 	unsigned int get_chunk_size();
 
 	void read_data( void* data, size_t size );
 
-	size_t advance( size_t size );
+	void advance( size_t size );
 
 private:
 	inline int to_number( unsigned address )

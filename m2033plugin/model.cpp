@@ -150,10 +150,10 @@ void Model::set_verts( void* verts, int count )
 
 void Model::set_faces( void* faces, int count )
 {
-	int size = count * 2;
+	int size = count * 6;
 	face_buffer_ = malloc( size );
 	memcpy( face_buffer_, faces, size );
-	face_count_ = count / 3;
+	face_count_ = count;
 
 }
 

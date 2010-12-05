@@ -59,6 +59,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="CORE.LIB MAXUTIL.LIB GEOM.LIB MESH.LIB"
 				OutputFile="$(OutDir)\$(ProjectName).dli"
 				AdditionalLibraryDirectories="$(MAX11SDK_DIR)\lib"
 				ModuleDefinitionFile="plugin.def"

@@ -51,9 +51,8 @@ public:
 	int DoImport( const TCHAR *name, ImpInterface *ii, Interface *i, BOOL suppressPrompts );
 
 private:
-	void read_model( Reader* reader, ModelList& meshes );
-	void read_static_model( Reader* reader, ModelList& meshes );
-	void read_dynamic_model( Reader* reader, ModelList& meshes );
+	void read_model( Reader& reader, ModelList& meshes );
+	void read_model( Reader& reader, ModelList& meshes, int type );
 
 	void split_string( const std::string& string, char splitter, StringList& result );
 };

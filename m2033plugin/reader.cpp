@@ -79,7 +79,7 @@ const std::string& Reader::get_path()
 	return path_;
 }
 
-unsigned int Reader::open_chunk()
+void Reader::open_chunk()
 {
 	size_t size, ptr;
 	ChunkDesc chunk, prev;
@@ -127,6 +127,19 @@ unsigned int Reader::get_chunk_id()
 	return chunk.id;
 }
 
+unsigned int Reader::get_next_chunk_id()
+{
+	ChunkDesc chunk;
+
+	chunk = chunks_.back();
+	if( chunk.end >= size_ )
+	{
+		return -1;
+	}
+
+	return to_number( chunk.end );
+}
+
 unsigned int Reader::get_chunk_size()
 {
 	ChunkDesc chunk;
@@ -150,7 +163,7 @@ void Reader::read_data( void* data, size_t size )
 	memcpy( data, addr, size );
 }
 
-size_t Reader::advance( size_t size )
+void Reader::advance( size_t size )
 {
 	ChunkDesc chunk;
 

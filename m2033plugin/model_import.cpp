@@ -18,6 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 ******************************************************************************/
 
+#include <assert.h>
 #include "model_import.h"
 #include "reader.h"
 #include "model.h"
@@ -29,11 +30,48 @@ enum ChunkIds
 	DYNAMIC_MODEL_CHUNK_ID = 0x14
 };
 
-int ModelImport::DoImport( const TCHAR *name, ImpInterface *ii, Interface *i, BOOL suppressPrompts )
+int ModelImport::DoImport( const TCHAR *name, ImpInterface *ii, Interface *iface, BOOL suppressPrompts )
 {
 	Reader reader;
+	ModelList meshes;
+	ModelList::iterator it;
+	ImpNode* node;
+	TriObject* object;
+	Mesh* mesh;
+	Model* mdl;
+	int count;
+	Matrix3 tm;
 
 	reader.open( name );
+
+	read_model( reader, meshes );
+
+	for( it = meshes.begin(); it != meshes.end(); it++ )
+	{
+		mdl = &(*it);
+		count = mdl->get_vertex_count();
+
+		object = CreateNewTriObject();
+		mesh = &object->GetMesh();
+		mesh->setNumVerts( count );
+		mesh->setNumTVerts( count );
+
+		memcpy( mesh->verts, mdl->get_verts(), count * sizeof( Point3 ) );
+		memcpy( mesh->tVerts, mdl->get_faces(), count * sizeof( Point3 ) );
+
+		count =  mdl->get_face_count();
+		mesh->setNumFaces( count );
+
+		memcpy( mesh->faces, mdl->get_faces(), count * sizeof( Face ) );
+
+		node = ii->CreateNode();
+		node->Reference( object );
+
+		tm.IdentityMatrix();
+		node->SetTransform( 0, tm );
+
+		ii->AddNodeToScene( node );
+	}
 
 	return IMPEXP_SUCCESS;
 }
@@ -49,7 +87,7 @@ void ModelImport::ShowAbout( HWND hwnd )
 }
 
 
-void ModelImport::read_model( Reader* reader, ModelList& meshes )
+void ModelImport::read_model( Reader& reader, ModelList& meshes )
 {
 	int id, size, off;
 	char buffer[1024];
@@ -58,33 +96,33 @@ void ModelImport::read_model( Reader* reader, ModelList& meshes )
 	StringList::iterator it;
 	std::string mesh_file, temp;
 
-	reader->open_chunk();
-	id = reader->get_chunk_id();
+	reader.open_chunk();
+	id = reader.get_chunk_id();
 
 	if( id == UNUSED_CHUNK_ID )
 	{
 		// skip chunk data
-		reader->close_chunk();
-		reader->open_chunk();
-		id = reader->get_chunk_id();
+		reader.close_chunk();
+		reader.open_chunk();
+		id = reader.get_chunk_id();
 	}
 
 	if( id == STATIC_MODEL_CHUNK_ID )
 	{
-		read_static_model( reader, meshes );
+		read_model( reader, meshes, Model::DYNAMIC_MODEL_VERTEX_FORMAT );
 		return;
 	}
 
 	if( id == DYNAMIC_MODEL_CHUNK_ID )
 	{
 		// skip chunk data
-		reader->close_chunk();
-		reader->open_chunk();
+		reader.close_chunk();
+		reader.open_chunk();
 
-		size = reader->get_chunk_size();
+		size = reader.get_chunk_size();
 		assert( size < 1024 );
 
-		reader->read_data( buffer, size );
+		reader.read_data( buffer, size );
 
 		split_string( buffer, ',', names );
 
@@ -96,11 +134,11 @@ void ModelImport::read_model( Reader* reader, ModelList& meshes )
 
 			temp = mesh_file.substr( off, size );
 
-			mesh_file = reader->get_path() + temp + std::string( ".mesh" );
+			mesh_file = reader.get_path() + temp + std::string( ".mesh" );
 			mesh_reader.close();
 			mesh_reader.open( mesh_file );
 
-			read_dynamic_model( &mesh_reader, meshes );
+			read_model( mesh_reader, meshes, Model::DYNAMIC_MODEL_VERTEX_FORMAT );
 		}
 	}
 }
@@ -130,10 +168,72 @@ void ModelImport::split_string( const std::string& string, char splitter, String
 	}
 }
 
-void ModelImport::read_static_model( Reader* reader, ModelList& meshes )
+void ModelImport::read_model( Reader& reader, ModelList& meshes, int type )
 {
-}
+	int size, count;
+	Model model;
+	char texture[1024];
+	void* buffer;
 
-void ModelImport::read_dynamic_model( Reader* reader, ModelList& meshes )
-{
+	if( type == Model::DYNAMIC_MODEL_VERTEX_FORMAT )
+	{
+		// skip unused chunk
+		reader.open_chunk();
+		reader.close_chunk();
+	}
+
+	while( reader.get_next_chunk_id() != -1 )
+	{
+		reader.open_chunk();
+
+		// skip unused chunk
+		reader.open_chunk();
+		reader.close_chunk();
+
+		// get texture string
+		reader.open_chunk();
+		reader.open_chunk();
+		size = reader.get_chunk_size();
+		assert( size < 1024 );
+		reader.read_data( texture, size );
+		reader.close_chunk();
+		model.set_texture( texture );
+
+		if( type == Model::DYNAMIC_MODEL_VERTEX_FORMAT )
+		{
+			// skip unused chunk
+			reader.open_chunk();
+			reader.close_chunk();
+		}
+
+		// read vertices
+		reader.open_chunk();
+		size = reader.get_chunk_size() - 8;
+		reader.advance( 4 );
+		reader.read_data( &count, 4 );
+		reader.advance( 8 );
+		buffer = malloc( size );
+		reader.read_data( buffer, size );
+		reader.close_chunk();
+		model.set_verts( buffer, count );
+		free( buffer );
+
+		// read indices
+		reader.open_chunk();
+		size = reader.get_chunk_size() - 4;
+		reader.read_data( &count, 4 );
+		reader.advance( 4 );
+		buffer = malloc( size );
+		reader.read_data( buffer, size );
+		reader.close_chunk();
+		model.set_faces( buffer, count / 3 );
+		free( buffer );
+
+		model.set_vertex_format( type );
+		model.init();
+		meshes.push_back( model );
+		model.clear();
+
+		reader.close_chunk();
+	}
 }
