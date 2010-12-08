@@ -21,13 +21,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #include "max.h"
 #include "model_import.h"
 
-class ModelImportClassDesc : ClassDesc
+class ModelImportClassDesc : public ClassDesc
 {
 public:
 	int				IsPublic() { return TRUE; }
 	void*			Create( BOOL loading ) { return new ModelImport; }
 	const TCHAR*	ClassName() { return "ModelImport"; }
-	SClass_ID		SuperClassID() { return GEOMOBJECT_CLASS_ID; }
+	SClass_ID		SuperClassID() { return SCENE_IMPORT_CLASS_ID; }
 	Class_ID		ClassID() { return Class_ID(0xc9a5a4d, 0x40a2064b); }
 	const TCHAR*    Category() { return _T(""); }
 };
@@ -47,12 +47,12 @@ __declspec( dllexport ) const TCHAR* LibDescription()
 
 __declspec( dllexport ) int LibInitialize(void)
 {
-	return TRUE;
+	return 1;
 }
 
 __declspec( dllexport ) int LibShutdown(void)
 {
-	return TRUE;
+	return 1;
 }
 
 __declspec( dllexport ) int LibNumberClasses()

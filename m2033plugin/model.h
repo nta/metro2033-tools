@@ -36,15 +36,16 @@ public:
 public:
 	Model() : vert_buffer_(0),
 		face_buffer_(0),
-		vertices_(0),
-		texcoords_(0),
-		faces_(0),
 		vertex_count_(0),
 		face_count_(0),
 		format_(-1)
 	{}
 
-	Model( const Model& model )
+	Model( const Model& model ) : vert_buffer_(0),
+		face_buffer_(0),
+		vertex_count_(0),
+		face_count_(0),
+		format_(-1)
 	{
 		operator=( model );
 	}
@@ -63,9 +64,7 @@ public:
 
 	int get_vertex_format() { return format_; }
 
-	Point3* get_verts() { return vertices_; }
-	Point3* get_texcoords() { return texcoords_; }
-	Face* get_faces() { return faces_; }
+	Mesh& get_mesh() { return mesh_; }
 
 	int get_vertex_count() { return vertex_count_; }
 	int get_face_count() { return face_count_; }
@@ -80,10 +79,7 @@ private:
 
 	int			format_;
 
-	Point3*		vertices_;
-	Point3*		texcoords_;
-
-	Face*		faces_;
+	Mesh		mesh_;
 
 	int			vertex_count_;
 	int			face_count_;

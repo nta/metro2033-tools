@@ -22,41 +22,61 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #include <assert.h>
 #include "reader.h"
 
-Reader::Reader()
-: data_(0),
-size_(0),
-ptr_(0)
+inline int to_number( unsigned address )
 {
+	return *((int*)address);
 }
 
-Reader::~Reader()
+inline const char* to_string( unsigned address )
 {
-	close();
+	return ((char*)address);
+}
+
+inline unsigned to_offset( void* data )
+{
+	return (unsigned)data;
+}
+
+inline void* to_ptr( unsigned offset )
+{
+	return (void*) offset;
 }
 
 void Reader::open( const std::string& name )
 {
+	char letter[255];
+	char path[255];
+	char fname[255];
+	char suffix[255];
 	FILE* file;
-	size_t size;
 
 	close();
 
+	_splitpath( name.c_str(), letter, path, fname, suffix );
+
+	path_ = std::string( letter ) + path;
+	name_ = fname;
+	suffix_ = suffix;
+	filename_ = name_ + suffix_;
+
 	file = fopen( name.c_str(), "rb" );
-	assert( file );
 
 	fseek( file, 0, SEEK_END );
-	size = ftell( file );
+	size_ = ftell( file );
 	fseek( file, 0, SEEK_SET );
 
-	data_ = malloc( size );
-	fread( data_, 1, size, file );
-
-	size_ = size;
+	data_ = malloc( size_ );
+	fread( data_, 1, size_, file );
 
 	fclose( file );
 
-	size = name.find_last_of( "\\" );
-	path_ = name.substr( 0, size );
+	root_ = new Chunk;
+
+	root_->id = -1;
+	root_->parent = 0;
+	root_->ptr = to_offset( data_ );
+	root_->start = root_->ptr;
+	root_->size = size_;
 }
 
 void Reader::close()
@@ -64,102 +84,140 @@ void Reader::close()
 	if( data_ )
 	{
 		free( data_ );
+		data_ = 0;
+	}
+	if( root_ )
+	{
+		delete root_;
+		root_ = 0;
 	}
 
-	data_ = 0;
 	size_ = 0;
-	ptr_ = 0;
+
+	path_.clear();
+	filename_.clear();
+	name_.clear();
+	suffix_.clear();
 
 	chunks_.clear();
-	path_.clear();
-}
-
-const std::string& Reader::get_path()
-{
-	return path_;
 }
 
 void Reader::open_chunk()
 {
-	size_t size, ptr;
-	ChunkDesc chunk, prev;
+	Chunk ch, *parent;
 
-	ptr = (unsigned)data_ + ptr_;
-	chunk.start = ptr + 8;
-	chunk.id = to_number( ptr );
-	size = to_number( ptr + 4 );
-	chunk.end = chunk.start + size;
-	ptr_ += 8;
+	if( chunks_.size() )
+	{
+		parent = &chunks_.back();
+	}
+	else
+	{
+		parent = root_;
+	}
 
-	chunk.ptr = chunk.start;
+	ch.start = parent->ptr + 8;
+	ch.id = to_number( parent->ptr );
+	ch.size = to_number( parent->ptr + 4 );
+	ch.ptr = ch.start;
+	ch.parent = parent;
 
-	chunks_.push_back( chunk );
+	chunks_.push_back( ch );
 }
 
 void Reader::close_chunk()
 {
-	ChunkDesc chunk;
+	Chunk* ch;
 
-	chunk = chunks_.back();
-	ptr_ += chunk.end - chunk.start;
-
-	chunks_.pop_back();
-}
-
-unsigned int Reader::get_chunk_id()
-{
-	ChunkDesc chunk;
-
-	chunk = chunks_.back();
-	return chunk.id;
-}
-
-unsigned int Reader::get_next_chunk_id()
-{
-	ChunkDesc chunk;
-
-	if( ptr_ >= size_ )
+	if( chunks_.size() )
 	{
-		return -1;
+		ch = &chunks_.back();
+		ch->parent->ptr = ch->start + ch->size;
+		chunks_.pop_back();
+	}
+}
+
+unsigned Reader::get_chunk_id()
+{
+	Chunk* ch;
+
+	if( chunks_.size() )
+	{
+		ch = &chunks_.back();
+		return ch->id;
 	}
 
-	if( chunks_.size() == 0 )
-	{
-		return ptr_;
-	}
-
-	chunk = chunks_.back();
-
-	return to_number( chunk.end );
+	return -1;
 }
 
-unsigned int Reader::get_chunk_size()
+unsigned Reader::get_next_chunk_id()
 {
-	ChunkDesc chunk;
+	Chunk* ch;
+	size_t off;
 
-	chunk = chunks_.back();
-	return chunk.end - chunk.start;
+	if( chunks_.size() )
+	{
+		ch = &chunks_.back();
+		if( ch->start + ch->size < ch->parent->start + ch->parent->size )
+		{
+			off = ch->start + ch->size;
+			return to_number( off );
+		}
+	}
+
+	return -1;
+}
+
+unsigned Reader::get_chunk_ptr()
+{
+	Chunk* ch;
+
+	if( chunks_.size() )
+	{
+		ch = &chunks_.back();
+		return ch->ptr - ch->start;
+	}
+
+	return 0;
+}
+
+unsigned Reader::get_chunk_size()
+{
+	Chunk* ch;
+
+	if( chunks_.size() )
+	{
+		ch = &chunks_.back();
+		return ch->size;
+	}
+
+	return 0;
 }
 
 void Reader::read_data( void* data, size_t size )
 {
-	ChunkDesc chunk;
+	Chunk* ch;
 	size_t len;
-	void* addr;
 
-	chunk = chunks_.back();
-	len = chunk.end - chunk.ptr;
-	assert( size <= len );
+	if( chunks_.size() )
+	{
+		ch = &chunks_.back();
+		len = ch->start + ch->size - ch->ptr;
+		assert( size <= len );
 
-	addr = (void*)chunk.ptr;
-
-	memcpy( data, addr, size );
+		memcpy( data, to_ptr( ch->ptr ), size );
+	}
 }
 
 void Reader::advance( size_t size )
 {
-	ChunkDesc* chunk;
+	Chunk* ch;
+	size_t len;
 
-	chunk = &chunks_.back();
-	chunk->ptr = chunk->start + size;
+	if( chunks_.size() )
+	{
+		ch = &chunks_.back();
+		len = ch->start + ch->size - ch->ptr;
+		assert( size <= len );
+		ch->ptr = ch->start + size;
+	}
 }

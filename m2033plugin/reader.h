@@ -24,67 +24,64 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #include <deque>
 #include <string>
 
-class ChunkDesc
+class Chunk
 {
 public:
 	unsigned	id;
+
 	size_t		start;
-	size_t		end;
+	size_t		size;
 	size_t		ptr;
 
-	void operator = ( const ChunkDesc& chunk )
-	{
-		id = chunk.id;
-		start = chunk.start;
-		end = chunk.end;
-		ptr = chunk.ptr;
-	}
+	Chunk*	parent;
 };
 
 class Reader
 {
 public:
-	Reader();
-	~Reader();
+	Reader()
+		: root_(0),
+		data_(0),
+		size_(0)
+	{}
+
+	~Reader() {}
 
 	void open( const std::string& name );
 	void close();
 
-	const std::string& get_path();
+	const std::string& get_path() { return path_; }
+	const std::string& get_file_name() { return filename_; }
+	const std::string& get_name() { return name_; }
+	const std::string& get_suffix() { return suffix_; }
 
 	void open_chunk();
 	void close_chunk();
 
-	unsigned int get_chunk_id();
-	unsigned int get_next_chunk_id();
-	unsigned int get_chunk_size();
+	unsigned get_chunk_id();
+	unsigned get_next_chunk_id();
+	unsigned get_chunk_ptr();
+	unsigned get_chunk_size();
 
 	void read_data( void* data, size_t size );
 
 	void advance( size_t size );
 
 private:
-	inline int to_number( unsigned address )
-	{
-		return *((int*)address);
-	}
-
-	inline const char* to_string( unsigned address )
-	{
-		return ((char*)address);
-	}
-
-private:
-	typedef std::deque<ChunkDesc>	ChunkDeskDeque;
+	typedef std::deque<Chunk>	ChunkDeque;
 
 private:
 	void*			data_;
 	size_t			size_;
-	size_t			ptr_;
 
-	ChunkDeskDeque	chunks_;
+	Chunk*			root_;
+
+	ChunkDeque		chunks_;
 
 	std::string		path_;
+	std::string		filename_;
+	std::string		name_;
+	std::string		suffix_;
 };
 
 #endif // __READER_H__

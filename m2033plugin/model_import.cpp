@@ -37,7 +37,6 @@ int ModelImport::DoImport( const TCHAR *name, ImpInterface *ii, Interface *iface
 	ModelList::iterator it;
 	ImpNode* node;
 	TriObject* object;
-	Mesh* mesh;
 	Model* mdl;
 	int count;
 	Matrix3 tm;
@@ -49,20 +48,12 @@ int ModelImport::DoImport( const TCHAR *name, ImpInterface *ii, Interface *iface
 	for( it = meshes.begin(); it != meshes.end(); it++ )
 	{
 		mdl = &(*it);
-		count = mdl->get_vertex_count();
 
 		object = CreateNewTriObject();
-		mesh = &object->GetMesh();
-		mesh->setNumVerts( count );
-		mesh->setNumTVerts( count );
+		Mesh& mesh = object->GetMesh();
+		mesh = mdl->get_mesh();
 
-		memcpy( mesh->verts, mdl->get_verts(), count * sizeof( Point3 ) );
-		memcpy( mesh->tVerts, mdl->get_faces(), count * sizeof( Point3 ) );
-
-		count =  mdl->get_face_count();
-		mesh->setNumFaces( count );
-
-		memcpy( mesh->faces, mdl->get_faces(), count * sizeof( Face ) );
+		count = mesh.getNumVerts();
 
 		node = ii->CreateNode();
 		node->Reference( object );
@@ -72,6 +63,8 @@ int ModelImport::DoImport( const TCHAR *name, ImpInterface *ii, Interface *iface
 
 		ii->AddNodeToScene( node );
 	}
+
+	ii->RedrawViews();
 
 	return IMPEXP_SUCCESS;
 }
@@ -89,7 +82,7 @@ void ModelImport::ShowAbout( HWND hwnd )
 
 void ModelImport::read_model( Reader& reader, ModelList& meshes )
 {
-	int id, size, off;
+	int id, size;
 	char buffer[1024];
 	StringList names;
 	Reader mesh_reader;
@@ -109,18 +102,19 @@ void ModelImport::read_model( Reader& reader, ModelList& meshes )
 
 	if( id == STATIC_MODEL_CHUNK_ID )
 	{
-		read_model( reader, meshes, Model::DYNAMIC_MODEL_VERTEX_FORMAT );
+		read_model( reader, meshes, Model::STATIC_MODEL_VERTEX_FORMAT );
 		return;
 	}
 
 	if( id == DYNAMIC_MODEL_CHUNK_ID )
 	{
-		// skip chunk data
 		reader.close_chunk();
 		reader.open_chunk();
 
-		size = reader.get_chunk_size();
+		size = reader.get_chunk_size() - 4;
 		assert( size < 1024 );
+
+		reader.advance( 4 );
 
 		reader.read_data( buffer, size );
 
@@ -128,14 +122,10 @@ void ModelImport::read_model( Reader& reader, ModelList& meshes )
 
 		for( it = names.begin(); it != names.end(); it++ )
 		{
-			mesh_file = (*it);
-			off = mesh_file.find_last_of( "\\" ) + 1;
-			size = mesh_file.size() - off;
+			temp = reader.get_path();
+			size = temp.find( "meshes" ) + 7;
+			mesh_file = temp.substr( 0, size ) + (*it) + std::string( ".mesh" );
 
-			temp = mesh_file.substr( off, size );
-
-			mesh_file = reader.get_path() + temp + std::string( ".mesh" );
-			mesh_reader.close();
 			mesh_reader.open( mesh_file );
 
 			read_model( mesh_reader, meshes, Model::DYNAMIC_MODEL_VERTEX_FORMAT );
@@ -152,16 +142,16 @@ void ModelImport::split_string( const std::string& string, char splitter, String
 
 	while( len != std::string::npos )
 	{
-		len = string.find_first_of( splitter );
+		len = temp.find_first_of( splitter );
 		if( len != std::string::npos )
 		{
 			size = temp.size();
-			val = temp.substr( 0, len-1 );
+			val = temp.substr( 0, len );
 			temp = temp.substr( len+1, size-len-1 );
 		}
 		else
 		{
-			val = string;
+			val = temp;
 		}
 
 		result.push_back( val );
@@ -172,17 +162,20 @@ void ModelImport::read_model( Reader& reader, ModelList& meshes, int type )
 {
 	int size, count;
 	Model model;
-	char texture[1024];
+	char texture[1024], n;
 	void* buffer;
 
 	if( type == Model::DYNAMIC_MODEL_VERTEX_FORMAT )
 	{
-		// skip unused chunk
+		// skip two unused chunks
 		reader.open_chunk();
 		reader.close_chunk();
+		reader.open_chunk();
+		reader.close_chunk();
+		reader.open_chunk();
 	}
 
-	while( reader.get_next_chunk_id() != -1 )
+	do
 	{
 		reader.open_chunk();
 
@@ -192,26 +185,33 @@ void ModelImport::read_model( Reader& reader, ModelList& meshes, int type )
 
 		// get texture string
 		reader.open_chunk();
-		reader.open_chunk();
 		size = reader.get_chunk_size();
 		assert( size < 1024 );
 		reader.read_data( texture, size );
 		reader.close_chunk();
 		model.set_texture( texture );
 
-		if( type == Model::DYNAMIC_MODEL_VERTEX_FORMAT )
-		{
-			// skip unused chunk
-			reader.open_chunk();
-			reader.close_chunk();
-		}
-
 		// read vertices
 		reader.open_chunk();
-		size = reader.get_chunk_size() - 8;
-		reader.advance( 4 );
-		reader.read_data( &count, 4 );
-		reader.advance( 8 );
+		if( type == Model::DYNAMIC_MODEL_VERTEX_FORMAT )
+		{
+			// skip unused data
+			reader.read_data( &n, 1 );
+			size = n * 60 + n + 1;
+			reader.advance( size );
+
+			// calculate vertices size
+			reader.read_data( &count, 4 );
+			reader.advance( size + 4 );
+			size = count * 32;
+		}
+		else
+		{
+			size = reader.get_chunk_size() - 8;
+			reader.advance( 4 );
+			reader.read_data( &count, 4 );
+			reader.advance( 8 );
+		}
 		buffer = malloc( size );
 		reader.read_data( buffer, size );
 		reader.close_chunk();
@@ -236,4 +236,5 @@ void ModelImport::read_model( Reader& reader, ModelList& meshes, int type )
 
 		reader.close_chunk();
 	}
+	while( reader.get_chunk_ptr() + 64 < reader.get_chunk_size() );
 }
