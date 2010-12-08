@@ -27,6 +27,7 @@ enum ChunkIds
 {
 	UNUSED_CHUNK_ID = 0x01,
 	STATIC_MODEL_CHUNK_ID = 0x09,
+	TEXTURE_NAMES_CHUNK_ID = 0x10,
 	DYNAMIC_MODEL_CHUNK_ID = 0x14
 };
 
@@ -108,8 +109,17 @@ void ModelImport::read_model( Reader& reader, ModelList& meshes )
 
 	if( id == DYNAMIC_MODEL_CHUNK_ID )
 	{
+		// skip chunk data
 		reader.close_chunk();
 		reader.open_chunk();
+
+		id = reader.get_chunk_id();
+		if( id != TEXTURE_NAMES_CHUNK_ID )
+		{
+			// skip chunk data
+			reader.close_chunk();
+			reader.open_chunk();
+		}
 
 		size = reader.get_chunk_size() - 4;
 		assert( size < 1024 );
@@ -122,9 +132,11 @@ void ModelImport::read_model( Reader& reader, ModelList& meshes )
 
 		for( it = names.begin(); it != names.end(); it++ )
 		{
+			mesh_file = (*it);
 			temp = reader.get_path();
+			
 			size = temp.find( "meshes" ) + 7;
-			mesh_file = temp.substr( 0, size ) + (*it) + std::string( ".mesh" );
+			mesh_file = temp.substr( 0, size ) + mesh_file + std::string( ".mesh" );
 
 			mesh_reader.open( mesh_file );
 
