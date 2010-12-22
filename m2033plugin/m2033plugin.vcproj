@@ -59,7 +59,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="CORE.LIB MAXUTIL.LIB GEOM.LIB MESH.LIB"
+				AdditionalDependencies="CORE.LIB MAXUTIL.LIB GEOM.LIB MESH.LIB GFX.LIB"
 				OutputFile="$(OutDir)\$(ProjectName).dli"
 				AdditionalLibraryDirectories="$(MAX11SDK_DIR)\lib"
 				ModuleDefinitionFile="plugin.def"
@@ -119,6 +119,10 @@
 				RelativePath=".\reader.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\skeleton.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Заголовочные файлы"
@@ -135,6 +139,10 @@
 			</File>
 			<File
 				RelativePath=".\reader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\skeleton.h"
 				>
 			</File>
 		</Filter>

@@ -32,7 +32,7 @@ public:
 	const TCHAR*    Category() { return _T(""); }
 };
 
-ModelImportClassDesc model_import_description;
+ModelImportClassDesc	model_import_description;
 
 BOOL WINAPI DllMain( HINSTANCE hinst,ULONG reason, LPVOID reserved )
 {
@@ -57,7 +57,7 @@ __declspec( dllexport ) int LibShutdown(void)
 
 __declspec( dllexport ) int LibNumberClasses()
 {
-	return 1;
+	return 2;
 }
 
 __declspec( dllexport ) ClassDesc *LibClassDesc( int i ) 

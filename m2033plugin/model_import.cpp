@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #include "model_import.h"
 #include "reader.h"
 #include "model.h"
+#include "skeleton.h"
 
 enum ChunkIds
 {
@@ -42,10 +43,15 @@ int ModelImport::DoImport( const TCHAR *name, ImpInterface *ii, Interface *iface
 	int count;
 	Matrix3 tm;
 
+	interface_ = iface;
+	imp_interface_ = ii;
+
+	skeleton_ = new Skeleton( iface );
+
 	reader.open( name );
 
 	read_model( reader, meshes );
-
+/*
 	for( it = meshes.begin(); it != meshes.end(); it++ )
 	{
 		mdl = &(*it);
@@ -66,6 +72,9 @@ int ModelImport::DoImport( const TCHAR *name, ImpInterface *ii, Interface *iface
 	}
 
 	ii->RedrawViews();
+*/
+
+	delete skeleton_;
 
 	return IMPEXP_SUCCESS;
 }
@@ -87,8 +96,9 @@ void ModelImport::read_model( Reader& reader, ModelList& meshes )
 	char buffer[1024];
 	StringList names;
 	Reader mesh_reader;
+	Reader skeleton_reader;
 	StringList::iterator it;
-	std::string mesh_file, temp;
+	std::string file_name, temp;
 
 	reader.open_chunk();
 	id = reader.get_chunk_id();
@@ -109,10 +119,18 @@ void ModelImport::read_model( Reader& reader, ModelList& meshes )
 
 	if( id == DYNAMIC_MODEL_CHUNK_ID )
 	{
-		// skip chunk data
+		// read skeleton
+		size = reader.get_chunk_size();
+		reader.read_data( buffer, size );
+		file_name = buffer;
+		temp = reader.get_path();
+		size = temp.find( "meshes" ) + 7;
+		file_name = temp.substr( 0, size ) + file_name + std::string( ".skeleton" );
+		skeleton_reader.open( file_name );
+		read_skeleton( skeleton_reader );
 		reader.close_chunk();
-		reader.open_chunk();
 
+		reader.open_chunk();
 		id = reader.get_chunk_id();
 		if( id != TEXTURE_NAMES_CHUNK_ID )
 		{
@@ -132,13 +150,13 @@ void ModelImport::read_model( Reader& reader, ModelList& meshes )
 
 		for( it = names.begin(); it != names.end(); it++ )
 		{
-			mesh_file = (*it);
+			file_name = (*it);
 			temp = reader.get_path();
 			
 			size = temp.find( "meshes" ) + 7;
-			mesh_file = temp.substr( 0, size ) + mesh_file + std::string( ".mesh" );
+			file_name = temp.substr( 0, size ) + file_name + std::string( ".mesh" );
 
-			mesh_reader.open( mesh_file );
+			mesh_reader.open( file_name );
 
 			read_model( mesh_reader, meshes, Model::DYNAMIC_MODEL_VERTEX_FORMAT );
 		}
@@ -209,12 +227,11 @@ void ModelImport::read_model( Reader& reader, ModelList& meshes, int type )
 		{
 			// skip unused data
 			reader.read_data( &n, 1 );
-			size = n * 60 + n + 1;
+			size = n * 61 + 1;
 			reader.advance( size );
 
 			// calculate vertices size
 			reader.read_data( &count, 4 );
-			reader.advance( size + 4 );
 			size = count * 32;
 		}
 		else
@@ -222,7 +239,6 @@ void ModelImport::read_model( Reader& reader, ModelList& meshes, int type )
 			size = reader.get_chunk_size() - 8;
 			reader.advance( 4 );
 			reader.read_data( &count, 4 );
-			reader.advance( 8 );
 		}
 		buffer = malloc( size );
 		reader.read_data( buffer, size );
@@ -234,7 +250,6 @@ void ModelImport::read_model( Reader& reader, ModelList& meshes, int type )
 		reader.open_chunk();
 		size = reader.get_chunk_size() - 4;
 		reader.read_data( &count, 4 );
-		reader.advance( 4 );
 		buffer = malloc( size );
 		reader.read_data( buffer, size );
 		reader.close_chunk();
@@ -249,4 +264,43 @@ void ModelImport::read_model( Reader& reader, ModelList& meshes, int type )
 		reader.close_chunk();
 	}
 	while( reader.get_chunk_ptr() + 64 < reader.get_chunk_size() );
+}
+
+void ModelImport::read_skeleton( Reader& reader )
+{
+	short count;
+	char name[255];
+	char parent_name[255];
+	float position[3];
+	float orientation[3];
+	short id;
+	Point3 pos, rot;
+
+	// skip unused chunk
+	reader.open_chunk();
+	reader.close_chunk();
+
+	// read number of bones
+	reader.open_chunk();
+	reader.advance( 4 );
+	reader.read_data( &count, 2 );
+
+	// read bones
+	for( int i = 0; i < count; i++ )
+	{
+		reader.read_string( name, 255 );
+		reader.read_string( parent_name, 255 );
+		reader.read_data( orientation, 12 );
+		reader.read_data( position, 12 );
+		reader.read_data( &id, 2 );
+
+		pos.Set( position[0], position[1], position[2] );
+		rot.Set( orientation[0], orientation[1], orientation[2] );
+
+		skeleton_->add_bone( name, parent_name, pos, rot );
+	}
+
+	reader.close();
+
+	skeleton_->build();
 }
