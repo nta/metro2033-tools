@@ -42,7 +42,7 @@ inline void* to_ptr( unsigned offset )
 	return (void*) offset;
 }
 
-void Reader::open( const std::string& name )
+bool Reader::open( const std::string& name )
 {
 	char letter[255];
 	char path[255];
@@ -60,6 +60,10 @@ void Reader::open( const std::string& name )
 	filename_ = name_ + suffix_;
 
 	file = fopen( name.c_str(), "rb" );
+	if( file == 0 )
+	{
+		return 0;
+	}
 
 	fseek( file, 0, SEEK_END );
 	size_ = ftell( file );
@@ -77,6 +81,8 @@ void Reader::open( const std::string& name )
 	root_->ptr = to_offset( data_ );
 	root_->start = root_->ptr;
 	root_->size = size_;
+
+	return 1;
 }
 
 void Reader::close()
@@ -205,6 +211,7 @@ void Reader::read_data( void* data, size_t size )
 		assert( size <= len );
 
 		memcpy( data, to_ptr( ch->ptr ), size );
+		advance( ch->ptr - ch->start + size );
 	}
 }
 
@@ -217,7 +224,31 @@ void Reader::advance( size_t size )
 	{
 		ch = &chunks_.back();
 		len = ch->start + ch->size - ch->ptr;
-		assert( size <= len );
 		ch->ptr = ch->start + size;
 	}
+}
+
+int Reader::read_string( char* buffer, int length )
+{
+	char ch;
+	int i;
+
+	assert( length );
+	assert( buffer );
+
+	memset( buffer, 0, length );
+
+	for( i = 0; i < length - 1; i++ )
+	{
+		read_data( &ch, 1 );
+		if( ch == 0 )
+		{
+			break;
+		}
+
+		buffer[i] = ch;
+	}
+
+	buffer[i] = 0;
+	return i;
 }

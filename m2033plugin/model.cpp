@@ -70,9 +70,9 @@ void Model::init()
 
 		for( int i = 0; i < vertex_count_; i++ )
 		{
-			float x = dynamic_vert[i].x / 3000.0f;
-			float y = -dynamic_vert[i].z / 3000.0f;
-			float z = dynamic_vert[i].y / 3000.0f;
+			float x = dynamic_vert[i].x / 2720.0f;
+			float y = -dynamic_vert[i].z / 2720.0f;
+			float z = dynamic_vert[i].y / 2720.0f;
 
 			float u = dynamic_vert[i].uv[0] / 32768.0f;
 			float v = dynamic_vert[i].uv[1] / 32768.0f;

@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 class Reader;
 class Model;
+class Skeleton;
 
 typedef std::list<std::string>	StringList;
 typedef std::list<Model>		ModelList;
@@ -53,8 +54,14 @@ public:
 private:
 	void read_model( Reader& reader, ModelList& meshes );
 	void read_model( Reader& reader, ModelList& meshes, int type );
+	void read_skeleton( Reader& reader );
 
 	void split_string( const std::string& string, char splitter, StringList& result );
+
+private:
+	Interface*		interface_;
+	ImpInterface*	imp_interface_;
+	Skeleton*		skeleton_;
 };
 
 #endif // __MODEL_IMPORT_H__

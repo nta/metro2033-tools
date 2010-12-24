@@ -47,7 +47,7 @@ public:
 
 	~Reader() {}
 
-	void open( const std::string& name );
+	bool open( const std::string& name );
 	void close();
 
 	const std::string& get_path() { return path_; }
@@ -64,6 +64,7 @@ public:
 	unsigned get_chunk_size();
 
 	void read_data( void* data, size_t size );
+	int read_string( char* buffer, int length );
 
 	void advance( size_t size );
 
