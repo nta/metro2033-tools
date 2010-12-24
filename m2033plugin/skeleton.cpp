@@ -121,8 +121,7 @@ void Skeleton::update_bone_length( const Bone& bone )
 	float d1, d2;
 	float length = 0;
 	Matrix3 m1, m2;
-	Point3 len;
-	int cnt;
+	Point3 len, off;
 
 	parent = get_bone_node( bone.parent);
 	child = get_bone_node( bone.name );
@@ -134,16 +133,19 @@ void Skeleton::update_bone_length( const Bone& bone )
 
 	len.Set( 0, 0, 0 );
 
-	for( cnt = 0; cnt < parent->NumberOfChildren(); cnt++ )
+	for( int i = 0; i < parent->NumberOfChildren(); i++ )
 	{
-		ch = parent->GetChildNode( cnt );
+		ch = parent->GetChildNode( i );
 		m1 = parent->GetNodeTM( 0 );
 		m2 = ch->GetNodeTM( 0 );
-		len += m2.GetTrans() - m1.GetTrans();
-		length = len.Length();
+		off = m2.GetTrans() - m1.GetTrans();
+		if( length < off.Length() )
+		{
+			length = off.Length();
+			len = off;
+		}
 	}
 
-	len /= cnt;
 	length = len.Length();
 
 	parent->ResetBoneStretch(0);
