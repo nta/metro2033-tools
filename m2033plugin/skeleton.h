@@ -53,7 +53,8 @@ private:
 	};
 
 private:
-	void construct_bone_mesh( const Bone& bone );
+	void update_bone_length( const Bone& bone );
+	void build_mesh( Mesh* mesh, float length );
 
 private:
 	typedef std::vector<Bone> BoneVector;

@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #include "max.h"
 #include "skeleton.h"
 #include "simpobj.h"
+#include "math.h"
 
 void Skeleton::build()
 {
@@ -61,8 +62,11 @@ void Skeleton::build()
 		{
 			parent->AttachChild( node, 0 );
 		}
+	}
 
-		construct_bone_mesh( bones_[i] );
+	for( int i = 0; i < bones_.size(); i++ )
+	{
+		update_bone_length( bones_[i] );
 	}
 }
 
@@ -108,26 +112,43 @@ INode* Skeleton::get_bone_node( const std::string& name )
 	return 0;
 }
 
-void Skeleton::construct_bone_mesh( const Bone& bone )
+void Skeleton::update_bone_length( const Bone& bone )
 {
 	INode* parent;
-	INode* node;
+	INode* child, *ch;
 	Mesh* mesh;
 	ObjectState os;
 	float d1, d2;
 	float length = 0;
 	Matrix3 m1, m2;
 	Point3 len;
+	int cnt;
 
-	if( length < 0 )
+	parent = get_bone_node( bone.parent);
+	child = get_bone_node( bone.name );
+
+	if( parent == 0 )
 	{
 		return;
 	}
 
-	node = get_bone_node( bone.name );
-	assert( node );
+	len.Set( 0, 0, 0 );
 
-	os = node->EvalWorldState( interface_->GetTime() );
+	for( cnt = 0; cnt < parent->NumberOfChildren(); cnt++ )
+	{
+		ch = parent->GetChildNode( cnt );
+		m1 = parent->GetNodeTM( 0 );
+		m2 = ch->GetNodeTM( 0 );
+		len += m2.GetTrans() - m1.GetTrans();
+		length = len.Length();
+	}
+
+	len /= cnt;
+	length = len.Length();
+
+	parent->ResetBoneStretch(0);
+
+	os = parent->EvalWorldState( interface_->GetTime() );
 	if( os.obj->ClassID() != BONE_OBJ_CLASSID )
 	{
 		return;
@@ -136,14 +157,28 @@ void Skeleton::construct_bone_mesh( const Bone& bone )
 	mesh = &((SimpleObject*)os.obj)->mesh;
 	mesh->Init();
 
-	parent = get_bone_node( bone.parent );
-	if( parent != 0 )
+	build_mesh( mesh, length );
+
+	if( child->NumberOfChildren() == 0 )
 	{
-		m2 = parent->GetNodeTM( 0 );
-		m1 = node->GetNodeTM( 0 );
-		len = m1.GetTrans() - m2.GetTrans();
-		length = len.Length();
+		child->ResetBoneStretch(0);
+
+		os = child->EvalWorldState( interface_->GetTime() );
+		if( os.obj->ClassID() != BONE_OBJ_CLASSID )
+		{
+			return;
+		}
+
+		mesh = &((SimpleObject*)os.obj)->mesh;
+		mesh->Init();
+
+		build_mesh( mesh, length );
 	}
+}
+
+void Skeleton::build_mesh( Mesh* mesh, float length )
+{
+	float d1, d2;
 
 	d1 = length / 20;
 	d2 = length / 100;

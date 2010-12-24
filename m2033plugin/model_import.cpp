@@ -51,7 +51,7 @@ int ModelImport::DoImport( const TCHAR *name, ImpInterface *ii, Interface *iface
 	reader.open( name );
 
 	read_model( reader, meshes );
-/*
+
 	for( it = meshes.begin(); it != meshes.end(); it++ )
 	{
 		mdl = &(*it);
@@ -72,7 +72,6 @@ int ModelImport::DoImport( const TCHAR *name, ImpInterface *ii, Interface *iface
 	}
 
 	ii->RedrawViews();
-*/
 
 	delete skeleton_;
 
