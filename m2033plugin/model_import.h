@@ -58,6 +58,8 @@ private:
 
 	void split_string( const std::string& string, char splitter, StringList& result );
 
+	Modifier* create_skin_modifier( INode* node );
+
 private:
 	Interface*		interface_;
 	ImpInterface*	imp_interface_;

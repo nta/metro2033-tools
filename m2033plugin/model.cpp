@@ -121,6 +121,9 @@ void Model::clear()
 	vertex_count_ = 0;
 	face_count_ = 0;
 
+	texture_.clear();
+	name_.clear();
+
 	format_ = -1;
 }
 

@@ -67,11 +67,12 @@ int ModelImport::DoImport( const TCHAR *name, ImpInterface *ii, Interface *iface
 
 		tm.IdentityMatrix();
 		node->SetTransform( 0, tm );
+		//node->SetName(...);
 
 		ii->AddNodeToScene( node );
 	}
 
-	ii->RedrawViews();
+	iface->ForceCompleteRedraw();
 
 	delete skeleton_;
 
@@ -194,6 +195,8 @@ void ModelImport::read_model( Reader& reader, ModelList& meshes, int type )
 	char texture[1024], n;
 	void* buffer;
 
+	model.set_name( reader.get_name() );
+
 	if( type == Model::DYNAMIC_MODEL_VERTEX_FORMAT )
 	{
 		// skip two unused chunks
@@ -218,7 +221,7 @@ void ModelImport::read_model( Reader& reader, ModelList& meshes, int type )
 		assert( size < 1024 );
 		reader.read_data( texture, size );
 		reader.close_chunk();
-		model.set_texture( texture );
+		model.set_texture_name( texture );
 
 		// read vertices
 		reader.open_chunk();

@@ -6,10 +6,13 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		3DS Max 2009|Win32 = 3DS Max 2009|Win32
+		3DSMax9|Win32 = 3DSMax9|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{6D454517-99DB-453B-8949-DFF679AE7B91}.3DS Max 2009|Win32.ActiveCfg = 3DSMax11|Win32
 		{6D454517-99DB-453B-8949-DFF679AE7B91}.3DS Max 2009|Win32.Build.0 = 3DSMax11|Win32
+		{6D454517-99DB-453B-8949-DFF679AE7B91}.3DSMax9|Win32.ActiveCfg = 3DSMax9|Win32
+		{6D454517-99DB-453B-8949-DFF679AE7B91}.3DSMax9|Win32.Build.0 = 3DSMax9|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

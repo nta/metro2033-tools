@@ -60,7 +60,8 @@ public:
 	void set_verts( void* verts, int count );
 	void set_faces( void* faces, int count );
 
-	void set_texture( const std::string& texture ) { texture_ = texture; }
+	void set_texture_name( const std::string& texture ) { texture_ = texture; }
+	void set_name( const std::string& name ) { name_ = name; }
 
 	int get_vertex_format() { return format_; }
 
@@ -70,6 +71,7 @@ public:
 	int get_face_count() { return face_count_; }
 
 	const std::string& get_texture_name() { return texture_; }
+	const std::string& get_name() { return name_; }
 
 	void operator = ( const Model& model );
 
@@ -85,6 +87,7 @@ private:
 	int			face_count_;
 
 	std::string	texture_;
+	std::string name_;
 };
 
 #endif // __MODEL_H__
