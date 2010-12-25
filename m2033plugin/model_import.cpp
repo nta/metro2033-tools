@@ -38,6 +38,7 @@ int ModelImport::DoImport( const TCHAR *name, ImpInterface *ii, Interface *iface
 	ModelList meshes;
 	ModelList::iterator it;
 	ImpNode* node;
+	INode* inode;
 	TriObject* object;
 	Model* mdl;
 	int count;
@@ -67,7 +68,8 @@ int ModelImport::DoImport( const TCHAR *name, ImpInterface *ii, Interface *iface
 
 		tm.IdentityMatrix();
 		node->SetTransform( 0, tm );
-		node->SetName( mdl->get_name().c_str() );
+		inode = node->GetINode();
+		inode->SetName( (char*)mdl->get_name().c_str() );
 
 		ii->AddNodeToScene( node );
 	}
@@ -190,12 +192,10 @@ void ModelImport::split_string( const std::string& string, char splitter, String
 
 void ModelImport::read_model( Reader& reader, ModelList& meshes, int type )
 {
-	int size, count;
+	int size, count, i = 0;
 	Model model;
-	char texture[1024], n;
+	char name[1024], n;
 	void* buffer;
-
-	model.set_name( reader.get_name() );
 
 	if( type == Model::DYNAMIC_MODEL_VERTEX_FORMAT )
 	{
@@ -209,6 +209,9 @@ void ModelImport::read_model( Reader& reader, ModelList& meshes, int type )
 
 	do
 	{
+		sprintf( name, "%s_%i", reader.get_name().c_str(), i );
+		model.set_name( name );
+
 		reader.open_chunk();
 
 		// skip unused chunk
@@ -219,9 +222,9 @@ void ModelImport::read_model( Reader& reader, ModelList& meshes, int type )
 		reader.open_chunk();
 		size = reader.get_chunk_size();
 		assert( size < 1024 );
-		reader.read_data( texture, size );
+		reader.read_data( name, size );
 		reader.close_chunk();
-		model.set_texture_name( texture );
+		model.set_texture_name( name );
 
 		// read vertices
 		reader.open_chunk();
@@ -264,6 +267,8 @@ void ModelImport::read_model( Reader& reader, ModelList& meshes, int type )
 		model.clear();
 
 		reader.close_chunk();
+
+		i++;
 	}
 	while( reader.get_chunk_ptr() + 64 < reader.get_chunk_size() );
 }

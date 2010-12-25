@@ -153,4 +153,5 @@ void Model::operator = ( const Model& model )
 	face_count_ = model.face_count_;
 	mesh_ = model.mesh_;
 	texture_ = model.texture_;
+	name_ = model.name_;
 }
