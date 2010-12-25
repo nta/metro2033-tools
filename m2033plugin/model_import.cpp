@@ -67,7 +67,7 @@ int ModelImport::DoImport( const TCHAR *name, ImpInterface *ii, Interface *iface
 
 		tm.IdentityMatrix();
 		node->SetTransform( 0, tm );
-		//node->SetName(...);
+		node->SetName( mdl->get_name().c_str() );
 
 		ii->AddNodeToScene( node );
 	}
