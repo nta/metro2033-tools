@@ -22,7 +22,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #include "model_import.h"
 #include "reader.h"
 #include "model.h"
-#include "skeleton.h"
+#include "iparamb2.h"
+#include "modstack.h"
+#include "iskin.h"
 
 enum ChunkIds
 {
@@ -43,11 +45,10 @@ int ModelImport::DoImport( const TCHAR *name, ImpInterface *ii, Interface *iface
 	Model* mdl;
 	int count;
 	Matrix3 tm;
+	ISkinImportData* skin_imp;
 
 	interface_ = iface;
 	imp_interface_ = ii;
-
-	skeleton_ = new Skeleton( iface );
 
 	reader.open( name );
 
@@ -74,9 +75,7 @@ int ModelImport::DoImport( const TCHAR *name, ImpInterface *ii, Interface *iface
 		ii->AddNodeToScene( node );
 	}
 
-	iface->ForceCompleteRedraw();
-
-	delete skeleton_;
+	ii->RedrawViews();
 
 	return IMPEXP_SUCCESS;
 }
@@ -304,10 +303,53 @@ void ModelImport::read_skeleton( Reader& reader )
 		pos.Set( position[0], position[1], position[2] );
 		rot.Set( orientation[0], orientation[1], orientation[2] );
 
-		skeleton_->add_bone( name, parent_name, pos, rot );
+		skeleton_.add_bone( name, parent_name, pos, rot );
 	}
 
 	reader.close();
 
-	skeleton_->build();
+	skeleton_.build();
+}
+
+Modifier* ModelImport::create_skin_modifier( INode* node )
+{
+	IDerivedObject *dobj;
+	Object *obj;
+	Modifier *mod = 0, *temp;
+
+	obj = node->GetObjectRef();
+	if( obj->SuperClassID() == GEN_DERIVOB_CLASS_ID )
+	{
+		dobj = (IDerivedObject*) obj;
+	}
+	else
+	{
+		dobj = CreateDerivedObject();
+		dobj->TransferReferences( obj );
+		dobj->ReferenceObject( obj );
+	}
+
+	for( int i = 0; i < dobj->NumModifiers(); i++ )
+	{
+		temp = dobj->GetModifier( i );
+		assert( temp );
+		if( temp->ClassID() == SKIN_CLASSID )
+		{
+			mod = temp;
+			break;
+		}
+	}
+
+	if( mod == 0 )
+	{
+		mod = (Modifier*) CreateInstance( OSM_CLASS_ID, SKIN_CLASSID );
+		dobj->AddModifier( mod );
+	}
+
+	dobj->NotifyDependents(FOREVER,PART_ALL,REFMSG_CHANGE);
+	mod->NotifyDependents(FOREVER,PART_ALL,REFMSG_CHANGE);
+	node->NotifyDependents(FOREVER,PART_ALL,REFMSG_CHANGE);
+	node->NotifyDependents(FOREVER,0,REFMSG_SUBANIM_STRUCTURE_CHANGED);
+
+	return mod;
 }

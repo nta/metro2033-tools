@@ -32,6 +32,9 @@ void Skeleton::build()
 	INode* node;
 	INode* parent;
 	Point3 color;
+	Interface* iface;
+
+	iface = GetCOREInterface();
 
 	for( int i = 0; i < bones_.size(); i++ )
 	{
@@ -42,9 +45,9 @@ void Skeleton::build()
 
 		color = GetUIColor(COLOR_BONES);
 
-		obj = (Object*) interface_->CreateInstance( GEOMOBJECT_CLASS_ID, BONE_OBJ_CLASSID );
+		obj = (Object*) iface->CreateInstance( GEOMOBJECT_CLASS_ID, BONE_OBJ_CLASSID );
 
-		node = interface_->CreateObjectNode( obj );
+		node = iface->CreateObjectNode( obj );
 		node->SetWireColor(RGB(int(color.x*255.0f), int(color.y*255.0f), int(color.z*255.0f) ));
 		node->SetName( (char*) bones_[i].name.c_str() );
 		node->SetNodeTM( 0, m );
@@ -122,6 +125,9 @@ void Skeleton::update_bone_length( const Bone& bone )
 	float length = 0;
 	Matrix3 m1, m2;
 	Point3 len, off;
+	Interface* iface;
+
+	iface = GetCOREInterface();
 
 	parent = get_bone_node( bone.parent);
 	child = get_bone_node( bone.name );
@@ -150,7 +156,7 @@ void Skeleton::update_bone_length( const Bone& bone )
 
 	parent->ResetBoneStretch(0);
 
-	os = parent->EvalWorldState( interface_->GetTime() );
+	os = parent->EvalWorldState( iface->GetTime() );
 	if( os.obj->ClassID() != BONE_OBJ_CLASSID )
 	{
 		return;
@@ -165,7 +171,7 @@ void Skeleton::update_bone_length( const Bone& bone )
 	{
 		child->ResetBoneStretch(0);
 
-		os = child->EvalWorldState( interface_->GetTime() );
+		os = child->EvalWorldState( iface->GetTime() );
 		if( os.obj->ClassID() != BONE_OBJ_CLASSID )
 		{
 			return;

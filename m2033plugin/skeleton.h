@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 class Skeleton
 {
 public:
-	Skeleton( Interface* i ) : interface_(i) {}
+	Skeleton() {}
 	~Skeleton() {}
 
 	void build();
@@ -63,7 +63,6 @@ private:
 private:
 	BoneVector	bones_;
 	NodeMap		hash_;
-	Interface*	interface_;
 };
 
 #endif // __SKELETON_H__

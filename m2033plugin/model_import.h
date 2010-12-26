@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #include <string>
 #include <list>
 #include "max.h"
+#include "skeleton.h"
 
 class Reader;
 class Model;
@@ -63,7 +64,7 @@ private:
 private:
 	Interface*		interface_;
 	ImpInterface*	imp_interface_;
-	Skeleton*		skeleton_;
+	Skeleton		skeleton_;
 };
 
 #endif // __MODEL_IMPORT_H__
