@@ -74,8 +74,8 @@ void Model::init()
 			float y = -dynamic_vert[i].z / 2720.0f;
 			float z = dynamic_vert[i].y / 2720.0f;
 
-			float u = dynamic_vert[i].uv[0] / 32768.0f;
-			float v = dynamic_vert[i].uv[1] / 32768.0f;
+			float u = dynamic_vert[i].uv[0] / 2048.0f;
+			float v = dynamic_vert[i].uv[1] / 2048.0f;
 
 			mesh_.setVert( i, x, y, z );
 			mesh_.setTVert( i, u, v, 0 );

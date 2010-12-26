@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 #include "max.h"
 #include "model_import.h"
+#include "image_import.h"
 
 class ModelImportClassDesc : public ClassDesc
 {
@@ -32,7 +33,19 @@ public:
 	const TCHAR*    Category() { return _T(""); }
 };
 
+class ImageImportClassDesc : public ClassDesc
+{
+public:
+	int				IsPublic() { return FALSE; }
+	void*			Create( BOOL loading ) { return new ImageImport; }
+	const TCHAR*	ClassName() { return "ImageImport"; }
+	SClass_ID		SuperClassID() { return BMM_IO_CLASS_ID; }
+	Class_ID		ClassID() { return Class_ID(0x38c90388, 0xd3752d3); }
+	const TCHAR*    Category() { return _T(""); }
+};
+
 ModelImportClassDesc	model_import_description;
+ImageImportClassDesc	image_import_description;
 
 BOOL WINAPI DllMain( HINSTANCE hinst,ULONG reason, LPVOID reserved )
 {
@@ -66,6 +79,8 @@ __declspec( dllexport ) ClassDesc *LibClassDesc( int i )
 	{
 	case 0:
 		return (ClassDesc*) &model_import_description;
+	case 1:
+		return (ClassDesc*) &image_import_description;
 	}
 
 	return 0;

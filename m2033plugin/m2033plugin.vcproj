@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="$(MAX11SDK_DIR)\include"
+				AdditionalIncludeDirectories="&quot;$(MAX11SDK_DIR)\include&quot;;..\dependencies\libsquish"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
@@ -59,9 +59,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="CORE.LIB MAXUTIL.LIB GEOM.LIB MESH.LIB GFX.LIB"
+				AdditionalDependencies="CORE.LIB MAXUTIL.LIB GEOM.LIB MESH.LIB GFX.LIB BMM.LIB squish.lib"
 				OutputFile="$(OutDir)\$(ProjectName).dli"
-				AdditionalLibraryDirectories="$(MAX11SDK_DIR)\lib"
+				AdditionalLibraryDirectories="&quot;$(MAX11SDK_DIR)\lib&quot;;..\dependencies\libsquish\Release"
 				ModuleDefinitionFile="plugin.def"
 				GenerateDebugInformation="true"
 				OptimizeReferences="2"
@@ -134,7 +134,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="CORE.LIB MAXUTIL.LIB GEOM.LIB MESH.LIB GFX.LIB"
+				AdditionalDependencies="CORE.LIB MAXUTIL.LIB GEOM.LIB MESH.LIB GFX.LIB BMM.LIB"
 				OutputFile="$(OutDir)\$(ProjectName).dli"
 				AdditionalLibraryDirectories="$(MAX9SDK_DIR)\lib"
 				ModuleDefinitionFile="plugin.def"
@@ -175,6 +175,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\image_import.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\model.cpp"
 				>
 			</File>
@@ -204,6 +208,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\image_import.h"
+				>
+			</File>
 			<File
 				RelativePath=".\model.h"
 				>

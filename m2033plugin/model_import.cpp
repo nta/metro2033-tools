@@ -75,7 +75,7 @@ int ModelImport::DoImport( const TCHAR *name, ImpInterface *ii, Interface *iface
 		ii->AddNodeToScene( node );
 	}
 
-	ii->RedrawViews();
+	iface->ForceCompleteRedraw();
 
 	return IMPEXP_SUCCESS;
 }

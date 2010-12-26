@@ -121,7 +121,6 @@ void Skeleton::update_bone_length( const Bone& bone )
 	INode* child, *ch;
 	Mesh* mesh;
 	ObjectState os;
-	float d1, d2;
 	float length = 0;
 	Matrix3 m1, m2;
 	Point3 len, off;
