@@ -36,11 +36,12 @@ public:
 class ImageImportClassDesc : public ClassDesc
 {
 public:
-	int				IsPublic() { return FALSE; }
+	int				IsPublic() { return TRUE; }
 	void*			Create( BOOL loading ) { return new ImageImport; }
 	const TCHAR*	ClassName() { return "ImageImport"; }
 	SClass_ID		SuperClassID() { return BMM_IO_CLASS_ID; }
-	Class_ID		ClassID() { return Class_ID(0x38c90388, 0xd3752d3); }
+	Class_ID		ClassID() { return Class_ID(0x52ae1ac0, 0x6d1845d8); }
+	const TCHAR    *InternalName ( ) { return _T("4a_image"); }
 	const TCHAR*    Category() { return _T(""); }
 };
 

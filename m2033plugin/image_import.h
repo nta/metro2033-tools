@@ -28,6 +28,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 class ImageImport : public BitmapIO
 {
 public:
+	ImageImport() {}
+	~ImageImport() {}
+
 	int				ExtCount() { return 1; }
 	const TCHAR*	Ext( int n ) { return "512"; }
 	const TCHAR*	LongDesc() { return "Metro2033 texture image file"; }
@@ -35,12 +38,13 @@ public:
 	const TCHAR*	AuthorName() { return "Ivan Shishkin"; }
 	const TCHAR*	CopyrightMessage() { return "Copyright (C) 2010 Ivan Shishkin <codingdude@gmail.com>"; }
 	unsigned int	Version() { return 100; }
-	int				Capability() { return BMMIO_NONE; }
+	int				Capability() { return BMMIO_READER | BMMIO_EXTENSION; }
 	void			ShowAbout( HWND hWnd );
 	BOOL			LoadConfigure( void *ptr ) { return TRUE; }
 	BOOL			SaveConfigure( void *ptr ) { return TRUE; }
 	DWORD			EvaluateConfigure() { return 0; }
-	BMMRES			GetImageInfo( BitmapInfo *bi ); 
+	BMMRES			GetImageInfo( BitmapInfo *bi );
+	void			DeleteThis() { delete this; }
 
 
 	BitmapStorage*  Load( BitmapInfo *bi, Bitmap *map, BMMRES *status ); 
