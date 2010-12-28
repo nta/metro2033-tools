@@ -128,15 +128,10 @@ void Skeleton::update_bone_length( const Bone& bone )
 {
 	INode* parent;
 	INode* child, *ch;
-	SimpleObject2* obj;
-	ObjectState os;
 	float length = 0;
 	float side = 0;
 	Matrix3 m1, m2;
 	Point3 len, off;
-	Interface* iface;
-
-	iface = GetCOREInterface();
 
 	parent = get_bone_node( bone.parent);
 	child = get_bone_node( bone.name );
@@ -154,33 +149,18 @@ void Skeleton::update_bone_length( const Bone& bone )
 			if( length < off.Length() )
 			{
 				len = off;
+				length = off.Length();
 			}
 		}
-		parent->ResetBoneStretch(0);
 
 		length = len.Length();
 		side = length / 10;
 
-		os = parent->EvalWorldState( iface->GetTime() );
-		if( os.obj->ClassID() != BONE_OBJ_CLASSID )
-		{
-			return;
-		}
-
-		obj = (SimpleObject2*)os.obj;
-		build_bone_obj( obj, length, side );
+		build_bone_obj( parent, length, side );
 	}
 
 	if( child->NumberOfChildren() == 0 )
 	{
-		child->ResetBoneStretch(0);
-
-		os = child->EvalWorldState( iface->GetTime() );
-		if( os.obj->ClassID() != BONE_OBJ_CLASSID )
-		{
-			return;
-		}
-
 		if( len.Length() == 0 )
 		{
 			length = 0.1f;
@@ -192,13 +172,28 @@ void Skeleton::update_bone_length( const Bone& bone )
 			side = length / 10;
 		}
 
-		obj = (SimpleObject2*)os.obj;
-		build_bone_obj( obj, length, side );
+		build_bone_obj( child, length, side );
 	}
 }
 
-void Skeleton::build_bone_obj( SimpleObject2* obj, float length, float side )
+void Skeleton::build_bone_obj( INode* bone_node, float length, float side )
 {
+	SimpleObject2* obj;
+	ObjectState os;
+	Interface* iface;
+
+	iface = GetCOREInterface();
+
+	bone_node->ResetBoneStretch(0);
+
+	os = bone_node->EvalWorldState( iface->GetTime() );
+	if( os.obj->ClassID() != BONE_OBJ_CLASSID )
+	{
+		return;
+	}
+
+	obj = (SimpleObject2*)os.obj;
+
 	obj->pblock2->SetValue( BONE_WIDTH, 0, side );
 	obj->pblock2->SetValue( BONE_HEIGHT, 0,  side );
 	//obj->pblock2->SetValue( BONE_TAPER, 0, 80 );
