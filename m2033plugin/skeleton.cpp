@@ -23,6 +23,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #include "skeleton.h"
 #include "simpobj.h"
 #include "math.h"
+#include "iparamb2.h"
+
+enum
+{ 
+   BONE_WIDTH,
+   BONE_HEIGHT,
+   BONE_TAPER,
+   BONE_LENGTH,
+};
 
 void Skeleton::build()
 {
@@ -119,7 +128,7 @@ void Skeleton::update_bone_length( const Bone& bone )
 {
 	INode* parent;
 	INode* child, *ch;
-	Mesh* mesh;
+	SimpleObject2* obj;
 	ObjectState os;
 	float length = 0;
 	Matrix3 m1, m2;
@@ -161,10 +170,8 @@ void Skeleton::update_bone_length( const Bone& bone )
 		return;
 	}
 
-	mesh = &((SimpleObject*)os.obj)->mesh;
-	mesh->Init();
-
-	build_mesh( mesh, length );
+	obj = (SimpleObject2*)os.obj;
+	build_bone_obj( obj, length );
 
 	if( child->NumberOfChildren() == 0 )
 	{
@@ -176,49 +183,21 @@ void Skeleton::update_bone_length( const Bone& bone )
 			return;
 		}
 
-		mesh = &((SimpleObject*)os.obj)->mesh;
-		mesh->Init();
-
-		build_mesh( mesh, length );
+		obj = (SimpleObject2*)os.obj;
+		build_bone_obj( obj, length );
 	}
 }
 
-void Skeleton::build_mesh( Mesh* mesh, float length )
+void Skeleton::build_bone_obj( SimpleObject2* obj, float length )
 {
-	float d1, d2;
+	float side;
 
-	d1 = length / 20;
-	d2 = length / 100;
+	side = length / 10;
 
-	// set vertices
-	mesh->setNumVerts( 9 );
-	mesh->setVert( 0, d1, d1, -d1 );
-	mesh->setVert( 1, d1, d1, d1 );
-	mesh->setVert( 2, d1, -d1, d1 );
-	mesh->setVert( 3, d1, -d1, -d1 );
-	mesh->setVert( 4, length, d2, -d2 );
-	mesh->setVert( 5, length, d2, d2 );
-	mesh->setVert( 6, length, -d2, d2 );
-	mesh->setVert( 7, length, -d2, -d2 );
-	mesh->setVert( 8, 0, 0, 0 );
+	obj->pblock2->SetValue( BONE_WIDTH, 0, side );
+	obj->pblock2->SetValue( BONE_HEIGHT, 0,  side );
+	//obj->pblock2->SetValue( BONE_TAPER, 0, 80 );
+	obj->pblock2->SetValue( BONE_LENGTH, 0, length );
 
-	// set faces
-	mesh->setNumFaces( 14 );
-	mesh->faces[0].setVerts( 0, 1, 5 );
-	mesh->faces[1].setVerts( 5, 4, 0 );
-	mesh->faces[2].setVerts( 1, 2, 6 );
-	mesh->faces[3].setVerts( 6, 5, 1 );
-	mesh->faces[4].setVerts( 2, 3, 7 );
-	mesh->faces[5].setVerts( 7, 6, 2 );
-	mesh->faces[6].setVerts( 3, 0, 4 );
-	mesh->faces[7].setVerts( 4, 7, 3 );
-	mesh->faces[8].setVerts( 8, 2, 1 );
-	mesh->faces[9].setVerts( 3, 2, 8 );
-	mesh->faces[10].setVerts( 8, 0, 3 );
-	mesh->faces[11].setVerts( 1, 0, 8 );
-	mesh->faces[12].setVerts( 4, 5, 6 );
-	mesh->faces[13].setVerts( 6, 7, 4 );
-
-	mesh->buildNormals();
-	mesh->buildBoundingBox();
+	obj->UpdateMesh(0);
 }

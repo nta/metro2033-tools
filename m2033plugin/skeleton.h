@@ -25,6 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #include <string>
 #include <map>
 
+class SimpleObject2;
+
 class Skeleton
 {
 public:
@@ -54,7 +56,7 @@ private:
 
 private:
 	void update_bone_length( const Bone& bone );
-	void build_mesh( Mesh* mesh, float length );
+	void build_bone_obj( SimpleObject2* obj, float length );
 
 private:
 	typedef std::vector<Bone> BoneVector;
