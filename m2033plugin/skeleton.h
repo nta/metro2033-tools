@@ -56,7 +56,7 @@ private:
 
 private:
 	void update_bone_length( const Bone& bone );
-	void build_bone_obj( SimpleObject2* obj, float length );
+	void build_bone_obj( SimpleObject2* obj, float length, float side );
 
 private:
 	typedef std::vector<Bone> BoneVector;

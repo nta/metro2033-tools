@@ -131,6 +131,7 @@ void Skeleton::update_bone_length( const Bone& bone )
 	SimpleObject2* obj;
 	ObjectState os;
 	float length = 0;
+	float side = 0;
 	Matrix3 m1, m2;
 	Point3 len, off;
 	Interface* iface;
@@ -140,38 +141,35 @@ void Skeleton::update_bone_length( const Bone& bone )
 	parent = get_bone_node( bone.parent);
 	child = get_bone_node( bone.name );
 
-	if( parent == 0 )
-	{
-		return;
-	}
-
 	len.Set( 0, 0, 0 );
 
-	for( int i = 0; i < parent->NumberOfChildren(); i++ )
+	if( parent != 0 )
 	{
-		ch = parent->GetChildNode( i );
-		m1 = parent->GetNodeTM( 0 );
-		m2 = ch->GetNodeTM( 0 );
-		off = m2.GetTrans() - m1.GetTrans();
-		if( length < off.Length() )
+		for( int i = 0; i < parent->NumberOfChildren(); i++ )
 		{
-			length = off.Length();
-			len = off;
+			ch = parent->GetChildNode( i );
+			m1 = parent->GetNodeTM( 0 );
+			m2 = ch->GetNodeTM( 0 );
+			off = m2.GetTrans() - m1.GetTrans();
+			if( length < off.Length() )
+			{
+				len = off;
+			}
 		}
+		parent->ResetBoneStretch(0);
+
+		length = len.Length();
+		side = length / 10;
+
+		os = parent->EvalWorldState( iface->GetTime() );
+		if( os.obj->ClassID() != BONE_OBJ_CLASSID )
+		{
+			return;
+		}
+
+		obj = (SimpleObject2*)os.obj;
+		build_bone_obj( obj, length, side );
 	}
-
-	length = len.Length();
-
-	parent->ResetBoneStretch(0);
-
-	os = parent->EvalWorldState( iface->GetTime() );
-	if( os.obj->ClassID() != BONE_OBJ_CLASSID )
-	{
-		return;
-	}
-
-	obj = (SimpleObject2*)os.obj;
-	build_bone_obj( obj, length );
 
 	if( child->NumberOfChildren() == 0 )
 	{
@@ -183,17 +181,24 @@ void Skeleton::update_bone_length( const Bone& bone )
 			return;
 		}
 
+		if( len.Length() == 0 )
+		{
+			length = 0.1f;
+			side = 0.1f;
+		}
+		else
+		{
+			length = len.Length();
+			side = length / 10;
+		}
+
 		obj = (SimpleObject2*)os.obj;
-		build_bone_obj( obj, length );
+		build_bone_obj( obj, length, side );
 	}
 }
 
-void Skeleton::build_bone_obj( SimpleObject2* obj, float length )
+void Skeleton::build_bone_obj( SimpleObject2* obj, float length, float side )
 {
-	float side;
-
-	side = length / 10;
-
 	obj->pblock2->SetValue( BONE_WIDTH, 0, side );
 	obj->pblock2->SetValue( BONE_HEIGHT, 0,  side );
 	//obj->pblock2->SetValue( BONE_TAPER, 0, 80 );
