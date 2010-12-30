@@ -22,7 +22,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #include "image_import.h"
 #include "squish.h"
 
-void ImageImport::ShowAbout( HWND hwnd )
+using namespace m2033;
+
+void image_import::ShowAbout( HWND hwnd )
 {
 	MessageBox( hwnd,
 				"Metro 2033 Image import plugin.\n"
@@ -32,7 +34,7 @@ void ImageImport::ShowAbout( HWND hwnd )
 				MB_ICONINFORMATION );
 }
 
-BitmapStorage* ImageImport::Load( BitmapInfo *bi, Bitmap *map, BMMRES *status )
+BitmapStorage* image_import::Load( BitmapInfo *bi, Bitmap *map, BMMRES *status )
 {
 	BitmapStorage *storage;
 	FILE* file;
@@ -126,7 +128,7 @@ BitmapStorage* ImageImport::Load( BitmapInfo *bi, Bitmap *map, BMMRES *status )
 	return storage;
 }
 
-BMMRES ImageImport::GetImageInfo( BitmapInfo *bi )
+BMMRES image_import::GetImageInfo( BitmapInfo *bi )
 {
 	bi->SetWidth( 512 );
 	bi->SetHeight( 512 );

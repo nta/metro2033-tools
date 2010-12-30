@@ -25,13 +25,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #include <string>
 #include <map>
 
-class SimpleObject2;
-
-class Skeleton
+namespace m2033
+{
+class skeleton
 {
 public:
-	Skeleton() {}
-	~Skeleton() {}
+	skeleton() {}
+	~skeleton() {}
 
 	void build();
 
@@ -44,7 +44,7 @@ public:
 	INode* get_bone_node( const std::string& name );
 
 private:
-	class Bone
+	class bone
 	{
 	public:
 		std::string	name;
@@ -55,16 +55,17 @@ private:
 	};
 
 private:
-	void update_bone_length( const Bone& bone );
+	void update_bone_length( const bone& b );
 	void build_bone_obj( INode* bone_node, float length, float side );
 
 private:
-	typedef std::vector<Bone> BoneVector;
-	typedef std::map<std::string, INode*> NodeMap;
+	typedef std::vector<bone> bone_vector;
+	typedef std::map<std::string, INode*> node_map;
 
 private:
-	BoneVector	bones_;
-	NodeMap		hash_;
+	bone_vector	bones_;
+	node_map		hash_;
 };
+}
 
 #endif // __SKELETON_H__

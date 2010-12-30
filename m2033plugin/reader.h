@@ -23,29 +23,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 #include <deque>
 #include <string>
+#include <assert.h>
 
-class Chunk
+namespace m2033
+{
+class reader
 {
 public:
-	unsigned	id;
-
-	size_t		start;
-	size_t		size;
-	size_t		ptr;
-
-	Chunk*	parent;
-};
-
-class Reader
-{
-public:
-	Reader()
-		: root_(0),
-		data_(0),
-		size_(0)
-	{}
-
-	~Reader() {}
+	reader() : current_(0), is_opened(0) {}
+	~reader() { close(); }
 
 	bool open( const std::string& name );
 	void close();
@@ -58,31 +44,45 @@ public:
 	void open_chunk();
 	void close_chunk();
 
-	unsigned get_chunk_id();
-	unsigned get_next_chunk_id();
-	unsigned get_chunk_ptr();
-	unsigned get_chunk_size();
+	unsigned chunk_id() { assert( current_ ); return current_->id; }
+	unsigned chunk_size() { assert( current_ ); return current_->size; }
+	void* chunk_data() { assert( current_ ); return current_->data; }
 
 	void read_data( void* data, size_t size );
-	int read_string( char* buffer, int length );
+	int read_string( char* buffer );
 
-	void advance( size_t size );
+	void advance( size_t size ) { assert( current_ ); current_->ptr += size; assert( current_->ptr <= current_->size ); }
+	size_t elapsed() { assert( current_ ); return current_->size - current_->ptr; }
+	size_t ptr() { assert( current_ ); return current_->ptr; }
 
 private:
-	typedef std::deque<Chunk>	ChunkDeque;
+	struct chunk
+	{
+		unsigned	id;
+
+		size_t		size;
+		size_t		ptr;
+
+		void*		data;
+
+		chunk*		parent;
+	};
+
+	typedef std::deque<chunk>	chunk_stack;
 
 private:
-	void*			data_;
-	size_t			size_;
+	bool			is_opened;
 
-	Chunk*			root_;
+	chunk			root_;
+	chunk*			current_;
 
-	ChunkDeque		chunks_;
+	chunk_stack		chunks_;
 
 	std::string		path_;
 	std::string		filename_;
 	std::string		name_;
 	std::string		suffix_;
 };
+}
 
 #endif // __READER_H__

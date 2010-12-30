@@ -25,11 +25,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #include "bmmlib.h"
 #include "bitmap.h"
 
-class ImageImport : public BitmapIO
+namespace m2033
+{
+class image_import : public BitmapIO
 {
 public:
-	ImageImport() {}
-	~ImageImport() {}
+	image_import() {}
+	~image_import() {}
 
 	int				ExtCount() { return 1; }
 	const TCHAR*	Ext( int n ) { return "512"; }
@@ -49,5 +51,6 @@ public:
 
 	BitmapStorage*  Load( BitmapInfo *bi, Bitmap *map, BMMRES *status ); 
 };
+}
 
 #endif // __IMAGE_IMPORT_H__

@@ -22,22 +22,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #include "model_import.h"
 #include "image_import.h"
 
-class ModelImportClassDesc : public ClassDesc
+using namespace m2033;
+
+class model_import_class_desc : public ClassDesc
 {
 public:
 	int				IsPublic() { return TRUE; }
-	void*			Create( BOOL loading ) { return new ModelImport; }
+	void*			Create( BOOL loading ) { return new model_import; }
 	const TCHAR*	ClassName() { return "ModelImport"; }
 	SClass_ID		SuperClassID() { return SCENE_IMPORT_CLASS_ID; }
 	Class_ID		ClassID() { return Class_ID(0xc9a5a4d, 0x40a2064b); }
 	const TCHAR*    Category() { return _T(""); }
 };
 
-class ImageImportClassDesc : public ClassDesc
+class image_import_class_desc : public ClassDesc
 {
 public:
 	int				IsPublic() { return TRUE; }
-	void*			Create( BOOL loading ) { return new ImageImport; }
+	void*			Create( BOOL loading ) { return new image_import; }
 	const TCHAR*	ClassName() { return "ImageImport"; }
 	SClass_ID		SuperClassID() { return BMM_IO_CLASS_ID; }
 	Class_ID		ClassID() { return Class_ID(0x52ae1ac0, 0x6d1845d8); }
@@ -45,8 +47,8 @@ public:
 	const TCHAR*    Category() { return _T(""); }
 };
 
-ModelImportClassDesc	model_import_description;
-ImageImportClassDesc	image_import_description;
+model_import_class_desc	model_import_description;
+image_import_class_desc	image_import_description;
 
 BOOL WINAPI DllMain( HINSTANCE hinst,ULONG reason, LPVOID reserved )
 {

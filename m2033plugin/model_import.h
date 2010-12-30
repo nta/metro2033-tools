@@ -26,14 +26,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #include "max.h"
 #include "skeleton.h"
 
-class Reader;
-class Model;
-class Skeleton;
+namespace m2033
+{
+class reader;
+class model;
 
-typedef std::list<std::string>	StringList;
-typedef std::list<Model>		ModelList;
-
-class ModelImport : public SceneImport
+class model_import : public SceneImport
 {
 public:
 	int				ExtCount() { return 1; }
@@ -53,18 +51,23 @@ public:
 	int DoImport( const TCHAR *name, ImpInterface *ii, Interface *i, BOOL suppressPrompts );
 
 private:
-	void read_model( Reader& reader, ModelList& meshes );
-	void read_model( Reader& reader, ModelList& meshes, int type );
-	void read_skeleton( Reader& reader );
+	typedef std::list<std::string>	string_list;
+	typedef std::list<model>		model_list;
 
-	void split_string( const std::string& string, char splitter, StringList& result );
+private:
+	void read_model( reader& r, model_list& models );
+	void read_model( reader& r, model_list& models, int type );
+	void read_skeleton( reader& r );
+
+	void split_string( const std::string& string, char splitter, string_list& result );
 
 	Modifier* create_skin_modifier( INode* node );
 
 private:
 	Interface*		interface_;
 	ImpInterface*	imp_interface_;
-	Skeleton		skeleton_;
+	skeleton		skeleton_;
 };
+}
 
 #endif // __MODEL_IMPORT_H__

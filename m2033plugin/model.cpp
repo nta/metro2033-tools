@@ -20,7 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 #include "model.h"
 
-struct StaticModelVertex
+using namespace m2033;
+
+struct static_model_vertex
 {
     float x, y, z, w;
     unsigned normal;
@@ -28,7 +30,7 @@ struct StaticModelVertex
     float u, v;
 };
 
-struct DynamicModelVertex
+struct dynamic_model_vertex
 {
     short x, y, z;
     short unknown;
@@ -40,10 +42,10 @@ struct DynamicModelVertex
     short uv[2];
 };
 
-void Model::init()
+void model::init()
 {
-	StaticModelVertex* static_vert;
-	DynamicModelVertex* dynamic_vert;
+	static_model_vertex* static_vert;
+	dynamic_model_vertex* dynamic_vert;
 
 	assert( vert_buffer_ != 0 );
 	assert( face_buffer_ != 0 );
@@ -56,7 +58,7 @@ void Model::init()
 
 	if( format_ == STATIC_MODEL_VERTEX_FORMAT )
 	{
-		static_vert = (StaticModelVertex*) vert_buffer_;
+		static_vert = (static_model_vertex*) vert_buffer_;
 
 		for( int i = 0; i < vertex_count_; i++ )
 		{
@@ -66,7 +68,7 @@ void Model::init()
 	}
 	else if( format_ == DYNAMIC_MODEL_VERTEX_FORMAT )
 	{
-		dynamic_vert = (DynamicModelVertex*) vert_buffer_; 
+		dynamic_vert = (dynamic_model_vertex*) vert_buffer_; 
 
 		for( int i = 0; i < vertex_count_; i++ )
 		{
@@ -103,7 +105,7 @@ void Model::init()
 	face_buffer_ = 0;
 }
 
-void Model::clear()
+void model::clear()
 {
 	if( vert_buffer_ != 0 )
 	{
@@ -127,7 +129,7 @@ void Model::clear()
 	format_ = -1;
 }
 
-void Model::set_verts( void* verts, int count )
+void model::set_verts( void* verts, int count )
 {
 	int size = count * 32;
 	vert_buffer_ = malloc( size );
@@ -135,7 +137,7 @@ void Model::set_verts( void* verts, int count )
 	vertex_count_ = count;
 }
 
-void Model::set_faces( void* faces, int count )
+void model::set_faces( void* faces, int count )
 {
 	int size = count * 6;
 	face_buffer_ = malloc( size );
@@ -144,7 +146,7 @@ void Model::set_faces( void* faces, int count )
 
 }
 
-void Model::operator = ( const Model& model )
+void model::operator = ( const model& model )
 {
 	clear();
 

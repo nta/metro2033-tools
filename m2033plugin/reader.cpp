@@ -19,236 +19,144 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 ******************************************************************************/
 
 #include <stdio.h>
-#include <assert.h>
 #include "reader.h"
 
-inline int to_number( unsigned address )
+using namespace m2033;
+
+static inline int to_number( unsigned address )
 {
 	return *((int*)address);
 }
 
-inline const char* to_string( unsigned address )
+static inline const char* to_string( unsigned address )
 {
-	return ((char*)address);
+	return (char*)address;
 }
 
-inline unsigned to_offset( void* data )
+static inline unsigned to_offset( void* data )
 {
 	return (unsigned)data;
 }
 
-inline void* to_ptr( unsigned offset )
+static inline void* to_ptr( unsigned offset )
 {
 	return (void*) offset;
 }
 
-bool Reader::open( const std::string& name )
+bool reader::open( const std::string& name )
 {
-	char letter[255];
-	char path[255];
-	char fname[255];
-	char suffix[255];
 	FILE* file;
+	void* data;
+	size_t size;
+	char drive[255];
+	char dir[255];
+	char filename[255];
+	char suffix[255];
 
 	close();
 
-	_splitpath( name.c_str(), letter, path, fname, suffix );
-
-	path_ = std::string( letter ) + path;
-	name_ = fname;
-	suffix_ = suffix;
-	filename_ = name_ + suffix_;
-
 	file = fopen( name.c_str(), "rb" );
-	if( file == 0 )
+	if( !file )
 	{
 		return 0;
 	}
 
 	fseek( file, 0, SEEK_END );
-	size_ = ftell( file );
+	size = ftell( file );
 	fseek( file, 0, SEEK_SET );
-
-	data_ = malloc( size_ );
-	fread( data_, 1, size_, file );
-
+	data = malloc( size );
+	fread( data, 1, size, file );
 	fclose( file );
 
-	root_ = new Chunk;
+	root_.data = data;
+	root_.size = size;
+	root_.ptr = 0;
+	root_.parent = 0;
 
-	root_->id = -1;
-	root_->parent = 0;
-	root_->ptr = to_offset( data_ );
-	root_->start = root_->ptr;
-	root_->size = size_;
+	current_ = &root_;
+
+	_splitpath( name.c_str(), drive, dir, filename, suffix );
+
+	path_ = std::string( drive ) + std::string( dir );
+	name_ = filename;
+	filename_ = std::string( filename ) + std::string( suffix );
+	suffix_ = suffix;
+
+	is_opened = true;
 
 	return 1;
 }
 
-void Reader::close()
+void reader::close()
 {
-	if( data_ )
+	if( is_opened )
 	{
-		free( data_ );
-		data_ = 0;
-	}
-	if( root_ )
-	{
-		delete root_;
-		root_ = 0;
-	}
-
-	size_ = 0;
-
-	path_.clear();
-	filename_.clear();
-	name_.clear();
-	suffix_.clear();
-
-	chunks_.clear();
-}
-
-void Reader::open_chunk()
-{
-	Chunk ch, *parent;
-
-	if( chunks_.size() )
-	{
-		parent = &chunks_.back();
-	}
-	else
-	{
-		parent = root_;
-	}
-
-	ch.start = parent->ptr + 8;
-	ch.id = to_number( parent->ptr );
-	ch.size = to_number( parent->ptr + 4 );
-	ch.ptr = ch.start;
-	ch.parent = parent;
-
-	chunks_.push_back( ch );
-}
-
-void Reader::close_chunk()
-{
-	Chunk* ch;
-
-	if( chunks_.size() )
-	{
-		ch = &chunks_.back();
-		ch->parent->ptr = ch->start + ch->size;
-		chunks_.pop_back();
+		chunks_.clear();
+		free( root_.data );
+		current_ = 0;
+		is_opened = false;
+		path_.clear();
+		name_.clear();
+		filename_.clear();
+		suffix_.clear();
 	}
 }
 
-unsigned Reader::get_chunk_id()
+void reader::open_chunk()
 {
-	Chunk* ch;
+	chunk c;
+	unsigned p;
 
-	if( chunks_.size() )
-	{
-		ch = &chunks_.back();
-		return ch->id;
-	}
+	assert( ptr() < chunk_size() );
 
-	return -1;
+	p = to_offset( chunk_data() ) + ptr();
+
+	c.id = to_number( p );
+	c.size = to_number( p + 4 );
+	c.data = to_ptr( p + 8 );
+	c.parent = current_;
+	c.ptr = 0;
+
+	chunks_.push_back( c );
+
+	current_ = &chunks_.back();
 }
 
-unsigned Reader::get_next_chunk_id()
+void reader::close_chunk()
 {
-	Chunk* ch;
-	size_t off;
+	chunk *c;
 
-	if( chunks_.size() )
-	{
-		ch = &chunks_.back();
-		if( ch->start + ch->size < ch->parent->start + ch->parent->size )
-		{
-			off = ch->start + ch->size;
-			return to_number( off );
-		}
-	}
+	if( current_ == 0 ) return;
+	if( current_->parent == 0 ) return;
 
-	return -1;
+	c = current_;
+	current_ = c->parent;
+	advance( c->size + 8 );
+	chunks_.pop_back();
 }
 
-unsigned Reader::get_chunk_ptr()
+void reader::read_data( void* data, size_t size )
 {
-	Chunk* ch;
+	unsigned p;
 
-	if( chunks_.size() )
-	{
-		ch = &chunks_.back();
-		return ch->ptr - ch->start;
-	}
-
-	return 0;
+	assert( size <= elapsed() );
+	p = to_offset( chunk_data() ) + ptr();
+	memcpy( data, to_ptr( p ), size );
+	advance( size );
 }
 
-unsigned Reader::get_chunk_size()
+int reader::read_string( char* buffer )
 {
-	Chunk* ch;
+	const char* str;
+	int len;
+	unsigned p;
 
-	if( chunks_.size() )
-	{
-		ch = &chunks_.back();
-		return ch->size;
-	}
+	assert( current_ );
+	p = to_offset( chunk_data() ) + ptr();
+	str = to_string( p );
+	len = strlen( str ) + 1;
+	strcpy( buffer, str );
+	advance( len );
 
-	return 0;
-}
-
-void Reader::read_data( void* data, size_t size )
-{
-	Chunk* ch;
-	size_t len;
-
-	if( chunks_.size() )
-	{
-		ch = &chunks_.back();
-		len = ch->start + ch->size - ch->ptr;
-		assert( size <= len );
-
-		memcpy( data, to_ptr( ch->ptr ), size );
-		advance( ch->ptr - ch->start + size );
-	}
-}
-
-void Reader::advance( size_t size )
-{
-	Chunk* ch;
-	size_t len;
-
-	if( chunks_.size() )
-	{
-		ch = &chunks_.back();
-		len = ch->start + ch->size - ch->ptr;
-		ch->ptr = ch->start + size;
-	}
-}
-
-int Reader::read_string( char* buffer, int length )
-{
-	char ch;
-	int i;
-
-	assert( length );
-	assert( buffer );
-
-	memset( buffer, 0, length );
-
-	for( i = 0; i < length - 1; i++ )
-	{
-		read_data( &ch, 1 );
-		if( ch == 0 )
-		{
-			break;
-		}
-
-		buffer[i] = ch;
-	}
-
-	buffer[i] = 0;
-	return i;
+	return len;
 }

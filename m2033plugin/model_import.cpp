@@ -26,6 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #include "modstack.h"
 #include "iskin.h"
 
+using namespace m2033;
+
 enum ChunkIds
 {
 	UNUSED_CHUNK_ID = 0x01,
@@ -34,15 +36,15 @@ enum ChunkIds
 	DYNAMIC_MODEL_CHUNK_ID = 0x14
 };
 
-int ModelImport::DoImport( const TCHAR *name, ImpInterface *ii, Interface *iface, BOOL suppressPrompts )
+int model_import::DoImport( const TCHAR *name, ImpInterface *ii, Interface *iface, BOOL suppressPrompts )
 {
-	Reader reader;
-	ModelList meshes;
-	ModelList::iterator it;
+	reader r;
+	model_list models;
+	model_list::iterator it;
 	ImpNode* node;
 	INode* inode;
 	TriObject* object;
-	Model* mdl;
+	model* mdl;
 	int count;
 	Matrix3 tm;
 	ISkinImportData* skin_imp;
@@ -50,11 +52,11 @@ int ModelImport::DoImport( const TCHAR *name, ImpInterface *ii, Interface *iface
 	interface_ = iface;
 	imp_interface_ = ii;
 
-	reader.open( name );
+	r.open( name );
 
-	read_model( reader, meshes );
+	read_model( r, models );
 
-	for( it = meshes.begin(); it != meshes.end(); it++ )
+	for( it = models.begin(); it != models.end(); it++ )
 	{
 		mdl = &(*it);
 
@@ -80,7 +82,7 @@ int ModelImport::DoImport( const TCHAR *name, ImpInterface *ii, Interface *iface
 	return IMPEXP_SUCCESS;
 }
 
-void ModelImport::ShowAbout( HWND hwnd )
+void model_import::ShowAbout( HWND hwnd )
 {
 	MessageBox( hwnd,
 				"Metro 2033 Model import plugin.\n"
@@ -91,80 +93,80 @@ void ModelImport::ShowAbout( HWND hwnd )
 }
 
 
-void ModelImport::read_model( Reader& reader, ModelList& meshes )
+void model_import::read_model( reader& r, model_list& models )
 {
 	int id, size;
 	char buffer[1024];
-	StringList names;
-	Reader mesh_reader;
-	Reader skeleton_reader;
-	StringList::iterator it;
+	string_list names;
+	reader mesh_reader;
+	reader skeleton_reader;
+	string_list::iterator it;
 	std::string file_name, temp;
 
-	reader.open_chunk();
-	id = reader.get_chunk_id();
+	r.open_chunk();
+	id = r.chunk_id();
 
 	if( id == UNUSED_CHUNK_ID )
 	{
 		// skip chunk data
-		reader.close_chunk();
-		reader.open_chunk();
-		id = reader.get_chunk_id();
+		r.close_chunk();
+		r.open_chunk();
+		id = r.chunk_id();
 	}
 
 	if( id == STATIC_MODEL_CHUNK_ID )
 	{
-		read_model( reader, meshes, Model::STATIC_MODEL_VERTEX_FORMAT );
+		read_model( r, models, model::STATIC_MODEL_VERTEX_FORMAT );
 		return;
 	}
 
 	if( id == DYNAMIC_MODEL_CHUNK_ID )
 	{
 		// read skeleton
-		size = reader.get_chunk_size();
-		reader.read_data( buffer, size );
+		size = r.chunk_size();
+		r.read_data( buffer, size );
 		file_name = buffer;
-		temp = reader.get_path();
+		temp = r.get_path();
 		size = temp.find( "meshes" ) + 7;
 		file_name = temp.substr( 0, size ) + file_name + std::string( ".skeleton" );
 		skeleton_reader.open( file_name );
 		read_skeleton( skeleton_reader );
-		reader.close_chunk();
+		r.close_chunk();
 
-		reader.open_chunk();
-		id = reader.get_chunk_id();
+		r.open_chunk();
+		id = r.chunk_id();
 		if( id != TEXTURE_NAMES_CHUNK_ID )
 		{
 			// skip chunk data
-			reader.close_chunk();
-			reader.open_chunk();
+			r.close_chunk();
+			r.open_chunk();
 		}
 
-		size = reader.get_chunk_size() - 4;
+		size = r.chunk_size() - 4;
 		assert( size < 1024 );
 
-		reader.advance( 4 );
+		r.advance( 4 );
 
-		reader.read_data( buffer, size );
+		r.read_data( buffer, size );
 
 		split_string( buffer, ',', names );
 
 		for( it = names.begin(); it != names.end(); it++ )
 		{
 			file_name = (*it);
-			temp = reader.get_path();
+			temp = r.get_path();
 			
 			size = temp.find( "meshes" ) + 7;
 			file_name = temp.substr( 0, size ) + file_name + std::string( ".mesh" );
 
 			mesh_reader.open( file_name );
 
-			read_model( mesh_reader, meshes, Model::DYNAMIC_MODEL_VERTEX_FORMAT );
+			read_model( mesh_reader, models, model::DYNAMIC_MODEL_VERTEX_FORMAT );
 		}
 	}
 }
 
-void ModelImport::split_string( const std::string& string, char splitter, StringList& result )
+void model_import::split_string( const std::string& string, char splitter, string_list& result )
 {
 	size_t len = 0, size;
 	std::string temp, val;
@@ -189,90 +191,90 @@ void ModelImport::split_string( const std::string& string, char splitter, String
 	}
 }
 
-void ModelImport::read_model( Reader& reader, ModelList& meshes, int type )
+void model_import::read_model( reader& r, model_list& models, int type )
 {
 	int size, count, i = 0;
-	Model model;
+	model m;
 	char name[1024], n;
 	void* buffer;
 
-	if( type == Model::DYNAMIC_MODEL_VERTEX_FORMAT )
+	if( type == model::DYNAMIC_MODEL_VERTEX_FORMAT )
 	{
 		// skip two unused chunks
-		reader.open_chunk();
-		reader.close_chunk();
-		reader.open_chunk();
-		reader.close_chunk();
-		reader.open_chunk();
+		r.open_chunk();
+		r.close_chunk();
+		r.open_chunk();
+		r.close_chunk();
+		r.open_chunk();
 	}
 
 	do
 	{
-		sprintf( name, "%s_%i", reader.get_name().c_str(), i );
-		model.set_name( name );
+		sprintf( name, "%s_%i", r.get_name().c_str(), i );
+		m.set_name( name );
 
-		reader.open_chunk();
+		r.open_chunk();
 
 		// skip unused chunk
-		reader.open_chunk();
-		reader.close_chunk();
+		r.open_chunk();
+		r.close_chunk();
 
 		// get texture string
-		reader.open_chunk();
-		size = reader.get_chunk_size();
+		r.open_chunk();
+		size = r.chunk_size();
 		assert( size < 1024 );
-		reader.read_data( name, size );
-		reader.close_chunk();
-		model.set_texture_name( name );
+		r.read_data( name, size );
+		r.close_chunk();
+		m.set_texture_name( name );
 
 		// read vertices
-		reader.open_chunk();
-		if( type == Model::DYNAMIC_MODEL_VERTEX_FORMAT )
+		r.open_chunk();
+		if( type == model::DYNAMIC_MODEL_VERTEX_FORMAT )
 		{
 			// skip unused data
-			reader.read_data( &n, 1 );
-			size = n * 61 + 1;
-			reader.advance( size );
+			r.read_data( &n, 1 );
+			size = n * 61;
+			r.advance( size );
 
 			// calculate vertices size
-			reader.read_data( &count, 4 );
+			r.read_data( &count, 4 );
 			size = count * 32;
 		}
 		else
 		{
-			size = reader.get_chunk_size() - 8;
-			reader.advance( 4 );
-			reader.read_data( &count, 4 );
+			size = r.chunk_size() - 8;
+			r.advance( 4 );
+			r.read_data( &count, 4 );
 		}
 		buffer = malloc( size );
-		reader.read_data( buffer, size );
-		reader.close_chunk();
-		model.set_verts( buffer, count );
+		r.read_data( buffer, size );
+		r.close_chunk();
+		m.set_verts( buffer, count );
 		free( buffer );
 
 		// read indices
-		reader.open_chunk();
-		size = reader.get_chunk_size() - 4;
-		reader.read_data( &count, 4 );
+		r.open_chunk();
+		size = r.chunk_size() - 4;
+		r.read_data( &count, 4 );
 		buffer = malloc( size );
-		reader.read_data( buffer, size );
-		reader.close_chunk();
-		model.set_faces( buffer, count / 3 );
+		r.read_data( buffer, size );
+		r.close_chunk();
+		m.set_faces( buffer, count / 3 );
 		free( buffer );
 
-		model.set_vertex_format( type );
-		model.init();
-		meshes.push_back( model );
-		model.clear();
+		m.set_vertex_format( type );
+		m.init();
+		models.push_back( m );
+		m.clear();
 
-		reader.close_chunk();
+		r.close_chunk();
 
 		i++;
 	}
-	while( reader.get_chunk_ptr() + 64 < reader.get_chunk_size() );
+	while( r.elapsed() > 64 );
 }
 
-void ModelImport::read_skeleton( Reader& reader )
+void model_import::read_skeleton( reader& r )
 {
 	short count;
 	char name[255];
@@ -283,22 +285,22 @@ void ModelImport::read_skeleton( Reader& reader )
 	Point3 pos, rot;
 
 	// skip unused chunk
-	reader.open_chunk();
-	reader.close_chunk();
+	r.open_chunk();
+	r.close_chunk();
 
 	// read number of bones
-	reader.open_chunk();
-	reader.advance( 4 );
-	reader.read_data( &count, 2 );
+	r.open_chunk();
+	r.advance( 4 );
+	r.read_data( &count, 2 );
 
 	// read bones
 	for( int i = 0; i < count; i++ )
 	{
-		reader.read_string( name, 255 );
-		reader.read_string( parent_name, 255 );
-		reader.read_data( orientation, 12 );
-		reader.read_data( position, 12 );
-		reader.read_data( &id, 2 );
+		r.read_string( name );
+		r.read_string( parent_name );
+		r.read_data( orientation, 12 );
+		r.read_data( position, 12 );
+		r.read_data( &id, 2 );
 
 		pos.Set( position[0], position[1], position[2] );
 		rot.Set( orientation[0], orientation[1], orientation[2] );
@@ -306,12 +308,12 @@ void ModelImport::read_skeleton( Reader& reader )
 		skeleton_.add_bone( name, parent_name, pos, rot );
 	}
 
-	reader.close();
+	r.close();
 
 	skeleton_.build();
 }
 
-Modifier* ModelImport::create_skin_modifier( INode* node )
+Modifier* model_import::create_skin_modifier( INode* node )
 {
 	IDerivedObject *dobj;
 	Object *obj;

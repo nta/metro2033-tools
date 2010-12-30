@@ -25,6 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #include "math.h"
 #include "iparamb2.h"
 
+using namespace m2033;
+
 enum
 { 
    BONE_WIDTH,
@@ -33,7 +35,7 @@ enum
    BONE_LENGTH,
 };
 
-void Skeleton::build()
+void skeleton::build()
 {
 	Matrix3 m;
 	Quat q;
@@ -82,26 +84,26 @@ void Skeleton::build()
 	}
 }
 
-void Skeleton::add_bone( const std::string& name, const std::string parent,
+void skeleton::add_bone( const std::string& name, const std::string parent,
 	const Point3& position, const Point3& orientation )
 {
-	Bone bone;
+	bone b;
 
-	bone.name = name;
-	bone.parent = parent;
+	b.name = name;
+	b.parent = parent;
 
-	bone.pos[0] = position[0];
-	bone.pos[1] = position[1];
-	bone.pos[2] = position[2];
+	b.pos[0] = position[0];
+	b.pos[1] = position[1];
+	b.pos[2] = position[2];
 
-	bone.rot[0] = orientation[0];
-	bone.rot[1] = orientation[1];
-	bone.rot[2] = orientation[2];
+	b.rot[0] = orientation[0];
+	b.rot[1] = orientation[1];
+	b.rot[2] = orientation[2];
 
-	bones_.push_back( bone );
+	bones_.push_back( b );
 }
 
-INode* Skeleton::get_bone_node( int id )
+INode* skeleton::get_bone_node( int id )
 {
 	if( id >= get_num_bones() )
 	{
@@ -111,9 +113,9 @@ INode* Skeleton::get_bone_node( int id )
 	return get_bone_node( bones_[id].name );
 }
 
-INode* Skeleton::get_bone_node( const std::string& name )
+INode* skeleton::get_bone_node( const std::string& name )
 {
-	NodeMap::iterator it;
+	node_map::iterator it;
 
 	it = hash_.find( name );
 	if( it != hash_.end() )
@@ -124,7 +126,7 @@ INode* Skeleton::get_bone_node( const std::string& name )
 	return 0;
 }
 
-void Skeleton::update_bone_length( const Bone& bone )
+void skeleton::update_bone_length( const bone& b )
 {
 	INode* parent;
 	INode* child, *ch;
@@ -133,8 +135,8 @@ void Skeleton::update_bone_length( const Bone& bone )
 	Matrix3 m1, m2;
 	Point3 len, off;
 
-	parent = get_bone_node( bone.parent);
-	child = get_bone_node( bone.name );
+	parent = get_bone_node( b.parent);
+	child = get_bone_node( b.name );
 
 	len.Set( 0, 0, 0 );
 
@@ -176,7 +178,7 @@ void Skeleton::update_bone_length( const Bone& bone )
 	}
 }
 
-void Skeleton::build_bone_obj( INode* bone_node, float length, float side )
+void skeleton::build_bone_obj( INode* bone_node, float length, float side )
 {
 	SimpleObject2* obj;
 	ObjectState os;

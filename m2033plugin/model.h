@@ -24,7 +24,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #include <string>
 #include "max.h"
 
-class Model
+namespace m2033
+{
+class model
 {
 public:
 	enum
@@ -34,23 +36,23 @@ public:
 	};
 
 public:
-	Model() : vert_buffer_(0),
+	model() : vert_buffer_(0),
 		face_buffer_(0),
 		vertex_count_(0),
 		face_count_(0),
 		format_(-1)
 	{}
 
-	Model( const Model& model ) : vert_buffer_(0),
+	model( const model& m ) : vert_buffer_(0),
 		face_buffer_(0),
 		vertex_count_(0),
 		face_count_(0),
 		format_(-1)
 	{
-		operator=( model );
+		operator=( m );
 	}
 
-	~Model() { clear(); }
+	~model() { clear(); }
 
 	void init();
 	void clear();
@@ -73,7 +75,7 @@ public:
 	const std::string& get_texture_name() { return texture_; }
 	const std::string& get_name() { return name_; }
 
-	void operator = ( const Model& model );
+	void operator = ( const model& model );
 
 private:
 	void*		vert_buffer_;
@@ -89,5 +91,6 @@ private:
 	std::string	texture_;
 	std::string name_;
 };
+}
 
 #endif // __MODEL_H__
