@@ -48,8 +48,13 @@ BitmapStorage* image_import::Load( BitmapInfo *bi, Bitmap *map, BMMRES *status )
 	const TCHAR* fname;
 
 	GetImageInfo( bi );
-
+#	ifndef MAX_RELEASE_R9
+	fname = bi->Name();
+#	elif !defined( MAX_RELEASE_R12 )
 	fname = bi->GetPath().GetCStr();
+#	else
+	fname = bi->GetPathEx().GetCStr();
+#	endif
 	file = fopen( fname, "rb" );
 	if( file == 0 )
 	{

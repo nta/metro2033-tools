@@ -60,7 +60,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="CORE.LIB MAXUTIL.LIB GEOM.LIB MESH.LIB GFX.LIB BMM.LIB squish.lib"
-				OutputFile="$(OutDir)\$(ProjectName).dli"
+				OutputFile="$(OutDir)\$(ProjectName)11.dli"
 				AdditionalLibraryDirectories="&quot;$(MAX11SDK_DIR)\lib&quot;;..\dependencies\libsquish\Release"
 				ModuleDefinitionFile="plugin.def"
 				GenerateDebugInformation="true"
@@ -117,7 +117,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="$(MAX9SDK_DIR)\include"
+				AdditionalIncludeDirectories="&quot;$(MAX9SDK_DIR)\include&quot;;..\dependencies\libsquish"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
@@ -134,9 +134,159 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="CORE.LIB MAXUTIL.LIB GEOM.LIB MESH.LIB GFX.LIB BMM.LIB"
-				OutputFile="$(OutDir)\$(ProjectName).dli"
-				AdditionalLibraryDirectories="$(MAX9SDK_DIR)\lib"
+				AdditionalDependencies="CORE.LIB MAXUTIL.LIB GEOM.LIB MESH.LIB GFX.LIB BMM.LIB squish.lib"
+				OutputFile="$(OutDir)\$(ProjectName)9.dli"
+				AdditionalLibraryDirectories="&quot;$(MAX9SDK_DIR)\lib&quot;;..\dependencies\libsquish\Release"
+				ModuleDefinitionFile="plugin.def"
+				GenerateDebugInformation="true"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="3DSMax7|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="2"
+			CharacterSet="2"
+			WholeProgramOptimization="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="&quot;$(MAX7SDK_DIR)\include&quot;;..\dependencies\libsquish"
+				RuntimeLibrary="2"
+				EnableFunctionLevelLinking="true"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="CORE.LIB MAXUTIL.LIB GEOM.LIB MESH.LIB GFX.LIB BMM.LIB squish.lib"
+				OutputFile="$(OutDir)\$(ProjectName)7.dli"
+				AdditionalLibraryDirectories="&quot;$(MAX7SDK_DIR)\lib&quot;;..\dependencies\libsquish\Release"
+				ModuleDefinitionFile="plugin.def"
+				GenerateDebugInformation="true"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="3DSMax12|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="2"
+			CharacterSet="2"
+			WholeProgramOptimization="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="&quot;$(MAX12SDK_DIR)\include&quot;;..\dependencies\libsquish"
+				RuntimeLibrary="2"
+				EnableFunctionLevelLinking="true"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="CORE.LIB MAXUTIL.LIB GEOM.LIB MESH.LIB GFX.LIB BMM.LIB squish.lib"
+				OutputFile="$(OutDir)\$(ProjectName)12.dli"
+				AdditionalLibraryDirectories="&quot;$(MAX12SDK_DIR)\lib&quot;;..\dependencies\libsquish\Release"
 				ModuleDefinitionFile="plugin.def"
 				GenerateDebugInformation="true"
 				OptimizeReferences="2"

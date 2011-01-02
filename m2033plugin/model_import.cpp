@@ -441,7 +441,7 @@ void model_import::create_material( INode *node, const std::string &texture )
 
 	mat = NewDefaultStdMat();
 	tex = NewDefaultBitmapTex();
-	tex->SetMapName( path.c_str() );
+	tex->SetMapName( (TCHAR*)path.c_str() );
 	tex->SetName( name.c_str() );
 	mat->SetSubTexmap( ID_DI, tex );
 	mat->SetName( name.c_str() );
