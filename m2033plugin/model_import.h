@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 #include <string>
 #include <list>
+#include <map>
 #include "max.h"
 #include "skeleton.h"
 
@@ -51,11 +52,12 @@ public:
 	int DoImport( const TCHAR *name, ImpInterface *ii, Interface *i, BOOL suppressPrompts );
 
 private:
-	typedef std::list<std::string>	string_list;
-	typedef std::list<model>		model_list;
+	typedef std::list<std::string>		string_list;
+	typedef std::list<model>			model_list;
+	typedef std::map<std::string, Mtl*> mtl_map;
 
 private:
-	void read_model( reader& r, model_list& models );
+	bool read_model( reader& r, model_list& models );
 	void read_model( reader& r, model_list& models, int type );
 	void read_skeleton( reader& r );
 
@@ -63,10 +65,15 @@ private:
 
 	Modifier* create_skin_modifier( INode* node );
 
+	void create_material( INode *node, const std::string &texture );
+
 private:
-	Interface*		interface_;
-	ImpInterface*	imp_interface_;
+	Interface		*interface_;
+	ImpInterface	*imp_interface_;
+
 	skeleton		skeleton_;
+
+	mtl_map			materials_;
 };
 }
 

@@ -77,7 +77,7 @@ void model::init()
 			float z = dynamic_vert[i].y / 2720.0f;
 
 			float u = dynamic_vert[i].uv[0] / 2048.0f;
-			float v = dynamic_vert[i].uv[1] / 2048.0f;
+			float v = -dynamic_vert[i].uv[1] / 2048.0f;
 
 			mesh_.setVert( i, x, y, z );
 			mesh_.setTVert( i, u, v, 0 );
@@ -87,11 +87,14 @@ void model::init()
 	short* faces = (short*) face_buffer_;
 
 	mesh_.setNumFaces( face_count_ );
+	mesh_.setNumTVFaces( face_count_ );
 
 	for( int i = 0; i < face_count_; i++ )
 	{
 		mesh_.faces[i].setVerts( faces[i*3], faces[i*3+1], faces[i*3+2] );
+		mesh_.faces[i].setSmGroup( 1 );
 		mesh_.faces[i].setEdgeVisFlags( 1, 1, 1 );
+		mesh_.tvFace[i].setTVerts( faces[i*3], faces[i*3+1], faces[i*3+2] );
 	}
 
 	mesh_.buildNormals();

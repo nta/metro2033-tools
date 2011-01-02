@@ -25,6 +25,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #include "iparamb2.h"
 #include "modstack.h"
 #include "iskin.h"
+#include "stdmat.h"
+#include "bmmlib.h"
+#include "bitmap.h"
 
 using namespace m2033;
 
@@ -36,6 +39,43 @@ enum ChunkIds
 	DYNAMIC_MODEL_CHUNK_ID = 0x14
 };
 
+class file_system
+{
+public:
+	enum
+	{
+		ROOT,
+		MESHES,
+		TEXTURES,
+	};
+
+	static void set_root_dir( const std::string& root ) { root_ = root; }
+	static const std::string& get_root_dir() { return root_; }
+
+	static std::string get_full_path( int path_id, const std::string& filename )
+	{
+		switch( path_id )
+		{
+		case ROOT:
+			return root_ + std::string( "\\" ) + filename;
+			break;
+		case MESHES:
+			return root_ + std::string( "\\meshes\\" ) + filename;
+			break;
+		case TEXTURES:
+			return root_ + std::string( "\\textures\\" ) + filename;
+			break;
+		default:
+			return "";
+		}
+	}
+
+private:
+	static std::string root_;
+};
+
+std::string file_system::root_ = "";
+
 int model_import::DoImport( const TCHAR *name, ImpInterface *ii, Interface *iface, BOOL suppressPrompts )
 {
 	reader r;
@@ -45,16 +85,34 @@ int model_import::DoImport( const TCHAR *name, ImpInterface *ii, Interface *ifac
 	INode* inode;
 	TriObject* object;
 	model* mdl;
-	int count;
 	Matrix3 tm;
-	ISkinImportData* skin_imp;
+	size_t size;
+	std::string root_dir;
+	bool res;
 
 	interface_ = iface;
 	imp_interface_ = ii;
 
-	r.open( name );
+	root_dir = name;
+	size = root_dir.rfind( "content" ) + 7;
+	if( size == std::string::npos )
+	{
+		return IMPEXP_FAIL;
+	}
+	root_dir = root_dir.substr( 0, size );
+	file_system::set_root_dir( root_dir );
 
-	read_model( r, models );
+	res = r.open( name );
+	if( !res )
+	{
+		return IMPEXP_FAIL;
+	}
+
+	res = read_model( r, models );
+	if( !res )
+	{
+		return IMPEXP_FAIL;
+	}
 
 	for( it = models.begin(); it != models.end(); it++ )
 	{
@@ -64,8 +122,6 @@ int model_import::DoImport( const TCHAR *name, ImpInterface *ii, Interface *ifac
 		Mesh& mesh = object->GetMesh();
 		mesh = mdl->get_mesh();
 
-		count = mesh.getNumVerts();
-
 		node = ii->CreateNode();
 		node->Reference( object );
 
@@ -73,6 +129,8 @@ int model_import::DoImport( const TCHAR *name, ImpInterface *ii, Interface *ifac
 		node->SetTransform( 0, tm );
 		inode = node->GetINode();
 		inode->SetName( (char*)mdl->get_name().c_str() );
+
+		create_material( inode, mdl->get_texture_name() );
 
 		ii->AddNodeToScene( node );
 	}
@@ -92,8 +150,7 @@ void model_import::ShowAbout( HWND hwnd )
 				MB_ICONINFORMATION );
 }
 
-
-void model_import::read_model( reader& r, model_list& models )
+bool model_import::read_model( reader& r, model_list& models )
 {
 	int id, size;
 	char buffer[1024];
@@ -101,7 +158,8 @@ void model_import::read_model( reader& r, model_list& models )
 	reader mesh_reader;
 	reader skeleton_reader;
 	string_list::iterator it;
-	std::string file_name, temp;
+	std::string file_name;
+	bool res;
 
 	r.open_chunk();
 	id = r.chunk_id();
@@ -117,7 +175,7 @@ void model_import::read_model( reader& r, model_list& models )
 	if( id == STATIC_MODEL_CHUNK_ID )
 	{
 		read_model( r, models, model::STATIC_MODEL_VERTEX_FORMAT );
-		return;
+		return 1;
 	}
 
 	if( id == DYNAMIC_MODEL_CHUNK_ID )
@@ -125,11 +183,9 @@ void model_import::read_model( reader& r, model_list& models )
 		// read skeleton
 		size = r.chunk_size();
 		r.read_data( buffer, size );
-		file_name = buffer;
-		temp = r.get_path();
-		size = temp.find( "meshes" ) + 7;
-		file_name = temp.substr( 0, size ) + file_name + std::string( ".skeleton" );
-		skeleton_reader.open( file_name );
+		file_name = file_system::get_full_path( file_system::MESHES, std::string( buffer ) + std::string( ".skeleton" ) );
+		res = skeleton_reader.open( file_name );
+		if( !res ) return 0;
 		read_skeleton( skeleton_reader );
 		r.close_chunk();
 
@@ -154,16 +210,15 @@ void model_import::read_model( reader& r, model_list& models )
 		for( it = names.begin(); it != names.end(); it++ )
 		{
 			file_name = (*it);
-			temp = r.get_path();
-			
-			size = temp.find( "meshes" ) + 7;
-			file_name = temp.substr( 0, size ) + file_name + std::string( ".mesh" );
+			file_name = file_system::get_full_path( file_system::MESHES, file_name + std::string( ".mesh" ) );
 
-			mesh_reader.open( file_name );
+			res = mesh_reader.open( file_name );
+			if( !res ) return 0;
 
 			read_model( mesh_reader, models, model::DYNAMIC_MODEL_VERTEX_FORMAT );
 		}
 	}
+	return 1;
 }
 
 void model_import::split_string( const std::string& string, char splitter, string_list& result )
@@ -195,7 +250,7 @@ void model_import::read_model( reader& r, model_list& models, int type )
 {
 	int size, count, i = 0;
 	model m;
-	char name[1024], n;
+	char name[255], n;
 	void* buffer;
 
 	if( type == model::DYNAMIC_MODEL_VERTEX_FORMAT )
@@ -354,4 +409,46 @@ Modifier* model_import::create_skin_modifier( INode* node )
 	node->NotifyDependents(FOREVER,0,REFMSG_SUBANIM_STRUCTURE_CHANGED);
 
 	return mod;
+}
+
+void model_import::create_material( INode *node, const std::string &texture )
+{
+	StdMat *mat;
+	BitmapTex *tex;
+	BitmapInfo bi;
+	std::string path;
+	std::string name;
+	size_t size, off;
+	mtl_map::iterator it;
+
+	path = file_system::get_full_path( file_system::TEXTURES, texture + std::string( ".512" ) );
+	name = texture;
+	off = texture.find( "\\" );
+	if( off != std::string::npos )
+	{
+		off++;
+		size = texture.length() - off;
+		name = texture.substr( off, size );
+	}
+
+	it = materials_.find( name );
+	if( it != materials_.end() )
+	{
+		mat = (StdMat*) it->second;
+		node->SetMtl( mat );
+		return;
+	}
+
+	mat = NewDefaultStdMat();
+	tex = NewDefaultBitmapTex();
+	tex->SetMapName( path.c_str() );
+	tex->SetName( name.c_str() );
+	mat->SetSubTexmap( ID_DI, tex );
+	mat->SetName( name.c_str() );
+	mat->EnableMap( ID_DI, TRUE );
+	mat->SetMtlFlag(MTL_TEX_DISPLAY_ENABLED);
+
+	materials_[name] = mat;
+
+	node->SetMtl( mat );
 }

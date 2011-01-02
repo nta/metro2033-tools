@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 ******************************************************************************/
 
 #include <stdio.h>
+#include <string>
 #include "image_import.h"
 #include "squish.h"
 
@@ -42,12 +43,14 @@ BitmapStorage* image_import::Load( BitmapInfo *bi, Bitmap *map, BMMRES *status )
 	int flags;
 	void* buffer;
 	squish::u8 *img, *p;
-	BMM_Color_64 color[512];
+	BMM_Color_64 color[2048];
 	BOOL res;
+	const TCHAR* fname;
 
 	GetImageInfo( bi );
 
-	file = fopen( bi->Filename(), "rb" );
+	fname = bi->GetPath().GetCStr();
+	file = fopen( fname, "rb" );
 	if( file == 0 )
 	{
 		*status = BMMRES_FILENOTFOUND;
@@ -66,6 +69,18 @@ BitmapStorage* image_import::Load( BitmapInfo *bi, Bitmap *map, BMMRES *status )
 	case 349552:
 		flags = squish::kDxt5;
 		break;
+	case 524288:
+		flags = squish::kDxt1;
+		break;
+	case 1048576:
+		flags = squish::kDxt5;
+		break;
+	case 2097152:
+		flags = squish::kDxt1;
+		break;
+	case 4194304:
+		flags = squish::kDxt5;
+		break;
 	default:
 		*status = BMMRES_INVALIDFORMAT;
 		return 0;
@@ -75,9 +90,9 @@ BitmapStorage* image_import::Load( BitmapInfo *bi, Bitmap *map, BMMRES *status )
 	fread( buffer, 1, size, file );
 	fclose( file );
 
-	img_size = 1048576;
+	img_size = bi->Width() * bi->Height() * 4;
 	img = (squish::u8*) malloc( img_size );
-	squish::DecompressImage( img, 512, 512, buffer, flags );
+	squish::DecompressImage( img, bi->Width(), bi->Height(), buffer, flags );
 
 	free( buffer );
 
@@ -100,9 +115,9 @@ BitmapStorage* image_import::Load( BitmapInfo *bi, Bitmap *map, BMMRES *status )
 
 	p = img;
 
-	for( int i = 0; i < 512; i++ )
+	for( int i = 0; i < bi->Width(); i++ )
 	{
-		for( int j = 0; j < 512; j++ )
+		for( int j = 0; j < bi->Height(); j++ )
 		{
 			color[j].r = (WORD)((*p++) << 8);
 			color[j].g = (WORD)((*p++) << 8);
@@ -110,7 +125,7 @@ BitmapStorage* image_import::Load( BitmapInfo *bi, Bitmap *map, BMMRES *status )
 			color[j].a = (WORD)((*p++) << 8);
 		}
 
-		res = storage->PutPixels( 0, i, 512, color );
+		res = storage->PutPixels( 0, i, bi->Width(), color );
 		if( res == 0 )
 		{
 			*status = BMMRES_MEMORYERROR;
@@ -130,8 +145,19 @@ BitmapStorage* image_import::Load( BitmapInfo *bi, Bitmap *map, BMMRES *status )
 
 BMMRES image_import::GetImageInfo( BitmapInfo *bi )
 {
-	bi->SetWidth( 512 );
-	bi->SetHeight( 512 );
+	int side;
+	std::string ext;
+	size_t off, count;
+
+	ext = bi->Name();
+	off = ext.rfind( "." ) + 1;
+	count = ext.length() - off;
+	ext = ext.substr( off, count );
+
+	side = atoi( ext.c_str() );
+
+	bi->SetWidth( side );
+	bi->SetHeight( side );
 	bi->SetAspect( 1.0f );
 	bi->SetType( BMM_REALPIX_32 );
 	bi->SetFirstFrame( 0 );
