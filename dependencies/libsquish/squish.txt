@@ -1,1 +1,1 @@
-http://code.google.complibsquish/
+http://code.google.com/p/libsquish/
