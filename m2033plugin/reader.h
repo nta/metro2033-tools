@@ -42,6 +42,7 @@ public:
 	const std::string& get_suffix() { return suffix_; }
 
 	void open_chunk();
+	bool open_chunk( unsigned id );
 	void close_chunk();
 
 	unsigned chunk_id() { assert( current_ ); return current_->id; }
@@ -52,6 +53,7 @@ public:
 	int read_string( char* buffer );
 
 	void advance( size_t size ) { assert( current_ ); current_->ptr += size; assert( current_->ptr <= current_->size ); }
+	void seek( size_t size ) { assert( current_ ); current_->ptr = size; assert( current_->ptr <= current_->size ); }
 	size_t elapsed() { assert( current_ ); return current_->size - current_->ptr; }
 	size_t ptr() { assert( current_ ); return current_->ptr; }
 

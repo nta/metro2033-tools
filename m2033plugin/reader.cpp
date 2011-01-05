@@ -160,3 +160,24 @@ int reader::read_string( char* buffer )
 
 	return len;
 }
+
+bool reader::open_chunk( unsigned id )
+{
+	size_t cur;
+
+	cur = ptr();
+	seek( 0 );
+
+	while( elapsed() > 0 )
+	{
+		open_chunk();
+		if( chunk_id() == id )
+		{
+			return true;
+		}
+		close_chunk();
+	}
+
+	seek( cur );
+	return 0;
+}

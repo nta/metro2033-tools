@@ -34,9 +34,13 @@ using namespace m2033;
 enum ChunkIds
 {
 	UNUSED_CHUNK_ID = 0x01,
-	STATIC_MODEL_CHUNK_ID = 0x09,
-	TEXTURE_NAMES_CHUNK_ID = 0x10,
-	DYNAMIC_MODEL_CHUNK_ID = 0x14
+	TEXTURE_NAME_CHUNK_ID = 0x02,
+	STATIC_VERTEX_CHUNK_ID = 0x03,
+	DYNAMIC_VERTEX_CHUNK_ID = 0x05,
+	MODEL_CHUNK_ID = 0x09,
+	BONES_CHUNK_ID = 0x0D,
+	MESH_NAMES_CHUNK_ID = 0x10,
+	SKELETON_NAME_CHUNK_ID = 0x14
 };
 
 class file_system
@@ -161,24 +165,12 @@ bool model_import::read_model( reader& r, model_list& models )
 	std::string file_name;
 	bool res;
 
-	r.open_chunk();
-	id = r.chunk_id();
-
-	if( id == UNUSED_CHUNK_ID )
-	{
-		// skip chunk data
-		r.close_chunk();
-		r.open_chunk();
-		id = r.chunk_id();
-	}
-
-	if( id == STATIC_MODEL_CHUNK_ID )
+	if( r.open_chunk( MODEL_CHUNK_ID ) )
 	{
 		read_model( r, models, model::STATIC_MODEL_VERTEX_FORMAT );
 		return 1;
 	}
-
-	if( id == DYNAMIC_MODEL_CHUNK_ID )
+	else if( r.open_chunk( SKELETON_NAME_CHUNK_ID ) )
 	{
 		// read skeleton
 		size = r.chunk_size();
@@ -189,13 +181,9 @@ bool model_import::read_model( reader& r, model_list& models )
 		read_skeleton( skeleton_reader );
 		r.close_chunk();
 
-		r.open_chunk();
-		id = r.chunk_id();
-		if( id != TEXTURE_NAMES_CHUNK_ID )
+		if( !r.open_chunk( MESH_NAMES_CHUNK_ID ) )
 		{
-			// skip chunk data
-			r.close_chunk();
-			r.open_chunk();
+			return 0;
 		}
 
 		size = r.chunk_size() - 4;
@@ -215,10 +203,14 @@ bool model_import::read_model( reader& r, model_list& models )
 			res = mesh_reader.open( file_name );
 			if( !res ) return 0;
 
+			res = mesh_reader.open_chunk( MODEL_CHUNK_ID );
+			if( !res ) return 0;
+
 			read_model( mesh_reader, models, model::DYNAMIC_MODEL_VERTEX_FORMAT );
 		}
+		return 1;
 	}
-	return 1;
+	return 0;
 }
 
 void model_import::split_string( const std::string& string, char splitter, string_list& result )
@@ -252,16 +244,7 @@ void model_import::read_model( reader& r, model_list& models, int type )
 	model m;
 	char name[255], n;
 	void* buffer;
-
-	if( type == model::DYNAMIC_MODEL_VERTEX_FORMAT )
-	{
-		// skip two unused chunks
-		r.open_chunk();
-		r.close_chunk();
-		r.open_chunk();
-		r.close_chunk();
-		r.open_chunk();
-	}
+	bool res;
 
 	do
 	{
@@ -270,12 +253,8 @@ void model_import::read_model( reader& r, model_list& models, int type )
 
 		r.open_chunk();
 
-		// skip unused chunk
-		r.open_chunk();
-		r.close_chunk();
-
 		// get texture string
-		r.open_chunk();
+		r.open_chunk( TEXTURE_NAME_CHUNK_ID );
 		size = r.chunk_size();
 		assert( size < 1024 );
 		r.read_data( name, size );
@@ -283,9 +262,10 @@ void model_import::read_model( reader& r, model_list& models, int type )
 		m.set_texture_name( name );
 
 		// read vertices
-		r.open_chunk();
 		if( type == model::DYNAMIC_MODEL_VERTEX_FORMAT )
 		{
+			r.open_chunk( DYNAMIC_VERTEX_CHUNK_ID );
+
 			// skip unused data
 			r.read_data( &n, 1 );
 			size = n * 61;
@@ -297,6 +277,7 @@ void model_import::read_model( reader& r, model_list& models, int type )
 		}
 		else
 		{
+			r.open_chunk( STATIC_VERTEX_CHUNK_ID );
 			size = r.chunk_size() - 8;
 			r.advance( 4 );
 			r.read_data( &count, 4 );
@@ -339,12 +320,8 @@ void model_import::read_skeleton( reader& r )
 	short id;
 	Point3 pos, rot;
 
-	// skip unused chunk
-	r.open_chunk();
-	r.close_chunk();
-
 	// read number of bones
-	r.open_chunk();
+	r.open_chunk( BONES_CHUNK_ID );
 	r.advance( 4 );
 	r.read_data( &count, 2 );
 
