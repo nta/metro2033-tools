@@ -63,7 +63,7 @@ void model::init()
 		for( int i = 0; i < vertex_count_; i++ )
 		{
 			mesh_.setVert( i, static_vert[i].x, -static_vert[i].z, static_vert[i].y );
-			mesh_.setTVert( i, static_vert[i].u, static_vert[i].v, 0 );
+			mesh_.setTVert( i, static_vert[i].u, -static_vert[i].v, 0 );
 		}
 	}
 	else if( format_ == DYNAMIC_MODEL_VERTEX_FORMAT )
