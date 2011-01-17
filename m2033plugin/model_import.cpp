@@ -418,11 +418,16 @@ void model_import::create_material( INode *node, const std::string &texture )
 
 	mat = NewDefaultStdMat();
 	tex = NewDefaultBitmapTex();
+
 	tex->SetMapName( (TCHAR*)path.c_str() );
 	tex->SetName( name.c_str() );
-	mat->SetSubTexmap( ID_DI, tex );
+	tex->SetAlphaAsMono( true );
+
 	mat->SetName( name.c_str() );
-	mat->EnableMap( ID_DI, TRUE );
+	mat->SetSubTexmap( ID_DI, tex );
+	mat->SetSubTexmap( ID_OP, tex );
+	mat->EnableMap( ID_OP, FALSE );
+	mat->SetActiveTexmap( tex );
 	mat->SetMtlFlag(MTL_TEX_DISPLAY_ENABLED);
 
 	materials_[name] = mat;
