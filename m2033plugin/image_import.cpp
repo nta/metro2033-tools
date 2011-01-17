@@ -95,7 +95,7 @@ BitmapStorage* image_import::Load( BitmapInfo *bi, Bitmap *map, BMMRES *status )
 
 	free( buffer );
 
-	storage = BMMCreateStorage( map->Manager(), BMM_FLOAT_RGBA_32 );
+	storage = BMMCreateStorage( map->Manager(), BMM_REALPIX_32 );
 	if( storage == 0 )
 	{
 		*status = BMMRES_CANTSTORAGE;
@@ -158,7 +158,7 @@ BMMRES image_import::GetImageInfo( BitmapInfo *bi )
 	bi->SetWidth( side );
 	bi->SetHeight( side );
 	bi->SetAspect( 1.0f );
-	bi->SetType( BMM_FLOAT_RGBA_32 );
+	bi->SetType( BMM_REALPIX_32 );
 	bi->SetFirstFrame( 0 );
 	bi->SetLastFrame( 0 );
 
