@@ -21,10 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #ifndef __READER_H__
 #define __READER_H__
 
-#include <deque>
-#include <string>
-#include <assert.h>
-
 namespace m2033
 {
 class reader

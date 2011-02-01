@@ -21,10 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #ifndef __SKELETON_H__
 #define __SKELETON_H__
 
-#include <vector>
-#include <string>
-#include <map>
-
 namespace m2033
 {
 class skeleton

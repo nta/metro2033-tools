@@ -18,12 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 ******************************************************************************/
 
-#include <assert.h>
-#include "max.h"
+#include "precompiled.h"
 #include "skeleton.h"
-#include "simpobj.h"
-#include "math.h"
-#include "iparamb2.h"
 
 using namespace m2033;
 
@@ -47,7 +43,7 @@ void skeleton::build()
 
 	iface = GetCOREInterface();
 
-	for( int i = 0; i < bones_.size(); i++ )
+	for( unsigned i = 0; i < bones_.size(); i++ )
 	{
 		m.IdentityMatrix();
 		q.SetEuler( bones_[i].rot[0], -bones_[i].rot[2], bones_[i].rot[1] );
@@ -68,7 +64,7 @@ void skeleton::build()
 		hash_[bones_[i].name] = node;
 	}
 
-	for( int i = 0; i < bones_.size(); i++ )
+	for( unsigned i = 0; i < bones_.size(); i++ )
 	{
 		node = get_bone_node( bones_[i].name );
 		parent = get_bone_node( bones_[i].parent );
@@ -78,7 +74,7 @@ void skeleton::build()
 		}
 	}
 
-	for( int i = 0; i < bones_.size(); i++ )
+	for( unsigned i = 0; i < bones_.size(); i++ )
 	{
 		update_bone_length( bones_[i] );
 	}

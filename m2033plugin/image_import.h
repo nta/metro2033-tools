@@ -21,10 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #ifndef __IMAGE_IMPORT_H__
 #define __IMAGE_IMPORT_H__
 
-#include "max.h"
-#include "bmmlib.h"
-#include "bitmap.h"
-
 namespace m2033
 {
 class image_import : public BitmapIO
@@ -57,6 +53,9 @@ public:
 			return "1024";
 		case 2:
 			return "2048";
+		default:
+			assert(0);
+			return 0;
 		}
 	}
 

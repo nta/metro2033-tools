@@ -21,10 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #ifndef __MODEL_IMPORT_H__
 #define __MODEL_IMPORT_H__
 
-#include <string>
-#include <list>
-#include <map>
-#include "max.h"
 #include "skeleton.h"
 
 namespace m2033

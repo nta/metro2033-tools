@@ -18,16 +18,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 ******************************************************************************/
 
-#include <assert.h>
+#include "precompiled.h"
 #include "model_import.h"
 #include "reader.h"
 #include "model.h"
-#include "iparamb2.h"
-#include "modstack.h"
-#include "iskin.h"
-#include "stdmat.h"
-#include "bmmlib.h"
-#include "bitmap.h"
 
 using namespace m2033;
 
@@ -156,7 +150,7 @@ void model_import::ShowAbout( HWND hwnd )
 
 bool model_import::read_model( reader& r, model_list& models )
 {
-	int id, size;
+	int size;
 	char buffer[1024];
 	string_list names;
 	reader mesh_reader;
@@ -244,7 +238,6 @@ void model_import::read_model( reader& r, model_list& models, int type )
 	model m;
 	char name[255], n;
 	void* buffer;
-	bool res;
 
 	do
 	{

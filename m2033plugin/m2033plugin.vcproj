@@ -45,6 +45,8 @@
 				AdditionalIncludeDirectories="&quot;$(MAX11SDK_DIR)\include&quot;;..\dependencies\libsquish"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="precompiled.h"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>
@@ -60,7 +62,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="CORE.LIB MAXUTIL.LIB GEOM.LIB MESH.LIB GFX.LIB BMM.LIB squish.lib"
-				OutputFile="$(OutDir)\$(ProjectName)11.dli"
+				OutputFile="$(OutDir)\$(ProjectName).dli"
 				AdditionalLibraryDirectories="&quot;$(MAX11SDK_DIR)\lib&quot;;..\dependencies\libsquish\Release"
 				ModuleDefinitionFile="plugin.def"
 				GenerateDebugInformation="true"
@@ -120,6 +122,8 @@
 				AdditionalIncludeDirectories="&quot;$(MAX9SDK_DIR)\include&quot;;..\dependencies\libsquish"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="precompiled.h"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>
@@ -135,7 +139,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="CORE.LIB MAXUTIL.LIB GEOM.LIB MESH.LIB GFX.LIB BMM.LIB squish.lib"
-				OutputFile="$(OutDir)\$(ProjectName)9.dli"
+				OutputFile="$(OutDir)\$(ProjectName).dli"
 				AdditionalLibraryDirectories="&quot;$(MAX9SDK_DIR)\lib&quot;;..\dependencies\libsquish\Release"
 				ModuleDefinitionFile="plugin.def"
 				GenerateDebugInformation="true"
@@ -195,6 +199,8 @@
 				AdditionalIncludeDirectories="&quot;$(MAX7SDK_DIR)\include&quot;;..\dependencies\libsquish"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="precompiled.h"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>
@@ -210,7 +216,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="CORE.LIB MAXUTIL.LIB GEOM.LIB MESH.LIB GFX.LIB BMM.LIB squish.lib"
-				OutputFile="$(OutDir)\$(ProjectName)7.dli"
+				OutputFile="$(OutDir)\$(ProjectName).dli"
 				AdditionalLibraryDirectories="&quot;$(MAX7SDK_DIR)\lib&quot;;..\dependencies\libsquish\Release"
 				ModuleDefinitionFile="plugin.def"
 				GenerateDebugInformation="true"
@@ -270,6 +276,8 @@
 				AdditionalIncludeDirectories="&quot;$(MAX12SDK_DIR)\include&quot;;..\dependencies\libsquish"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="precompiled.h"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>
@@ -285,7 +293,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="CORE.LIB MAXUTIL.LIB GEOM.LIB MESH.LIB GFX.LIB BMM.LIB squish.lib"
-				OutputFile="$(OutDir)\$(ProjectName)12.dli"
+				OutputFile="$(OutDir)\$(ProjectName).dli"
 				AdditionalLibraryDirectories="&quot;$(MAX12SDK_DIR)\lib&quot;;..\dependencies\libsquish\Release"
 				ModuleDefinitionFile="plugin.def"
 				GenerateDebugInformation="true"
@@ -319,66 +327,94 @@
 	<References>
 	</References>
 	<Files>
-		<Filter
-			Name="Файлы исходного кода"
-			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
-			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
+		<File
+			RelativePath=".\image_import.cpp"
 			>
-			<File
-				RelativePath=".\image_import.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\model.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\model_import.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\plugin.def"
-				>
-			</File>
-			<File
-				RelativePath=".\plugin_dll.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\reader.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\skeleton.cpp"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="Заголовочные файлы"
-			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
+		</File>
+		<File
+			RelativePath=".\image_import.h"
 			>
-			<File
-				RelativePath=".\image_import.h"
+		</File>
+		<File
+			RelativePath=".\model.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\model.h"
+			>
+		</File>
+		<File
+			RelativePath=".\model_import.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\model_import.h"
+			>
+		</File>
+		<File
+			RelativePath=".\plugin.def"
+			>
+		</File>
+		<File
+			RelativePath=".\plugin_dll.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\precompiled.cpp"
+			>
+			<FileConfiguration
+				Name="3DSMax11|Win32"
 				>
-			</File>
-			<File
-				RelativePath=".\model.h"
+				<Tool
+					Name="VCCLCompilerTool"
+					UsePrecompiledHeader="1"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="3DSMax9|Win32"
 				>
-			</File>
-			<File
-				RelativePath=".\model_import.h"
+				<Tool
+					Name="VCCLCompilerTool"
+					UsePrecompiledHeader="1"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="3DSMax7|Win32"
 				>
-			</File>
-			<File
-				RelativePath=".\reader.h"
+				<Tool
+					Name="VCCLCompilerTool"
+					UsePrecompiledHeader="1"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="3DSMax12|Win32"
 				>
-			</File>
-			<File
-				RelativePath=".\skeleton.h"
-				>
-			</File>
-		</Filter>
+				<Tool
+					Name="VCCLCompilerTool"
+					UsePrecompiledHeader="1"
+				/>
+			</FileConfiguration>
+		</File>
+		<File
+			RelativePath=".\precompiled.h"
+			>
+		</File>
+		<File
+			RelativePath=".\reader.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\reader.h"
+			>
+		</File>
+		<File
+			RelativePath=".\skeleton.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\skeleton.h"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

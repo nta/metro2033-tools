@@ -21,9 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #ifndef __MODEL_H__
 #define __MODEL_H__
 
-#include <string>
-#include "max.h"
-
 namespace m2033
 {
 class model
