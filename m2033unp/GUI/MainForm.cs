@@ -94,6 +94,8 @@ namespace Unpacker
             {
                 OutputWindow.Text = ex.ToString();
                 converterExited = true;
+                extractToolStripMenuItem.Enabled = true;
+                cancelToolStripMenuItem.Enabled = false;
                 return;
             }
 
