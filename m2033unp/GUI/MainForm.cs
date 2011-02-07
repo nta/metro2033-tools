@@ -86,7 +86,17 @@ namespace Unpacker
 
             converterExited = false;
 
-            unpacker.Start();
+            try
+            {
+                unpacker.Start();
+            }
+            catch (Win32Exception ex)
+            {
+                OutputWindow.Text = ex.ToString();
+                converterExited = true;
+                return;
+            }
+
             unpacker.BeginOutputReadLine();
             unpacker.BeginErrorReadLine();
         }
