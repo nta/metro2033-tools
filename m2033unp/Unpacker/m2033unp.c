@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 ******************************************************************************/
 
+#pragma warning( disable : 4996 )
+
 #include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -235,7 +237,7 @@ static unsigned decompress(struct context *ctx, unsigned char *outbuf, const uns
 {
 	unsigned char *outp = outbuf;
 	const unsigned char *inp = inbuf;
-	unsigned masklen, clen, len;
+	unsigned clen, len;
 
 	memset(ctx, 0, sizeof(struct context));
 
@@ -404,7 +406,7 @@ static unsigned dump_vfs( const char* archive, unsigned char* data )
 	unsigned  crc, fsize, fdecomp, fpos, length;
 	unsigned char  *inbuf, *outbuf;
 	char name[255], path[255];
-	int i;
+	unsigned i;
 	struct context *ctx;
 
 	crc = get_u32( data );
@@ -582,8 +584,6 @@ int __cdecl main(int argc, char *argv[])
 
 	if( suffix )
 		free( suffix );
-
-	_getch();
 
 	return 0;
 }
