@@ -131,7 +131,7 @@
             this.MinimizeBox = false;
             this.Name = "ExtractForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Распаковать";
+            this.Text = "Extract";
             this.ResumeLayout(false);
             this.PerformLayout();
 
