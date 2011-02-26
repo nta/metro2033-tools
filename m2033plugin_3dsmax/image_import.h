@@ -18,10 +18,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 ******************************************************************************/
 
-#ifndef __IMAGE_IMPORT_H__
-#define __IMAGE_IMPORT_H__
+#ifndef __3DSMAX_IMAGE_IMPORT_H__
+#define __3DSMAX_IMAGE_IMPORT_H__
 
-namespace m2033
+namespace m2033_3dsmax
 {
 class image_import : public BitmapIO
 {
@@ -63,4 +63,4 @@ public:
 };
 }
 
-#endif // __IMAGE_IMPORT_H__
+#endif // __3DSMAX_IMAGE_IMPORT_H__

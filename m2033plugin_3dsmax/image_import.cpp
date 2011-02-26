@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #include "image_import.h"
 #include "squish.h"
 
-using namespace m2033;
+using namespace m2033_3dsmax;
 
 void image_import::ShowAbout( HWND hwnd )
 {

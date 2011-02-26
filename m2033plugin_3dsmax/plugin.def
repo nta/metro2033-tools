@@ -1,4 +1,3 @@
-LIBRARY	"m2033plugin.dli"
 EXPORTS
 	LibDescription
 	LibInitialize

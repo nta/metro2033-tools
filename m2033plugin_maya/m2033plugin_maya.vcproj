@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="magicdds"
-	ProjectGUID="{4CF0E608-F7B9-4AE7-8B74-3B0028E2A684}"
-	RootNamespace="magicdds"
+	Name="m2033plugin_maya"
+	ProjectGUID="{18755926-789E-4A1C-B753-5A42CA825FDB}"
+	RootNamespace="m2033plugin_maya"
 	TargetFrameworkVersion="196613"
 	>
 	<Platforms>
@@ -17,9 +17,9 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)bin"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
+			ConfigurationType="2"
 			CharacterSet="2"
 			>
 			<Tool
@@ -40,12 +40,13 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="$(MAYA2009)\include"
+				PreprocessorDefinitions="WIN32;DEBUG;_WINDOWS;NT_PLUGIN"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				WarningLevel="3"
 				DebugInformationFormat="4"
-				CompileAs="1"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -58,7 +59,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)\$(ProjectName)d.exe"
+				AdditionalOptions="/export:initializePlugin /export:uninitializePlugin"
+				AdditionalDependencies="Foundation.lib OpenMaya.lib OpenMayaUI.lib OpenMayaAnim.lib OpenMayaFX.lib OpenMayaRender.lib Image.lib"
+				OutputFile="$(OutDir)\$(ProjectName).mll"
+				AdditionalLibraryDirectories="$(MAYA2009)\lib"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
 			/>
@@ -86,9 +90,9 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)bin"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
+			ConfigurationType="2"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
 			>
@@ -111,11 +115,12 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="$(MAYA2009)\include"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;NT_PLUGIN"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
 				DebugInformationFormat="3"
-				CompileAs="1"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -128,6 +133,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalOptions="/export:initializePlugin /export:uninitializePlugin"
+				AdditionalDependencies="Foundation.lib OpenMaya.lib OpenMayaUI.lib OpenMayaAnim.lib OpenMayaFX.lib OpenMayaRender.lib Image.lib"
+				OutputFile="$(OutDir)\$(ProjectName).mll"
+				AdditionalLibraryDirectories="$(MAYA2009)\lib"
 				GenerateDebugInformation="true"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
@@ -160,7 +169,7 @@
 	</References>
 	<Files>
 		<File
-			RelativePath=".\magicdds.c"
+			RelativePath=".\MetroTranslator.cpp"
 			>
 		</File>
 	</Files>

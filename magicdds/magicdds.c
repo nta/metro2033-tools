@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <assert.h>
 
+#pragma warning( disable : 4996 )
+
 typedef struct {
 	UINT dwSize;
 	UINT dwFlags;
@@ -255,7 +257,6 @@ int __cdecl main( int argc, char *argv[] )
 {
 	char *path, *suffix, *source, target[255];
 	unsigned resolution;
-	int i;
 
 	if( argc <= 2 )
 		goto error;

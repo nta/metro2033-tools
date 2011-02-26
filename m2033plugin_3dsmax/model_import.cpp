@@ -20,122 +20,80 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 #include "precompiled.h"
 #include "model_import.h"
-#include "reader.h"
-#include "model.h"
 
-using namespace m2033;
+using namespace m2033_3dsmax;
 
-enum ChunkIds
-{
-	UNUSED_CHUNK_ID = 0x01,
-	TEXTURE_NAME_CHUNK_ID = 0x02,
-	STATIC_VERTEX_CHUNK_ID = 0x03,
-	DYNAMIC_VERTEX_CHUNK_ID = 0x05,
-	MODEL_CHUNK_ID = 0x09,
-	BONES_CHUNK_ID = 0x0D,
-	MESH_NAMES_CHUNK_ID = 0x10,
-	SKELETON_NAME_CHUNK_ID = 0x14
+enum
+{ 
+   BONE_WIDTH,
+   BONE_HEIGHT,
+   BONE_TAPER,
+   BONE_LENGTH,
 };
-
-class file_system
-{
-public:
-	enum
-	{
-		ROOT,
-		MESHES,
-		TEXTURES,
-	};
-
-	static void set_root_dir( const std::string& root ) { root_ = root; }
-	static const std::string& get_root_dir() { return root_; }
-
-	static std::string get_full_path( int path_id, const std::string& filename )
-	{
-		switch( path_id )
-		{
-		case ROOT:
-			return root_ + std::string( "\\" ) + filename;
-			break;
-		case MESHES:
-			return root_ + std::string( "\\meshes\\" ) + filename;
-			break;
-		case TEXTURES:
-			return root_ + std::string( "\\textures\\" ) + filename;
-			break;
-		default:
-			return "";
-		}
-	}
-
-private:
-	static std::string root_;
-};
-
-std::string file_system::root_ = "";
 
 int model_import::DoImport( const TCHAR *name, ImpInterface *ii, Interface *iface, BOOL suppressPrompts )
 {
-	reader r;
-	model_list models;
-	model_list::iterator it;
-	ImpNode* node;
-	INode* inode;
-	TriObject* object;
-	model* mdl;
-	Matrix3 tm;
-	size_t size;
-	std::string root_dir;
+	m2033::model_serializer serializer;
+	m2033::model model;
+	m2033::mesh m;
 	bool res;
 
-	interface_ = iface;
-	imp_interface_ = ii;
-
-	root_dir = name;
-	size = root_dir.rfind( "content" ) + 7;
-	if( size == std::string::npos )
-	{
-		return IMPEXP_FAIL;
-	}
-	root_dir = root_dir.substr( 0, size );
-	file_system::set_root_dir( root_dir );
-
-	res = r.open( name );
+	res = serializer.read_model( name, model );
 	if( !res )
 	{
 		return IMPEXP_FAIL;
 	}
 
-	res = read_model( r, models );
-	if( !res )
+	for( unsigned i = 0; i < model.get_num_meshes(); i++ )
 	{
-		return IMPEXP_FAIL;
-	}
-
-	for( it = models.begin(); it != models.end(); it++ )
-	{
-		mdl = &(*it);
-
-		object = CreateNewTriObject();
+		TriObject *object = CreateNewTriObject();
 		Mesh& mesh = object->GetMesh();
-		mesh = mdl->get_mesh();
+		m = model.get_mesh( i );
 
-		node = ii->CreateNode();
+		set_mesh( mesh, m );
+
+		ImpNode *node = ii->CreateNode();
 		node->Reference( object );
 
-		tm.IdentityMatrix();
-		node->SetTransform( 0, tm );
-		inode = node->GetINode();
-		inode->SetName( (char*)mdl->get_name().c_str() );
-
-		create_material( inode, mdl->get_texture_name() );
+		create_material( node->GetINode(), m.get_texture_name() );
 
 		ii->AddNodeToScene( node );
+	}
+
+	if( model.get_type() == m2033::mesh::DYNAMIC_MESH )
+	{
+		build_skeleton( model.get_skeleton() );
 	}
 
 	iface->ForceCompleteRedraw();
 
 	return IMPEXP_SUCCESS;
+}
+
+void model_import::set_mesh( Mesh &m1, m2033::mesh &m2 )
+{
+	m2033::mesh::vertices v = m2.get_vertices();
+	m2033::mesh::indices idx = m2.get_indices();
+	m2033::mesh::texcoords tc = m2.get_tex_coords();
+
+	m1.setNumVerts( v.size() );
+	m1.setNumTVerts( tc.size() );
+	m1.setNumFaces( idx.size() / 3 );
+	m1.setNumTVFaces( idx.size() / 3 );
+
+	for( unsigned i = 0; i < v.size(); i++ )
+	{
+		m1.setVert( i, v[i].x, -v[i].z, v[i].y );
+		m1.setTVert( i, tc[i].x, -tc[i].y, 0 );
+	}
+
+	for( unsigned i = 0; i < idx.size() / 3; i++ )
+	{
+		m1.faces[i].setVerts( idx[i*3], idx[i*3+1], idx[i*3+2] );
+		m1.tvFace[i].setTVerts( idx[i*3], idx[i*3+1], idx[i*3+2] );
+		m1.faces[i].setSmGroup( 1 );
+		m1.faces[i].setEdgeVisFlags( 1, 1, 1 );
+	}
 }
 
 void model_import::ShowAbout( HWND hwnd )
@@ -146,196 +104,6 @@ void model_import::ShowAbout( HWND hwnd )
 				"Copyright (C) 2010 Ivan Shishkin <codingdude@gmail.com>\n",
 				"About",
 				MB_ICONINFORMATION );
-}
-
-bool model_import::read_model( reader& r, model_list& models )
-{
-	int size;
-	char buffer[1024];
-	string_list names;
-	reader mesh_reader;
-	reader skeleton_reader;
-	string_list::iterator it;
-	std::string file_name;
-	bool res;
-
-	if( r.open_chunk( MODEL_CHUNK_ID ) )
-	{
-		read_model( r, models, model::STATIC_MODEL_VERTEX_FORMAT );
-		return 1;
-	}
-	else if( r.open_chunk( SKELETON_NAME_CHUNK_ID ) )
-	{
-		// read skeleton
-		size = r.chunk_size();
-		r.read_data( buffer, size );
-		file_name = file_system::get_full_path( file_system::MESHES, std::string( buffer ) + std::string( ".skeleton" ) );
-		res = skeleton_reader.open( file_name );
-		if( !res ) return 0;
-		read_skeleton( skeleton_reader );
-		r.close_chunk();
-
-		if( !r.open_chunk( MESH_NAMES_CHUNK_ID ) )
-		{
-			return 0;
-		}
-
-		size = r.chunk_size() - 4;
-		assert( size < 1024 );
-
-		r.advance( 4 );
-
-		r.read_data( buffer, size );
-
-		split_string( buffer, ',', names );
-
-		for( it = names.begin(); it != names.end(); it++ )
-		{
-			file_name = (*it);
-			file_name = file_system::get_full_path( file_system::MESHES, file_name + std::string( ".mesh" ) );
-
-			res = mesh_reader.open( file_name );
-			if( !res ) return 0;
-
-			res = mesh_reader.open_chunk( MODEL_CHUNK_ID );
-			if( !res ) return 0;
-
-			read_model( mesh_reader, models, model::DYNAMIC_MODEL_VERTEX_FORMAT );
-		}
-		return 1;
-	}
-	return 0;
-}
-
-void model_import::split_string( const std::string& string, char splitter, string_list& result )
-{
-	size_t len = 0, size;
-	std::string temp, val;
-
-	temp = string;
-
-	while( len != std::string::npos )
-	{
-		len = temp.find_first_of( splitter );
-		if( len != std::string::npos )
-		{
-			size = temp.size();
-			val = temp.substr( 0, len );
-			temp = temp.substr( len+1, size-len-1 );
-		}
-		else
-		{
-			val = temp;
-		}
-
-		result.push_back( val );
-	}
-}
-
-void model_import::read_model( reader& r, model_list& models, int type )
-{
-	int size, count, i = 0;
-	model m;
-	char name[255], n;
-	void* buffer;
-
-	do
-	{
-		sprintf( name, "%s_%i", r.get_name().c_str(), i );
-		m.set_name( name );
-
-		r.open_chunk();
-
-		// get texture string
-		r.open_chunk( TEXTURE_NAME_CHUNK_ID );
-		size = r.chunk_size();
-		assert( size < 1024 );
-		r.read_data( name, size );
-		r.close_chunk();
-		m.set_texture_name( name );
-
-		// read vertices
-		if( type == model::DYNAMIC_MODEL_VERTEX_FORMAT )
-		{
-			r.open_chunk( DYNAMIC_VERTEX_CHUNK_ID );
-
-			// skip unused data
-			r.read_data( &n, 1 );
-			size = n * 61;
-			r.advance( size );
-
-			// calculate vertices size
-			r.read_data( &count, 4 );
-			size = count * 32;
-		}
-		else
-		{
-			r.open_chunk( STATIC_VERTEX_CHUNK_ID );
-			size = r.chunk_size() - 8;
-			r.advance( 4 );
-			r.read_data( &count, 4 );
-		}
-		buffer = malloc( size );
-		r.read_data( buffer, size );
-		r.close_chunk();
-		m.set_verts( buffer, count );
-		free( buffer );
-
-		// read indices
-		r.open_chunk();
-		size = r.chunk_size() - 4;
-		r.read_data( &count, 4 );
-		buffer = malloc( size );
-		r.read_data( buffer, size );
-		r.close_chunk();
-		m.set_faces( buffer, count / 3 );
-		free( buffer );
-
-		m.set_vertex_format( type );
-		m.init();
-		models.push_back( m );
-		m.clear();
-
-		r.close_chunk();
-
-		i++;
-	}
-	while( r.elapsed() > 64 );
-}
-
-void model_import::read_skeleton( reader& r )
-{
-	short count;
-	char name[255];
-	char parent_name[255];
-	float position[3];
-	float orientation[3];
-	short id;
-	Point3 pos, rot;
-
-	// read number of bones
-	r.open_chunk( BONES_CHUNK_ID );
-	r.advance( 4 );
-	r.read_data( &count, 2 );
-
-	// read bones
-	for( int i = 0; i < count; i++ )
-	{
-		r.read_string( name );
-		r.read_string( parent_name );
-		r.read_data( orientation, 12 );
-		r.read_data( position, 12 );
-		r.read_data( &id, 2 );
-
-		pos.Set( position[0], position[1], position[2] );
-		rot.Set( orientation[0], orientation[1], orientation[2] );
-
-		skeleton_.add_bone( name, parent_name, pos, rot );
-	}
-
-	r.close();
-
-	skeleton_.build();
 }
 
 Modifier* model_import::create_skin_modifier( INode* node )
@@ -381,17 +149,142 @@ Modifier* model_import::create_skin_modifier( INode* node )
 	return mod;
 }
 
+void model_import::build_skeleton( m2033::skeleton &s )
+{
+	Matrix3 m;
+	Quat q;
+	Object* obj;
+	INode* node;
+	INode* parent;
+	Point3 color;
+	Interface* iface;
+
+	iface = GetCOREInterface();
+
+	for( unsigned i = 0; i < s.get_num_bones(); i++ )
+	{
+		m.IdentityMatrix();
+		q.SetEuler( s.get_bone( i ).rot.x, -s.get_bone( i ).rot.z, s.get_bone( i ).rot.y );
+		m.SetRotate( q );
+		m.Translate( Point3( s.get_bone( i ).pos.x, -s.get_bone( i ).pos.z, s.get_bone( i ).pos.y ) );
+
+		color = GetUIColor(COLOR_BONES);
+
+		obj = (Object*) iface->CreateInstance( GEOMOBJECT_CLASS_ID, BONE_OBJ_CLASSID );
+
+		node = iface->CreateObjectNode( obj );
+		node->SetWireColor(RGB(int(color.x*255.0f), int(color.y*255.0f), int(color.z*255.0f) ));
+		node->SetName( (char*) s.get_bone( i ).name.c_str() );
+		node->SetNodeTM( 0, m );
+		node->SetBoneNodeOnOff( TRUE, 0 );
+		node->SetRenderable( FALSE );
+	}
+
+	for( unsigned i = 0; i < s.get_num_bones(); i++ )
+	{
+		node = iface->GetINodeByName( s.get_bone( i ).name.c_str() );
+		parent = iface->GetINodeByName( s.get_bone( i ).parent.c_str() );
+		if( parent != 0 )
+		{
+			parent->AttachChild( node, 0 );
+		}
+	}
+
+	for( unsigned i = 0; i < s.get_num_bones(); i++ )
+	{
+		update_bone_length( s.get_bone( i ) );
+	}
+}
+
+void model_import::update_bone_length( const m2033::skeleton::bone& b )
+{
+	INode* parent;
+	INode* child, *ch;
+	float length = 0;
+	float side = 0;
+	Matrix3 m1, m2;
+	Point3 len, off;
+
+	Interface* iface = GetCOREInterface();
+
+	parent = iface->GetINodeByName( b.parent.c_str() );
+	child = iface->GetINodeByName( b.name.c_str() );
+
+	len.Set( 0, 0, 0 );
+
+	if( parent != 0 )
+	{
+		for( int i = 0; i < parent->NumberOfChildren(); i++ )
+		{
+			ch = parent->GetChildNode( i );
+			m1 = parent->GetNodeTM( 0 );
+			m2 = ch->GetNodeTM( 0 );
+			off = m2.GetTrans() - m1.GetTrans();
+			if( length < off.Length() )
+			{
+				len = off;
+				length = off.Length();
+			}
+		}
+
+		length = len.Length();
+		side = length / 10;
+
+		build_bone_obj( parent, length, side );
+	}
+
+	if( child->NumberOfChildren() == 0 )
+	{
+		if( len.Length() == 0 )
+		{
+			length = 0.1f;
+			side = 0.1f;
+		}
+		else
+		{
+			length = len.Length();
+			side = length / 10;
+		}
+
+		build_bone_obj( child, length, side );
+	}
+}
+
+void model_import::build_bone_obj( INode* bone_node, float length, float side )
+{
+	SimpleObject2* obj;
+	ObjectState os;
+	Interface* iface;
+
+	iface = GetCOREInterface();
+
+	bone_node->ResetBoneStretch(0);
+
+	os = bone_node->EvalWorldState( iface->GetTime() );
+	if( os.obj->ClassID() != BONE_OBJ_CLASSID )
+	{
+		return;
+	}
+
+	obj = (SimpleObject2*)os.obj;
+
+	obj->pblock2->SetValue( BONE_WIDTH, 0, side );
+	obj->pblock2->SetValue( BONE_HEIGHT, 0,  side );
+	//obj->pblock2->SetValue( BONE_TAPER, 0, 80 );
+	obj->pblock2->SetValue( BONE_LENGTH, 0, length );
+
+	obj->UpdateMesh(0);
+}
+
 void model_import::create_material( INode *node, const std::string &texture )
 {
 	StdMat *mat;
 	BitmapTex *tex;
 	BitmapInfo bi;
-	std::string path;
 	std::string name;
 	size_t size, off;
 	mtl_map::iterator it;
 
-	path = file_system::get_full_path( file_system::TEXTURES, texture + std::string( ".512" ) );
 	name = texture;
 	off = texture.find( "\\" );
 	if( off != std::string::npos )
@@ -412,7 +305,7 @@ void model_import::create_material( INode *node, const std::string &texture )
 	mat = NewDefaultStdMat();
 	tex = NewDefaultBitmapTex();
 
-	tex->SetMapName( (TCHAR*)path.c_str() );
+	tex->SetMapName( (TCHAR*)texture.c_str() );
 	tex->SetName( name.c_str() );
 	tex->SetAlphaAsMono( true );
 

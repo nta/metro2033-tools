@@ -1,5 +1,5 @@
-#ifndef __PRECOMPILED_H__
-#define __PRECOMPILED_H__
+#ifndef __3DSMAX_PRECOMPILED_H__
+#define __3DSMAX_PRECOMPILED_H__
 
 #pragma warning( disable : 4996 )
 
@@ -11,7 +11,8 @@
 #include "bmmlib.h"
 #include "bitmap.h"
 #include "simpobj.h"
-#include "math.h"
+
+#include <m2033core/model_serializer.h>
 
 #include <string>
 #include <list>
@@ -21,5 +22,6 @@
 
 #include <stdio.h>
 #include <assert.h>
+#include <math.h>
 
-#endif // __PRECOMPILED_H__
+#endif // __3DSMAX_PRECOMPILED_H__

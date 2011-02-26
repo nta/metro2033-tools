@@ -18,12 +18,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 ******************************************************************************/
 
-#ifndef __MODEL_IMPORT_H__
-#define __MODEL_IMPORT_H__
+#ifndef __3DSMAX_MODEL_IMPORT_H__
+#define __3DSMAX_MODEL_IMPORT_H__
 
-#include "skeleton.h"
-
-namespace m2033
+namespace m2033_3dsmax
 {
 class reader;
 class model;
@@ -48,29 +46,22 @@ public:
 	int DoImport( const TCHAR *name, ImpInterface *ii, Interface *i, BOOL suppressPrompts );
 
 private:
-	typedef std::list<std::string>		string_list;
-	typedef std::list<model>			model_list;
 	typedef std::map<std::string, Mtl*> mtl_map;
 
 private:
-	bool read_model( reader& r, model_list& models );
-	void read_model( reader& r, model_list& models, int type );
-	void read_skeleton( reader& r );
-
-	void split_string( const std::string& string, char splitter, string_list& result );
-
 	Modifier* create_skin_modifier( INode* node );
-
 	void create_material( INode *node, const std::string &texture );
+	void set_mesh( Mesh &m1, m2033::mesh &m2 );
+	void build_skeleton( m2033::skeleton &s );
+	void update_bone_length( const m2033::skeleton::bone& b );
+	void build_bone_obj( INode* bone_node, float length, float side );
 
 private:
 	Interface		*interface_;
 	ImpInterface	*imp_interface_;
 
-	skeleton		skeleton_;
-
 	mtl_map			materials_;
 };
 }
 
-#endif // __MODEL_IMPORT_H__
+#endif // __3DSMAX_MODEL_IMPORT_H__
