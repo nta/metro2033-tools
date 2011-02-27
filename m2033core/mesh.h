@@ -26,6 +26,7 @@ namespace m2033
 			unsigned num_indices, const std::string &name, const std::string &texture_name );
 		void clear();
 
+		inline std::string get_name() const;
 		inline std::string get_texture_name() const;
 		inline vertices get_vertices() const;
 		inline normals get_normals() const;
@@ -45,6 +46,7 @@ namespace m2033
 	inline mesh::mesh() {}
 	inline mesh::~mesh() {}
 
+	inline std::string mesh::get_name() const { return name_; }
 	inline std::string mesh::get_texture_name() const { return texname_; }
 	inline mesh::vertices mesh::get_vertices() const { return vertices_; }
 	inline mesh::normals mesh::get_normals() const { return normals_; }

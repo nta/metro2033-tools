@@ -54,6 +54,7 @@ int model_import::DoImport( const TCHAR *name, ImpInterface *ii, Interface *ifac
 
 		ImpNode *node = ii->CreateNode();
 		node->Reference( object );
+		node->SetName( m.get_name().c_str() );
 
 		create_material( node->GetINode(), m.get_texture_name() );
 
@@ -178,12 +179,14 @@ void model_import::build_skeleton( m2033::skeleton &s )
 		node->SetNodeTM( 0, m );
 		node->SetBoneNodeOnOff( TRUE, 0 );
 		node->SetRenderable( FALSE );
+
+		bones_[s.get_bone( i ).name] = node;
 	}
 
 	for( unsigned i = 0; i < s.get_num_bones(); i++ )
 	{
-		node = iface->GetINodeByName( s.get_bone( i ).name.c_str() );
-		parent = iface->GetINodeByName( s.get_bone( i ).parent.c_str() );
+		node = get_bone_node( s.get_bone( i ).name.c_str() );
+		parent = get_bone_node( s.get_bone( i ).parent.c_str() );
 		if( parent != 0 )
 		{
 			parent->AttachChild( node, 0 );
@@ -194,6 +197,19 @@ void model_import::build_skeleton( m2033::skeleton &s )
 	{
 		update_bone_length( s.get_bone( i ) );
 	}
+}
+
+INode* model_import::get_bone_node( const std::string& name )
+{
+	bone_map::iterator it;
+
+	it = bones_.find( name );
+	if( it != bones_.end() )
+	{
+		return it->second;
+	}
+
+	return 0;
 }
 
 void model_import::update_bone_length( const m2033::skeleton::bone& b )
@@ -207,8 +223,8 @@ void model_import::update_bone_length( const m2033::skeleton::bone& b )
 
 	Interface* iface = GetCOREInterface();
 
-	parent = iface->GetINodeByName( b.parent.c_str() );
-	child = iface->GetINodeByName( b.name.c_str() );
+	parent = get_bone_node( b.parent.c_str() );
+	child = get_bone_node( b.name.c_str() );
 
 	len.Set( 0, 0, 0 );
 

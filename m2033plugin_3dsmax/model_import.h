@@ -47,6 +47,7 @@ public:
 
 private:
 	typedef std::map<std::string, Mtl*> mtl_map;
+	typedef std::map<std::string, INode*> bone_map;
 
 private:
 	Modifier* create_skin_modifier( INode* node );
@@ -55,12 +56,14 @@ private:
 	void build_skeleton( m2033::skeleton &s );
 	void update_bone_length( const m2033::skeleton::bone& b );
 	void build_bone_obj( INode* bone_node, float length, float side );
+	INode* get_bone_node( const std::string& name );
 
 private:
 	Interface		*interface_;
 	ImpInterface	*imp_interface_;
 
 	mtl_map			materials_;
+	bone_map		bones_;
 };
 }
 

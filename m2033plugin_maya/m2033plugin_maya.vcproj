@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(MAYA2009)\include"
+				AdditionalIncludeDirectories="&quot;$(MAYA2009)\include&quot;;..\"
 				PreprocessorDefinitions="WIN32;DEBUG;_WINDOWS;NT_PLUGIN"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -61,7 +61,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/export:initializePlugin /export:uninitializePlugin"
 				AdditionalDependencies="Foundation.lib OpenMaya.lib OpenMayaUI.lib OpenMayaAnim.lib OpenMayaFX.lib OpenMayaRender.lib Image.lib"
-				OutputFile="$(OutDir)\$(ProjectName).mll"
+				OutputFile="$(OutDir)\$(ProjectName)d.mll"
 				AdditionalLibraryDirectories="$(MAYA2009)\lib"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
@@ -90,7 +90,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)bin"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="2"
@@ -113,12 +113,11 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
+				Optimization="0"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="$(MAYA2009)\include"
+				AdditionalIncludeDirectories="&quot;$(MAYA2009)\include&quot;;..\"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;NT_PLUGIN"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>
