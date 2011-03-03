@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(MAYA2009)\include&quot;;..\"
+				AdditionalIncludeDirectories="&quot;$(MAYA2009)\include&quot;;..\;..\dependencies\libsquish"
 				PreprocessorDefinitions="WIN32;DEBUG;_WINDOWS;NT_PLUGIN"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -60,9 +60,9 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/export:initializePlugin /export:uninitializePlugin"
-				AdditionalDependencies="Foundation.lib OpenMaya.lib OpenMayaUI.lib OpenMayaAnim.lib OpenMayaFX.lib OpenMayaRender.lib Image.lib"
+				AdditionalDependencies="Foundation.lib OpenMaya.lib OpenMayaUI.lib OpenMayaAnim.lib OpenMayaFX.lib OpenMayaRender.lib Image.lib squishd.lib"
 				OutputFile="$(OutDir)\$(ProjectName)d.mll"
-				AdditionalLibraryDirectories="$(MAYA2009)\lib"
+				AdditionalLibraryDirectories="&quot;$(MAYA2009)\lib&quot;;..\dependencies\libsquish\lib"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
 			/>
@@ -115,7 +115,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;$(MAYA2009)\include&quot;;..\"
+				AdditionalIncludeDirectories="&quot;$(MAYA2009)\include&quot;;..\;..\dependencies\libsquish"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;NT_PLUGIN"
 				RuntimeLibrary="2"
 				WarningLevel="3"
@@ -133,9 +133,9 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/export:initializePlugin /export:uninitializePlugin"
-				AdditionalDependencies="Foundation.lib OpenMaya.lib OpenMayaUI.lib OpenMayaAnim.lib OpenMayaFX.lib OpenMayaRender.lib Image.lib"
+				AdditionalDependencies="Foundation.lib OpenMaya.lib OpenMayaUI.lib OpenMayaAnim.lib OpenMayaFX.lib OpenMayaRender.lib Image.lib squish.lib"
 				OutputFile="$(OutDir)\$(ProjectName).mll"
-				AdditionalLibraryDirectories="$(MAYA2009)\lib"
+				AdditionalLibraryDirectories="&quot;$(MAYA2009)\lib&quot;;..\dependencies\libsquish\lib"
 				GenerateDebugInformation="true"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
@@ -168,7 +168,27 @@
 	</References>
 	<Files>
 		<File
-			RelativePath=".\MetroTranslator.cpp"
+			RelativePath=".\metro_image.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\metro_image.h"
+			>
+		</File>
+		<File
+			RelativePath=".\metro_model_translator.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\metro_model_translator.h"
+			>
+		</File>
+		<File
+			RelativePath=".\plugin_dll.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\precompiled.h"
 			>
 		</File>
 	</Files>
