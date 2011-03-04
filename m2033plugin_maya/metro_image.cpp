@@ -121,11 +121,12 @@ MStatus metro_image::load( MImage& image, unsigned int idx)
 	squish::u8 *src = m_image;
 	unsigned char *pixels = image.pixels();
 	for( unsigned y = 0; y < m_height; y++ ) {
-		for( unsigned x = 0; x < m_width; x++ ) {
-			*pixels++ = *src++;
-			*pixels++ = *src++;
-			*pixels++ = *src++;
-			*pixels++ = *src++;
+		for( unsigned x = m_width; x != 0 / 4; x-- ) {
+			unsigned i = y * m_height + x - 1;
+			*pixels++ = src[i * 4 + 2];
+			*pixels++ = src[i * 4 + 1];
+			*pixels++ = src[i * 4];
+			*pixels++ = src[i * 4 + 3];
 		}
 	}
 

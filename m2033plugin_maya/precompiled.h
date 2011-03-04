@@ -27,6 +27,7 @@
 #include <maya/MStringArray.h>
 #include <maya/MIntArray.h>
 #include <maya/MFloatPointArray.h>
+#include <maya/MFloatArray.h>
 #include <maya/MFloatVectorArray.h>
 #include <maya/MPlugArray.h>
 #include <maya/MIOStream.h>
@@ -40,6 +41,10 @@
 #include <maya/MDGModifier.h>
 #include <maya/MFnTransform.h>
 #include <maya/MRenderView.h>
+#include <maya/MItDependencyNodes.h>
+#include <maya/MItDependencyGraph.h>
+#include <maya/MFnLambertShader.h>
+#include <maya/MGlobal.h>
 
 #include <m2033core/model_serializer.h>
 

@@ -29,7 +29,7 @@ namespace m2033_maya
 
 		MStatus  reader(const MFileObject &file, const MString &optionsString, FileAccessMode mode);
 
-		void create_shape( const m2033::mesh &m );
+		MStatus create_shape( const m2033::mesh &m );
 		MObject create_material( const std::string &texture, MStatus *status = NULL );
 
 		bool  haveReadMethod() const { return true; }

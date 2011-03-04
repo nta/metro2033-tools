@@ -53,8 +53,11 @@ MStatus initializePlugin( MObject obj )
 MStatus uninitializePlugin( MObject obj )
 {
     MFnPlugin plugin( obj );
-    plugin.deregisterImageFile( "MetroImage" );
-	plugin.deregisterFileTranslator( "MetroModelTranslator" );
+	bool img, geom;
+    img = plugin.deregisterImageFile( "MetroImage" );
+	geom = plugin.deregisterFileTranslator( "MetroModelTranslator" );
+	if( !img || !geom )
+		return MS::kFailure;
 
     return MS::kSuccess;
 }
