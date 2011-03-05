@@ -68,7 +68,7 @@ MStatus metro_model_translator::create_shape( const m2033::mesh &m )
 	m2033::mesh::texcoords mt = m.get_tex_coords();
 
 	for( unsigned i = 0; i < mv.size(); i++ ) {
-		v.append( mv[i].x, mv[i].y, mv[i].z );
+		v.append( -mv[i].x, mv[i].y, mv[i].z );
 	}
 
 	for( unsigned i = 0; i < mi.size() / 3; i++ ) {
@@ -80,8 +80,8 @@ MStatus metro_model_translator::create_shape( const m2033::mesh &m )
 
 	MFloatArray u_values, v_values;
 	for( unsigned i = 0; i < mt.size(); i++ ) {
-		u_values.append( -mt[i].x );
-		v_values.append( mt[i].y );
+		u_values.append( mt[i].x );
+		v_values.append( -mt[i].y );
 	}
 
 	MFnMesh meshFn;
@@ -181,6 +181,7 @@ MObject metro_model_translator::create_material( const std::string &texture, MSt
 	dg_modifier.doIt();
 
 	dg_modifier.connect(texture_fn.findPlug("oc"), shader_fn.findPlug("c"));
+	//dg_modifier.connect(texture_fn.findPlug("ot"), shader_fn.findPlug("it")); <- opacity
 	dg_modifier.doIt();
 
 	if (status)

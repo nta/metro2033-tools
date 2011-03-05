@@ -116,8 +116,13 @@ MStatus metro_image::open( MString pathname, MImageFileInfo* info)
 	{
 		info->width( m_width );
 		info->height( m_height );
-		 info->channels( 4 );
-		 info->pixelType( MImage::kByte );
+		info->numberOfImages( 1 );
+		info->channels( 4 );
+		info->hasAlpha( true );
+		info->hasMipMaps( false );
+		info->hardwareType( MImageFileInfo::kHwTexture2D );
+		info->imageType( MImageFileInfo::kImageTypeColor );
+		info->pixelType( MImage::kByte );
 	}
 
 	return MS::kSuccess;
@@ -129,15 +134,16 @@ MStatus metro_image::load( MImage& image, unsigned int idx)
 
 	squish::u8 *src = m_image;
 	unsigned char *pixels = image.pixels();
-	for( unsigned y = 0; y < m_height; y++ ) {
-		for( unsigned x = m_width; x != 0 / 4; x-- ) {
-			unsigned i = y * m_height + x - 1;
-			*pixels++ = src[i * 4 + 2];
-			*pixels++ = src[i * 4 + 1];
+	for( unsigned y = m_height; y != 0 ; y-- ) {
+		for( unsigned x = 0; x < m_width; x++ ) {
+			unsigned i = (y - 1) * m_height + x;
 			*pixels++ = src[i * 4];
+			*pixels++ = src[i * 4 + 1];
+			*pixels++ = src[i * 4 + 2];
 			*pixels++ = src[i * 4 + 3];
 		}
 	}
+	image.setRGBA( true );
 
 	return MS::kSuccess;
 }
