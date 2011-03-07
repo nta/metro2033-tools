@@ -49,10 +49,12 @@ namespace m2033
 			SKELETON_NAME_CHUNK_ID = 0x14
 		};
 
-		bool read_model( const std::string &file, model &m );
-		bool read_mesh( const std::string &file, model::meshes &meshes );
-		void read_mesh( int type, reader &r, model::meshes &meshes );
-		bool read_skeleton( const std::string &file, skeleton &s );
+		bool read_model_file( const std::string &file, model &m );
+		bool read_mesh_file( const std::string &file, model &m );
+		bool read_skeleton_file( const std::string &file, skeleton &s );
+
+		void read_mesh(  int type, reader &r, mesh &m  );
+		void read_meshes( int type, reader &r, model::meshes &meshes );
 
 	private:
 		typedef std::list<std::string> string_list;

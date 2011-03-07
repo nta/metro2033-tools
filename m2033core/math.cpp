@@ -166,6 +166,20 @@ float vec2::length()
 	return sqrt( x * x + y * y );
 }
 
+float vec2::normalize()
+{
+	float len = length();
+
+	if ( len > 1e-08 )
+	{
+		float inv = 1.0f / len;
+		x *= inv;
+		y *= inv;
+	}
+
+	return len;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 vec3::vec3() : x(0), y(0), z(0) {}
@@ -318,4 +332,19 @@ bool vec3::operator < ( const vec3& vector )
 float vec3::length()
 {
         return sqrt( x * x + y * y + z * z );
+}
+
+float vec3::normalize()
+{
+	float len = length();
+
+	if ( len > 1e-08 )
+	{
+		float inv = 1.0f / len;
+		x *= inv;
+		y *= inv;
+		z *= inv;
+	}
+
+	return len;
 }

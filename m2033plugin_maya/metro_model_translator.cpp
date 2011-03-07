@@ -33,9 +33,14 @@ MStatus  metro_model_translator::reader(const MFileObject &file, const MString &
 	m2033::model_serializer s;
 	m2033::model model;
 	m2033::mesh mesh;
-	bool res;
+	bool res = MStatus::kFailure;
 
-	res = s.read_model( file.fullName().asChar(), model );
+	if( strstr( file.name().asChar(), ".mesh" ) != 0 ) {
+		res = s.read_mesh_file( file.fullName().asChar(), model );
+	}
+	else {
+		res = s.read_model_file( file.fullName().asChar(), model );
+	}
 	if( !res ) {
 		return MStatus::kFailure;
 	}
@@ -55,7 +60,7 @@ MStatus  metro_model_translator::reader(const MFileObject &file, const MString &
 MStatus metro_model_translator::create_shape( const m2033::mesh &m )
 {
 	MFloatPointArray v;
-	MFloatVectorArray norm;
+	MVectorArray norm;
 	MIntArray p;
 	MIntArray idx;
 
@@ -66,9 +71,11 @@ MStatus metro_model_translator::create_shape( const m2033::mesh &m )
 	m2033::mesh::vertices mv = m.get_vertices();
 	m2033::mesh::indices mi = m.get_indices();
 	m2033::mesh::texcoords mt = m.get_tex_coords();
+	m2033::mesh::normals mn = m.get_normals();
 
 	for( unsigned i = 0; i < mv.size(); i++ ) {
 		v.append( -mv[i].x, mv[i].y, mv[i].z );
+		norm.append( MVector( -mn[i].x, mn[i].y, mn[i].z ) );
 	}
 
 	for( unsigned i = 0; i < mi.size() / 3; i++ ) {
@@ -88,12 +95,22 @@ MStatus metro_model_translator::create_shape( const m2033::mesh &m )
 	MObject mesh = meshFn.create( v.length(), p.length(), v, p, idx, u_values, v_values, transform_obj );
 	MString name = m.get_name().c_str();
 	meshFn.setName( name + MString("_shape") );
+
 	MStatus s = meshFn.assignUVs( p, idx, 0 );
 	if( !s ) {
 		return s;
 	}
 
-	MObject mat = create_material( m.get_texture_name() );
+	s = meshFn.unlockVertexNormals( idx );
+	if( !s ) {
+		return s;
+	}
+	meshFn.setVertexNormals( norm, idx );
+
+	MObject mat = create_material( m.get_texture_name(), &s );
+	if( !s ) {
+		return s;
+	}
 	MFnSet mat_fn(mat);
 	mat_fn.addMember(mesh);
 
@@ -194,7 +211,7 @@ MPxFileTranslator::MFileKind metro_model_translator::identifyFile(const MFileObj
 {
 	MString name = file.name();
 	MString ext = name.substring( name.rindex( '.' ), name.length() ).toLowerCase();
-	if( ext != MString( ".model" ) )
+	if( ext != MString( ".model" ) && ext != MString( ".mesh" ) )
 		return MPxFileTranslator::kNotMyFileType;
 
 	return MPxFileTranslator::kIsMyFileType;

@@ -34,9 +34,22 @@ class model;
 class model_import : public SceneImport
 {
 public:
-	int				ExtCount() { return 1; }
-	const TCHAR*	Ext( int i ) { return i ? 0 : "model"; }
-	const TCHAR*	LongDesc() { return "Metro2033 Model file"; }
+	int				ExtCount() { return 3; }
+
+	const TCHAR* Ext( int i )
+	{
+		switch( i )
+		{
+		case 0:
+			return "mesh";
+		case 1:
+			return "model";
+		case 2:
+			return "geom_pc";
+		}
+	}
+
+	const TCHAR*	LongDesc() { return "Metro2033 Model"; }
 	const TCHAR*	ShortDesc() { return "Metro2033 Model file"; }
 	const TCHAR*	AuthorName() { return "Ivan Shishkin"; }
 	const TCHAR*	CopyrightMessage() { return "Copyright (C) 2010 Ivan Shishkin <codingdude@gmail.com>"; }

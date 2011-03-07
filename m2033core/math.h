@@ -67,6 +67,7 @@ namespace m2033
 		bool operator < ( const vec2& vector );
 
 		float length();
+		float normalize();
 	};
 
 	class vec3
@@ -106,6 +107,7 @@ namespace m2033
 		bool operator < ( const vec3& vector );
 
 		float length();
+		float normalize();
 	};
 }
 

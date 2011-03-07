@@ -41,9 +41,16 @@ int model_import::DoImport( const TCHAR *name, ImpInterface *ii, Interface *ifac
 	m2033::model_serializer serializer;
 	m2033::model model;
 	m2033::mesh m;
-	bool res;
+	bool res = 0;
 
-	res = serializer.read_model( name, model );
+	if( strstr( name, ".mesh" ) != 0 )
+	{
+		res = serializer.read_mesh_file( name, model );
+	}
+	else if( strstr( name, ".model" ) != 0 )
+	{
+		res = serializer.read_model_file( name, model );
+	}
 	if( !res )
 	{
 		return IMPEXP_FAIL;

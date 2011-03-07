@@ -48,8 +48,7 @@ struct dynamic_model_vertex
     short u, v;
 };
 
-void mesh::init( int type, void *vertices, unsigned num_vertices, void *indices,
-			unsigned num_indices, const std::string &name, const std::string &texture_name )
+void mesh::init( int type, void *vertices, unsigned num_vertices, void *indices, unsigned num_indices )
 {
 	assert( vertices );
 	assert( indices );
@@ -74,7 +73,7 @@ void mesh::init( int type, void *vertices, unsigned num_vertices, void *indices,
 			vec3 norm = vec3( ((v[i].normal << 16) & 0xFF) / 255.0f,
 				((v[i].normal << 8) & 0xFF) / 255.0f,
 				(v[i].normal & 0xFF) / 255.0f );
-
+			norm.normalize();
 			normals_.push_back( norm );
 
 			vec2 tc = vec2( v[i].u, v[i].v );
@@ -107,9 +106,6 @@ void mesh::init( int type, void *vertices, unsigned num_vertices, void *indices,
 	{
 		indices_.push_back( idx[i] );
 	}
-
-	name_ = name;
-	texname_ = texture_name;
 }
 
 void mesh::clear()

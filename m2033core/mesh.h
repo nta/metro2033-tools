@@ -47,9 +47,12 @@ namespace m2033
 		inline mesh();
 		inline ~mesh();
 
-		void init( int type, void *vertices, unsigned num_vertices, void *indices,
-			unsigned num_indices, const std::string &name, const std::string &texture_name );
+		void init( int type, void *vertices,
+			unsigned num_vertices, void *indices, unsigned num_indices );
 		void clear();
+
+		inline void set_name( const std::string &name );
+		inline void set_texture_name( const std::string &name );
 
 		inline std::string get_name() const;
 		inline std::string get_texture_name() const;
@@ -70,6 +73,9 @@ namespace m2033
 
 	inline mesh::mesh() {}
 	inline mesh::~mesh() {}
+
+	inline void mesh::set_name( const std::string &name ) { name_ = name; }
+	inline void mesh::set_texture_name( const std::string &name ) { texname_ = name; }
 
 	inline std::string mesh::get_name() const { return name_; }
 	inline std::string mesh::get_texture_name() const { return texname_; }
