@@ -23,35 +23,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ******************************************************************************/
 
-#ifndef __3DSMAX_PRECOMPILED_H__
-#define __3DSMAX_PRECOMPILED_H__
+#ifndef __M2033_FILE_SYSTEM_H__
+#define __M2033_FILE_SYSTEM_H__
 
-#pragma warning( disable : 4996 )
+#include "prerequisites.h"
 
-#include "max.h"
-#include "iparamb2.h"
-#include "modstack.h"
-#include "iskin.h"
-#include "stdmat.h"
-#include "bmmlib.h"
-#include "bitmap.h"
-#include "simpobj.h"
+namespace m2033
+{
+	class file_system
+	{
+	public:
+		enum
+		{
+			ROOT,
+			MESHES,
+			TEXTURES,
+		};
 
-#include <m2033core/model.h>
-#include <m2033core/mesh.h>
-#include <m2033core/skeleton.h>
-#include <m2033core/level.h>
-#include <m2033core/reader.h>
-#include <m2033core/file_system.h>
+		reader open_reader( const std::string& name );
 
-#include <string>
-#include <list>
-#include <map>
-#include <deque>
-#include <vector>
+		inline void set_root_dir( const std::string& root ) { root_ = root; }
+		inline const std::string& get_root_dir() { return root_; }
 
-#include <stdio.h>
-#include <assert.h>
-#include <math.h>
+		bool set_root_from_fname( const std::string& file );
+		std::string get_full_path( int path_id, const std::string& filename );
 
-#endif // __3DSMAX_PRECOMPILED_H__
+	private:
+		static std::string root_;
+	};
+}
+
+#endif // __M2033_FILE_SYSTEM_H__

@@ -23,35 +23,42 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ******************************************************************************/
 
-#ifndef __3DSMAX_PRECOMPILED_H__
-#define __3DSMAX_PRECOMPILED_H__
+#ifndef __M2033_LEVEL_H__
+#define __M2033_LEVEL_H__
 
-#pragma warning( disable : 4996 )
+#include "prerequisites.h"
+#include "model.h"
 
-#include "max.h"
-#include "iparamb2.h"
-#include "modstack.h"
-#include "iskin.h"
-#include "stdmat.h"
-#include "bmmlib.h"
-#include "bitmap.h"
-#include "simpobj.h"
+namespace m2033
+{
+	class level
+	{
+	public:
+		bool load( reader &r );
 
-#include <m2033core/model.h>
-#include <m2033core/mesh.h>
-#include <m2033core/skeleton.h>
-#include <m2033core/level.h>
-#include <m2033core/reader.h>
-#include <m2033core/file_system.h>
+		model& get_geometry() { return m_geom; }
 
-#include <string>
-#include <list>
-#include <map>
-#include <deque>
-#include <vector>
+	private:
+		struct part
+		{
+			unsigned vb_offset;
+			unsigned vb_size;
+			unsigned ib_offset;
+			unsigned ib_size;
+			short	 texture_id;
+		};
 
-#include <stdio.h>
-#include <assert.h>
-#include <math.h>
+		typedef std::vector<part> part_vector;
+		typedef std::vector<void*> buf_vector;
 
-#endif // __3DSMAX_PRECOMPILED_H__
+		part_vector		m_parts;
+		model			m_geom;
+
+		buf_vector		m_vbuffers;
+		buf_vector		m_ibuffers;
+
+		string_vector	m_textures;
+	};
+}
+
+#endif // __M2033_LEVEL_H__

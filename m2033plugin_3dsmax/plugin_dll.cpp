@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include "precompiled.h"
 #include "model_import.h"
 #include "image_import.h"
+#include "level_import.h"
 
 using namespace m2033_3dsmax;
 
@@ -52,8 +53,20 @@ public:
 	const TCHAR*    Category() { return _T(""); }
 };
 
+class level_import_class_desc : public ClassDesc
+{
+public:
+	int				IsPublic() { return TRUE; }
+	void*			Create( BOOL loading ) { return new level_import; }
+	const TCHAR*	ClassName() { return "LevelImport"; }
+	SClass_ID		SuperClassID() { return SCENE_IMPORT_CLASS_ID; }
+	Class_ID		ClassID() { return Class_ID(0x50346607, 0x31fc2c42); }
+	const TCHAR*    Category() { return _T(""); }
+};
+
 model_import_class_desc	model_import_description;
 image_import_class_desc	image_import_description;
+level_import_class_desc level_import_description;
 
 BOOL WINAPI DllMain( HINSTANCE hinst,ULONG reason, LPVOID reserved )
 {
@@ -78,7 +91,7 @@ __declspec( dllexport ) int LibShutdown(void)
 
 __declspec( dllexport ) int LibNumberClasses()
 {
-	return 2;
+	return 3;
 }
 
 __declspec( dllexport ) ClassDesc *LibClassDesc( int i ) 
@@ -89,6 +102,8 @@ __declspec( dllexport ) ClassDesc *LibClassDesc( int i )
 		return (ClassDesc*) &model_import_description;
 	case 1:
 		return (ClassDesc*) &image_import_description;
+	case 2:
+		return (ClassDesc*) &level_import_description;
 	}
 
 	return 0;

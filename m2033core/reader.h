@@ -33,14 +33,17 @@ namespace m2033
 class reader
 {
 public:
-	reader() : current_(0), is_opened(0) {}
-	~reader() { close(); }
+	inline reader();
+	reader( const std::string name, void *data, size_t size );
+	~reader() { clear(); }
 
-	bool open( const std::string& name );
-	void close();
+	inline bool is_empty();
+
+	void clear();
 
 	inline const std::string& get_path();
 	inline const std::string& get_file_name();
+	inline const std::string& get_full_name();
 	inline const std::string& get_name();
 	inline const std::string& get_suffix();
 
@@ -51,6 +54,8 @@ public:
 	inline unsigned chunk_id();
 	inline unsigned chunk_size();
 	inline void* chunk_data();
+
+	void* data();
 
 	void read_data( void* data, size_t size );
 	int read_string( char* buffer );
@@ -76,21 +81,27 @@ private:
 	typedef std::deque<chunk>	chunk_stack;
 
 private:
-	bool			is_opened;
+	bool				is_opened;
 
-	chunk			root_;
-	chunk*			current_;
+	shared_ptr<chunk>	root_;
+	chunk*				current_;
 
-	chunk_stack		chunks_;
+	chunk_stack			chunks_;
 
-	std::string		path_;
-	std::string		filename_;
-	std::string		name_;
-	std::string		suffix_;
+	std::string			path_;
+	std::string			fullname_;
+	std::string			filename_;
+	std::string			name_;
+	std::string			suffix_;
 };
+
+inline reader::reader() : is_opened(0) {}
+
+inline bool reader::is_empty() { return !is_opened; }
 
 inline const std::string& reader::get_path() { return path_; }
 inline const std::string& reader::get_file_name() { return filename_; }
+inline const std::string& reader::get_full_name() { return fullname_; }
 inline const std::string& reader::get_name() { return name_; }
 inline const std::string& reader::get_suffix() { return suffix_; }
 

@@ -1116,6 +1116,14 @@
 			>
 		</File>
 		<File
+			RelativePath=".\level_import.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\level_import.h"
+			>
+		</File>
+		<File
 			RelativePath=".\model_import.cpp"
 			>
 		</File>

@@ -23,35 +23,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ******************************************************************************/
 
-#ifndef __3DSMAX_PRECOMPILED_H__
-#define __3DSMAX_PRECOMPILED_H__
+#ifndef __3DSMAX_LEVEL_IMPORT_H__
+#define __3DSMAX_LEVEL_IMPORT_H__
 
-#pragma warning( disable : 4996 )
+namespace m2033_3dsmax
+{
+	class level_import : public SceneImport
+	{
+	public:
+		int				ExtCount() { return 1; }
+		const TCHAR* Ext( int i ) { return "geom_pc"; }
+		const TCHAR*	LongDesc() { return "Metro2033 Level Importer"; }
+		const TCHAR*	ShortDesc() { return "Metro2033 Level Importer"; }
+		const TCHAR*	AuthorName() { return "Ivan Shishkin"; }
+		const TCHAR*	CopyrightMessage() { return "Copyright (C) 2010 Ivan Shishkin <codingdude@gmail.com>"; }
+		const TCHAR*	OtherMessage1() { return ""; }
+		const TCHAR*	OtherMessage2() { return ""; }
+		unsigned int	Version() { return 100; }
+		int				ZoomExtents() { return ZOOMEXT_NOT_IMPLEMENTED; }
+		void			DeleteThis() { delete this; }
 
-#include "max.h"
-#include "iparamb2.h"
-#include "modstack.h"
-#include "iskin.h"
-#include "stdmat.h"
-#include "bmmlib.h"
-#include "bitmap.h"
-#include "simpobj.h"
+		void ShowAbout( HWND hwnd );
 
-#include <m2033core/model.h>
-#include <m2033core/mesh.h>
-#include <m2033core/skeleton.h>
-#include <m2033core/level.h>
-#include <m2033core/reader.h>
-#include <m2033core/file_system.h>
+		int DoImport( const TCHAR *name, ImpInterface *ii, Interface *i, BOOL suppressPrompts );
+	};
+}
 
-#include <string>
-#include <list>
-#include <map>
-#include <deque>
-#include <vector>
-
-#include <stdio.h>
-#include <assert.h>
-#include <math.h>
-
-#endif // __3DSMAX_PRECOMPILED_H__
+#endif // __3DSMAX_LEVEL_IMPORT_H__

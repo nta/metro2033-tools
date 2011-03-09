@@ -24,6 +24,7 @@ THE SOFTWARE.
 ******************************************************************************/
 
 #include "mesh.h"
+#include "reader.h"
 #include "math.h"
 
 using namespace m2033;
@@ -46,6 +47,16 @@ struct dynamic_model_vertex
     char  bones[4];
     char  weights[4];
     short u, v;
+};
+
+struct level_geom_vertex
+{
+    float x, y, z;
+    unsigned normal;
+	unsigned tangent;
+	unsigned binormal;
+    short u, v;
+	unsigned unused; // ?
 };
 
 void mesh::init( int type, void *vertices, unsigned num_vertices, void *indices, unsigned num_indices )
@@ -99,6 +110,25 @@ void mesh::init( int type, void *vertices, unsigned num_vertices, void *indices,
 			texcoords_.push_back( tc );
 		}
 	}
+	else if( type == mesh::LEVEL_GEOM )
+	{
+		level_geom_vertex *v = (level_geom_vertex*) vertices;
+
+		for( unsigned i = 0; i < num_vertices; i++ )
+		{
+			vec3 vert = vec3( v[i].x, v[i].y, v[i].z );
+			vertices_.push_back( vert );
+
+			vec3 norm = vec3( ((v[i].normal << 16) & 0xFF) / 255.0f,
+				((v[i].normal << 8) & 0xFF) / 255.0f,
+				(v[i].normal & 0xFF) / 255.0f );
+
+			normals_.push_back( norm );
+
+			vec2 tc = vec2( v[i].u / 2048.0f, v[i].v / 2048.0f );
+			texcoords_.push_back( tc );
+		}
+	}
 
 	unsigned short *idx = (unsigned short*) indices;
 
@@ -116,4 +146,49 @@ void mesh::clear()
 	indices_.clear();
 	texname_.clear();
 	name_.clear();
+}
+
+void mesh::load( reader &r, int type )
+{
+	void *vb, *ib;
+	int size, vnum, inum, i = 0;
+	char n;
+
+	// read vertices
+	if( type == mesh::DYNAMIC_MESH )
+	{
+		r.open_chunk( DYNAMIC_VERTEX_CHUNK_ID );
+
+		// skip unused data
+		r.read_data( &n, 1 );
+		size = n * 61;
+		r.advance( size );
+
+		// calculate vertices size
+		r.read_data( &vnum, 4 );
+		size = vnum * 32;
+	}
+	else
+	{
+		r.open_chunk( STATIC_VERTEX_CHUNK_ID );
+		size = r.chunk_size() - 8;
+		r.advance( 4 );
+		r.read_data( &vnum, 4 );
+	}
+	vb = malloc( size );
+	r.read_data( vb, size );
+	r.close_chunk();
+
+	// read indices
+	r.open_chunk();
+	size = r.chunk_size() - 4;
+	r.read_data( &inum, 4 );
+	ib = malloc( size );
+	r.read_data( ib, size );
+	r.close_chunk();
+
+	init( type, vb, vnum, ib, inum );
+
+	free( vb);
+	free( ib );
 }

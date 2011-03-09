@@ -36,7 +36,8 @@ namespace m2033
 		enum
 		{
 			STATIC_MESH,
-			DYNAMIC_MESH
+			DYNAMIC_MESH,
+			LEVEL_GEOM
 		};
 
 		typedef std::vector<vec3> vertices;
@@ -46,6 +47,8 @@ namespace m2033
 
 		inline mesh();
 		inline ~mesh();
+
+		void load( reader &r, int type );
 
 		void init( int type, void *vertices,
 			unsigned num_vertices, void *indices, unsigned num_indices );

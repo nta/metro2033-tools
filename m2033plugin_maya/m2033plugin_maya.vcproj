@@ -48,6 +48,8 @@
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="precompiled.h"
 				WarningLevel="3"
 				DebugInformationFormat="4"
 			/>
@@ -121,6 +123,8 @@
 				AdditionalIncludeDirectories="&quot;$(MAYA2009)\include&quot;;..\;..\dependencies\libsquish"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;NT_PLUGIN"
 				RuntimeLibrary="2"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="precompiled.h"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>
@@ -329,6 +333,14 @@
 			>
 		</File>
 		<File
+			RelativePath=".\metro_level_translator.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\metro_level_translator.h"
+			>
+		</File>
+		<File
 			RelativePath=".\metro_model_translator.cpp"
 			>
 		</File>
@@ -339,6 +351,26 @@
 		<File
 			RelativePath=".\plugin_dll.cpp"
 			>
+		</File>
+		<File
+			RelativePath=".\precompiled.cpp"
+			>
+			<FileConfiguration
+				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCLCompilerTool"
+					UsePrecompiledHeader="1"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Release|Win32"
+				>
+				<Tool
+					Name="VCCLCompilerTool"
+					UsePrecompiledHeader="1"
+				/>
+			</FileConfiguration>
 		</File>
 		<File
 			RelativePath=".\precompiled.h"

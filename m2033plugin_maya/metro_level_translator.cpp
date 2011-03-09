@@ -23,35 +23,39 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ******************************************************************************/
 
-#ifndef __3DSMAX_PRECOMPILED_H__
-#define __3DSMAX_PRECOMPILED_H__
+#include "precompiled.h"
+#include "metro_level_translator.h"
+#include "metro_model_translator.h"
 
-#pragma warning( disable : 4996 )
+using namespace m2033_maya;
 
-#include "max.h"
-#include "iparamb2.h"
-#include "modstack.h"
-#include "iskin.h"
-#include "stdmat.h"
-#include "bmmlib.h"
-#include "bitmap.h"
-#include "simpobj.h"
+MStatus  metro_level_translator::reader(const MFileObject &file, const MString &optionsString, FileAccessMode mode)
+{
+	char name[255];
+	strcpy( name, file.expandedFullName().asChar() );
+	char* ch = (char*) strrchr( name, '.' );
+	*ch = '\0';
 
-#include <m2033core/model.h>
-#include <m2033core/mesh.h>
-#include <m2033core/skeleton.h>
-#include <m2033core/level.h>
-#include <m2033core/reader.h>
-#include <m2033core/file_system.h>
+	m2033::file_system fs;
+	fs.set_root_from_fname( name );
+	m2033::reader r = fs.open_reader( name );
+	if( r.is_empty() )
+		return MS::kFailure;
 
-#include <string>
-#include <list>
-#include <map>
-#include <deque>
-#include <vector>
+	m2033::level lvl;
+	lvl.load( r );
+	m2033::model model = lvl.get_geometry();
 
-#include <stdio.h>
-#include <assert.h>
-#include <math.h>
+	metro_model_translator model_trans;
+	return model_trans.read( model );
+}
 
-#endif // __3DSMAX_PRECOMPILED_H__
+MPxFileTranslator::MFileKind metro_level_translator::identifyFile(const MFileObject &file, const char *buffer, short size) const
+{
+	MString name = file.name();
+	MString ext = name.substring( name.rindex( '.' ), name.length() ).toLowerCase();
+	if( ext != MString( ".geom_pc" ) )
+		return MPxFileTranslator::kNotMyFileType;
+
+	return MPxFileTranslator::kIsMyFileType;
+}

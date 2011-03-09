@@ -36,14 +36,40 @@ THE SOFTWARE.
 #include <assert.h>
 #include <math.h>
 
+#include "shared_ptr.h"
+
 namespace m2033
 {
+	enum
+	{
+		UNUSED_CHUNK_ID = 0x01,
+		TEXTURE_NAME_CHUNK_ID = 0x02,
+		STATIC_VERTEX_CHUNK_ID = 0x03,
+		DYNAMIC_VERTEX_CHUNK_ID = 0x05,
+		MODEL_CHUNK_ID = 0x09,
+		BONES_CHUNK_ID = 0x0D,
+		MESH_NAMES_CHUNK_ID = 0x10,
+		SKELETON_NAME_CHUNK_ID = 0x14,
+		LEVEL_PARTS_CHUNK_ID = 0x03,
+		LEVEL_TEXTURES_CHUNK_ID = 0x02,
+		LEVEL_VB_CHUNK_ID = 0x09,
+		LEVEL_IB_CHUNK_ID = 0x0A
+	};
+
 	class vec3;
 	class vec2;
 	class mesh;
 	class skeleton;
 	class model;
 	class reader;
+
+	typedef std::list<std::string> string_list;
+	typedef std::vector<std::string> string_vector;
+	typedef shared_ptr<model> model_ptr;
+	typedef shared_ptr<skeleton> skeleton_ptr;
+	typedef shared_ptr<mesh> mesh_ptr;
+	typedef std::vector<model_ptr> model_vector;
+	typedef std::vector<mesh_ptr> mesh_vector;
 }
 
 #endif // __PREREQUISITES_H__

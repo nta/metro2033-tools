@@ -30,23 +30,26 @@ using namespace m2033_maya;
 
 MStatus  metro_model_translator::reader(const MFileObject &file, const MString &optionsString, FileAccessMode mode)
 {
-	m2033::model_serializer s;
+	m2033::file_system fs;
+	m2033::reader r;
 	m2033::model model;
-	m2033::mesh mesh;
 	bool res = MStatus::kFailure;
 
-	if( strstr( file.name().asChar(), ".mesh" ) != 0 ) {
-		res = s.read_mesh_file( file.fullName().asChar(), model );
-	}
-	else {
-		res = s.read_model_file( file.fullName().asChar(), model );
-	}
+	fs.set_root_from_fname( file.expandedFullName().asChar() );
+	r = fs.open_reader( file.expandedFullName().asChar() );
+
+	res = model.load( r );
 	if( !res ) {
 		return MStatus::kFailure;
 	}
 
-	for( unsigned i = 0; i < model.get_num_meshes(); i++ ) {
-		mesh = model.get_mesh( i );
+	return read( model );
+}
+
+MStatus	metro_model_translator::read( m2033::model &m )
+{
+	for( unsigned i = 0; i < m.get_num_meshes(); i++ ) {
+		m2033::mesh_ptr mesh = m.get_mesh( i );
 		if( !create_shape( mesh ) ) {
 			return MStatus::kFailure;
 		}
@@ -57,7 +60,7 @@ MStatus  metro_model_translator::reader(const MFileObject &file, const MString &
 	return MStatus::kSuccess;
 }
 
-MStatus metro_model_translator::create_shape( const m2033::mesh &m )
+MStatus metro_model_translator::create_shape( const m2033::mesh_ptr m )
 {
 	MFloatPointArray v;
 	MVectorArray norm;
@@ -66,12 +69,12 @@ MStatus metro_model_translator::create_shape( const m2033::mesh &m )
 
 	MFnTransform transform_fn;
 	MObject transform_obj = transform_fn.create( MObject::kNullObj );
-	transform_fn.setName( m.get_name().c_str() );
+	transform_fn.setName( m->get_name().c_str() );
 
-	m2033::mesh::vertices mv = m.get_vertices();
-	m2033::mesh::indices mi = m.get_indices();
-	m2033::mesh::texcoords mt = m.get_tex_coords();
-	m2033::mesh::normals mn = m.get_normals();
+	m2033::mesh::vertices mv = m->get_vertices();
+	m2033::mesh::indices mi = m->get_indices();
+	m2033::mesh::texcoords mt = m->get_tex_coords();
+	m2033::mesh::normals mn = m->get_normals();
 
 	for( unsigned i = 0; i < mv.size(); i++ ) {
 		v.append( -mv[i].x, mv[i].y, mv[i].z );
@@ -93,7 +96,7 @@ MStatus metro_model_translator::create_shape( const m2033::mesh &m )
 
 	MFnMesh meshFn;
 	MObject mesh = meshFn.create( v.length(), p.length(), v, p, idx, u_values, v_values, transform_obj );
-	MString name = m.get_name().c_str();
+	MString name = m->get_name().c_str();
 	meshFn.setName( name + MString("_shape") );
 
 	MStatus s = meshFn.assignUVs( p, idx, 0 );
@@ -107,7 +110,7 @@ MStatus metro_model_translator::create_shape( const m2033::mesh &m )
 	}
 	meshFn.setVertexNormals( norm, idx );
 
-	MObject mat = create_material( m.get_texture_name(), &s );
+	MObject mat = create_material( m->get_texture_name(), &s );
 	if( !s ) {
 		return s;
 	}

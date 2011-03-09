@@ -55,7 +55,12 @@ THE SOFTWARE.
 #include <maya/MFnLambertShader.h>
 #include <maya/MGlobal.h>
 
-#include <m2033core/model_serializer.h>
+#include <m2033core/model.h>
+#include <m2033core/mesh.h>
+#include <m2033core/skeleton.h>
+#include <m2033core/level.h>
+#include <m2033core/reader.h>
+#include <m2033core/file_system.h>
 
 #include <squish.h>
 

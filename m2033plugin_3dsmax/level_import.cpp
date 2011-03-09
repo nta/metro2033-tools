@@ -23,35 +23,39 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ******************************************************************************/
 
-#ifndef __3DSMAX_PRECOMPILED_H__
-#define __3DSMAX_PRECOMPILED_H__
+#include "precompiled.h"
+#include "level_import.h"
+#include "model_import.h"
 
-#pragma warning( disable : 4996 )
+using namespace m2033_3dsmax;
 
-#include "max.h"
-#include "iparamb2.h"
-#include "modstack.h"
-#include "iskin.h"
-#include "stdmat.h"
-#include "bmmlib.h"
-#include "bitmap.h"
-#include "simpobj.h"
+int level_import::DoImport( const TCHAR *name, ImpInterface *ii, Interface *i, BOOL suppressPrompts )
+{
+	char lname[255];
+	strcpy( lname, name );
+	char* ch = (char*) strrchr( lname, '.' );
+	*ch = '\0';
 
-#include <m2033core/model.h>
-#include <m2033core/mesh.h>
-#include <m2033core/skeleton.h>
-#include <m2033core/level.h>
-#include <m2033core/reader.h>
-#include <m2033core/file_system.h>
+	m2033::file_system fs;
+	fs.set_root_from_fname( name );
+	m2033::reader r = fs.open_reader( lname );
+	if( r.is_empty() )
+		return IMPEXP_FAIL;
 
-#include <string>
-#include <list>
-#include <map>
-#include <deque>
-#include <vector>
+	m2033::level lvl;
+	lvl.load( r );
+	m2033::model model = lvl.get_geometry();
 
-#include <stdio.h>
-#include <assert.h>
-#include <math.h>
+	model_import model_imp;
+	return model_imp.import( model );
+}
 
-#endif // __3DSMAX_PRECOMPILED_H__
+void level_import::ShowAbout( HWND hwnd )
+{
+	MessageBox( hwnd,
+				"Metro 2033 Level import plugin.\n"
+				"Please visit http://code.google.com/p/metro2033-tools/ for more information.\n"
+				"Copyright (C) 2010 Ivan Shishkin <codingdude@gmail.com>\n",
+				"About",
+				MB_ICONINFORMATION );
+}

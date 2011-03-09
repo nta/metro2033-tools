@@ -23,35 +23,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ******************************************************************************/
 
-#ifndef __3DSMAX_PRECOMPILED_H__
-#define __3DSMAX_PRECOMPILED_H__
+#ifndef __MAYA_METRO_LEVEL_TRANSLATOR_H__
+#define __MAYA_METRO_LEVEL_TRANSLATOR_H__
 
-#pragma warning( disable : 4996 )
+namespace m2033_maya
+{
+	class metro_level_translator : public MPxFileTranslator
+	{
+	public:
+		metro_level_translator() {}
+		~metro_level_translator() {}
 
-#include "max.h"
-#include "iparamb2.h"
-#include "modstack.h"
-#include "iskin.h"
-#include "stdmat.h"
-#include "bmmlib.h"
-#include "bitmap.h"
-#include "simpobj.h"
+		static void* creator() { return new metro_level_translator(); }
 
-#include <m2033core/model.h>
-#include <m2033core/mesh.h>
-#include <m2033core/skeleton.h>
-#include <m2033core/level.h>
-#include <m2033core/reader.h>
-#include <m2033core/file_system.h>
+		MStatus  reader(const MFileObject &file, const MString &optionsString, FileAccessMode mode);
+		MPxFileTranslator::MFileKind identifyFile(const MFileObject &file, const char *buffer, short size) const;
 
-#include <string>
-#include <list>
-#include <map>
-#include <deque>
-#include <vector>
+		bool  haveReadMethod() const { return true; }
+		MString  defaultExtension() const { return "geom_pc"; }
+		bool  canBeOpened () const { return true; }
+	};
+}
 
-#include <stdio.h>
-#include <assert.h>
-#include <math.h>
-
-#endif // __3DSMAX_PRECOMPILED_H__
+#endif // __MAYA_METRO_LEVEL_TRANSLATOR_H__

@@ -45,6 +45,8 @@ namespace m2033
 		inline skeleton();
 		inline ~skeleton();
 
+		bool load( reader &r );
+
 		inline void add_bone( const std::string &name,
 			const std::string &parent, const vec3 &pos, const vec3 &rot );
 		inline void add_bone( const bone &b );

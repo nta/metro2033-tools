@@ -27,45 +27,54 @@ THE SOFTWARE.
 #define __M2033_MODEL_H__
 
 #include "prerequisites.h"
-#include "mesh.h"
-#include "skeleton.h"
 
 namespace m2033
 {
 	class model
 	{
 	public:
-		typedef std::vector<mesh> meshes;
+		enum
+		{
+			STATIC,
+			DYNAMIC
+		};
 
 		inline model();
 		inline ~model();
 
-		inline void add_mesh( const mesh &m );
-		inline void set_skeleton( const skeleton &s );
+		bool load( reader &r );
+		inline void clear();
+
+		void add_mesh( mesh &m );
+		void set_skeleton( const skeleton &s );
 		inline void set_type( int type );
 
-		inline mesh get_mesh( unsigned idx ) const;
+		inline mesh_ptr get_mesh( unsigned idx ) const;
 		inline unsigned get_num_meshes() const;
-		inline skeleton get_skeleton() const;
+		inline skeleton_ptr get_skeleton() const;
 		inline int get_type() const;
 
 	private:
-		meshes		meshes_;
-		skeleton	skeleton_;
+		void split_string( const std::string& string, char splitter, string_list& result );
 
-		int			type_;
+		mesh_vector load_meshes( reader &r, int type );
+
+		mesh_vector		meshes_;
+		skeleton_ptr	skeleton_;
+
+		int				type_;
 	};
 
 	inline model::model() : type_(-1) {}
-	inline model::~model() {}
+	inline model::~model() { clear(); }
 
-	inline void model::add_mesh( const mesh &m ) { meshes_.push_back( m ); }
-	inline void model::set_skeleton( const skeleton &s ) { skeleton_ = s; }
+	inline void model::clear() { meshes_.clear(); skeleton_.release(); type_ = -1; }
+
 	inline void model::set_type( int type ) { type_ = type; }
 
-	inline mesh model::get_mesh( unsigned idx ) const { assert( idx < meshes_.size() ); return meshes_[idx]; }
+	inline mesh_ptr model::get_mesh( unsigned idx ) const { assert( idx < meshes_.size() ); return meshes_[idx]; }
 	inline unsigned model::get_num_meshes() const { return meshes_.size(); }
-	inline skeleton model::get_skeleton() const { return skeleton_; }
+	inline skeleton_ptr model::get_skeleton() const { return skeleton_; }
 	inline int model::get_type() const { return type_; }
 }
 

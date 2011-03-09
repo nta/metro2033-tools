@@ -23,35 +23,67 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ******************************************************************************/
 
-#ifndef __3DSMAX_PRECOMPILED_H__
-#define __3DSMAX_PRECOMPILED_H__
+#include "file_system.h"
+#include "reader.h"
 
-#pragma warning( disable : 4996 )
+using namespace m2033;
 
-#include "max.h"
-#include "iparamb2.h"
-#include "modstack.h"
-#include "iskin.h"
-#include "stdmat.h"
-#include "bmmlib.h"
-#include "bitmap.h"
-#include "simpobj.h"
+std::string file_system::root_;
 
-#include <m2033core/model.h>
-#include <m2033core/mesh.h>
-#include <m2033core/skeleton.h>
-#include <m2033core/level.h>
-#include <m2033core/reader.h>
-#include <m2033core/file_system.h>
+bool file_system::set_root_from_fname( const std::string& file )
+{
+	int size;
+	std::string file_name;
 
-#include <string>
-#include <list>
-#include <map>
-#include <deque>
-#include <vector>
+	file_name = file;
+	size = file_name.rfind( "content" ) + 7;
+	if( size == std::string::npos )
+	{
+		return 0;
+	}
+	file_name = file_name.substr( 0, size );
+	file_system::set_root_dir( file_name );
 
-#include <stdio.h>
-#include <assert.h>
-#include <math.h>
+	return 1;
+}
 
-#endif // __3DSMAX_PRECOMPILED_H__
+std::string file_system::get_full_path( int path_id, const std::string& filename )
+{
+	switch( path_id )
+	{
+	case ROOT:
+		return root_ + std::string( "\\" ) + filename;
+		break;
+	case MESHES:
+		return root_ + std::string( "\\meshes\\" ) + filename;
+		break;
+	case TEXTURES:
+		return root_ + std::string( "\\textures\\" ) + filename;
+		break;
+	default:
+		return "";
+	}
+}
+
+reader file_system::open_reader( const std::string& name )
+{
+	FILE* file;
+	void* data;
+	size_t size;
+
+	file = fopen( name.c_str(), "rb" );
+	if( !file )
+	{
+		return reader();
+	}
+
+	fseek( file, 0, SEEK_END );
+	size = ftell( file );
+	fseek( file, 0, SEEK_SET );
+	data = malloc( size );
+	fread( data, 1, size, file );
+	fclose( file );
+
+	reader r( name, data, size );
+	return r;
+}

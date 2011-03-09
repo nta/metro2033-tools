@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include "precompiled.h"
 #include "metro_image.h"
 #include "metro_model_translator.h"
+#include "metro_level_translator.h"
 
 #include <maya/MFnPlugin.h>
 
@@ -48,9 +49,17 @@ MStatus initializePlugin( MObject obj )
 		return s;
 	}
 
-	s =  plugin.registerFileTranslator( "MetroModelTranslator",
+	s =  plugin.registerFileTranslator( "Metro Model Translator",
 										"",
 										metro_model_translator::creator );
+	if (!s) {
+		s.perror("registerFileTranslator");
+		return s;
+	}
+
+	s =  plugin.registerFileTranslator( "Metro Level Translator",
+										"",
+										metro_level_translator::creator );
 	if (!s) {
 		s.perror("registerFileTranslator");
 		return s;
@@ -62,10 +71,11 @@ MStatus initializePlugin( MObject obj )
 MStatus uninitializePlugin( MObject obj )
 {
     MFnPlugin plugin( obj );
-	bool img, geom;
+	bool img, geom, lvl;
     img = plugin.deregisterImageFile( "MetroImage" );
-	geom = plugin.deregisterFileTranslator( "MetroModelTranslator" );
-	if( !img || !geom )
+	geom = plugin.deregisterFileTranslator( "Metro Model Translator" );
+	lvl = plugin.deregisterFileTranslator( "Metro Level Translator" );
+	if( !img || !geom || !lvl )
 		return MS::kFailure;
 
     return MS::kSuccess;
