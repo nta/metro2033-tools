@@ -49,7 +49,7 @@ namespace m2033
 		};
 
 		typedef std::vector<part> part_vector;
-		typedef std::vector<void*> buf_vector;
+		typedef std::vector<unsigned char*> buf_vector;
 
 		part_vector		m_parts;
 		model			m_geom;

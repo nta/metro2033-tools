@@ -37,17 +37,17 @@ static inline const char* to_string( unsigned address )
 	return (char*)address;
 }
 
-static inline unsigned to_offset( void* data )
+static inline unsigned to_offset( unsigned char* data )
 {
 	return (unsigned)data;
 }
 
-static inline void* to_ptr( unsigned offset )
+static inline unsigned char* to_ptr( unsigned offset )
 {
-	return (void*) offset;
+	return (unsigned char*) offset;
 }
 
-reader::reader( const std::string name, void *data, size_t size )
+reader::reader( const std::string name, unsigned char *data, size_t size )
 {
 	char drive[255];
 	char dir[255];
@@ -80,7 +80,7 @@ void reader::clear()
 	{
 		chunks_.clear();
 		if( root_.ref_count() == 1 )
-			free( root_->data );
+			delete [] root_->data;
 		current_ = 0;
 		is_opened = false;
 		path_.clear();
@@ -123,7 +123,7 @@ void reader::close_chunk()
 	chunks_.pop_back();
 }
 
-void* reader::data()
+unsigned char* reader::data()
 {
 	unsigned p = to_offset( chunk_data() ) + ptr();
 	return to_ptr( p );

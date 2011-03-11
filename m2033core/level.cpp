@@ -79,7 +79,7 @@ bool level::load( reader &r )
 	if( s.open_chunk( LEVEL_VB_CHUNK_ID ) ) {
 		for( unsigned i = 0; i < m_parts.size(); i++ ) {
 			s.seek( m_parts[i].vb_offset * 32 );
-			void *vb = s.data();
+			unsigned char *vb = s.data();
 			m_vbuffers.push_back( vb );
 		}
 		s.close_chunk();
@@ -88,7 +88,7 @@ bool level::load( reader &r )
 	if( s.open_chunk( LEVEL_IB_CHUNK_ID ) ) {
 		for( unsigned i = 0; i < m_parts.size(); i++ ) {
 			s.seek( m_parts[i].ib_offset * 2 );
-			void *ib = s.data();
+			unsigned char *ib = s.data();
 			m_ibuffers.push_back( ib );
 		}
 		s.close_chunk();
@@ -103,6 +103,7 @@ bool level::load( reader &r )
 		m.init( mesh::LEVEL_GEOM, vb, vnum, ib, inum );
 		m.set_texture_name( fs.get_full_path( file_system::TEXTURES,
 			m_textures[m_parts[i].texture_id] + std::string( ".512" ) ) );
+		m.set_name( r.get_name() );
 		m_geom.add_mesh( m );
 	};
 	m_geom.set_type( model::STATIC );

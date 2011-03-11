@@ -40,7 +40,7 @@ namespace m2033
 			TEXTURES,
 		};
 
-		reader open_reader( const std::string& name );
+		reader open_reader( const std::string& name, bool compressed = false );
 
 		inline void set_root_dir( const std::string& root ) { root_ = root; }
 		inline const std::string& get_root_dir() { return root_; }

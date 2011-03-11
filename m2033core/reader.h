@@ -34,7 +34,7 @@ class reader
 {
 public:
 	inline reader();
-	reader( const std::string name, void *data, size_t size );
+	reader( const std::string name, unsigned char *data, size_t size );
 	~reader() { clear(); }
 
 	inline bool is_empty();
@@ -53,9 +53,9 @@ public:
 
 	inline unsigned chunk_id();
 	inline unsigned chunk_size();
-	inline void* chunk_data();
+	inline unsigned char* chunk_data();
 
-	void* data();
+	unsigned char* data();
 
 	void read_data( void* data, size_t size );
 	int read_string( char* buffer );
@@ -68,14 +68,14 @@ public:
 private:
 	struct chunk
 	{
-		unsigned	id;
+		unsigned		id;
 
-		size_t		size;
-		size_t		ptr;
+		size_t			size;
+		size_t			ptr;
 
-		void*		data;
+		unsigned char*	data;
 
-		chunk*		parent;
+		chunk*			parent;
 	};
 
 	typedef std::deque<chunk>	chunk_stack;
@@ -107,7 +107,7 @@ inline const std::string& reader::get_suffix() { return suffix_; }
 
 inline unsigned reader::chunk_id() { assert( current_ ); return current_->id; }
 inline unsigned reader::chunk_size() { assert( current_ ); return current_->size; }
-inline void* reader::chunk_data() { assert( current_ ); return current_->data; }
+inline unsigned char* reader::chunk_data() { assert( current_ ); return current_->data; }
 
 inline void reader::advance( size_t size ) { assert( current_ ); current_->ptr += size; assert( current_->ptr <= current_->size ); }
 inline void reader::seek( size_t size ) { assert( current_ ); current_->ptr = size; assert( current_->ptr <= current_->size ); }
