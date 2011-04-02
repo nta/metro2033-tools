@@ -99,11 +99,14 @@ bool level::load( reader &r )
 		void *ib = m_ibuffers[i];
 		size_t vnum = m_parts[i].vb_size;
 		size_t inum = m_parts[i].ib_size;
+
 		mesh m;
 		m.init( mesh::LEVEL_GEOM, vb, vnum, ib, inum );
 		m.set_texture_name( fs.get_full_path( file_system::TEXTURES,
 			m_textures[m_parts[i].texture_id] + std::string( ".512" ) ) );
-		m.set_name( r.get_name() );
+
+		char buf[255];
+		m.set_name( r.get_name() + std::string( "_" ) + std::string( itoa( i, buf, 10 ) ) );
 		m_geom.add_mesh( m );
 	};
 	m_geom.set_type( model::STATIC );
