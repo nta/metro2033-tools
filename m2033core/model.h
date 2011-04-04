@@ -42,14 +42,14 @@ namespace m2033
 		inline model();
 		inline ~model();
 
-		bool load( reader &r );
+		bool load( const std::string & path );
 		inline void clear();
 
 		void add_mesh( mesh &m );
 		void set_skeleton( const skeleton &s );
-		inline void set_type( int type );
+		inline void set_type( uint32_t type );
 
-		inline mesh_ptr get_mesh( unsigned idx ) const;
+		inline mesh_ptr get_mesh( uint32_t idx ) const;
 		inline unsigned get_num_meshes() const;
 		inline skeleton_ptr get_skeleton() const;
 		inline int get_type() const;
@@ -57,7 +57,7 @@ namespace m2033
 	private:
 		void split_string( const std::string& string, char splitter, string_list& result );
 
-		mesh_vector load_meshes( reader &r, int type );
+		uint32_t load_meshes( reader &r );
 
 		mesh_vector		meshes_;
 		skeleton_ptr	skeleton_;
@@ -70,9 +70,9 @@ namespace m2033
 
 	inline void model::clear() { meshes_.clear(); skeleton_.release(); type_ = -1; }
 
-	inline void model::set_type( int type ) { type_ = type; }
+	inline void model::set_type( uint32_t type ) { type_ = type; }
 
-	inline mesh_ptr model::get_mesh( unsigned idx ) const { assert( idx < meshes_.size() ); return meshes_[idx]; }
+	inline mesh_ptr model::get_mesh( uint32_t idx ) const { assert( idx < meshes_.size() ); return meshes_[idx]; }
 	inline unsigned model::get_num_meshes() const { return meshes_.size(); }
 	inline skeleton_ptr model::get_skeleton() const { return skeleton_; }
 	inline int model::get_type() const { return type_; }

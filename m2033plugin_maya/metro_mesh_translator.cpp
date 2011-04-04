@@ -23,34 +23,35 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ******************************************************************************/
 
-#ifndef __M2033_FILE_SYSTEM_H__
-#define __M2033_FILE_SYSTEM_H__
+#include "precompiled.h"
+#include "metro_mesh_translator.h"
+#include "metro_model_translator.h"
 
-#include "prerequisites.h"
+using namespace m2033_maya;
 
-namespace m2033
+MStatus  metro_mesh_translator::reader(const MFileObject &file, const MString &optionsString, FileAccessMode mode)
 {
-	class file_system
-	{
-	public:
-		enum
-		{
-			ROOT,
-			MESHES,
-			TEXTURES,
-		};
+	m2033::file_system fs;
+	m2033::model model;
+	bool res = MStatus::kFailure;
 
-		reader open_reader( const std::string& name );
+	fs.set_root_from_fname( file.expandedFullName().asChar() );
 
-		inline void set_root_dir( const std::string& root ) { root_ = root; }
-		inline const std::string& get_root_dir() { return root_; }
+	res = model.load( file.expandedFullName().asChar() );
+	if( !res ) {
+		return MStatus::kFailure;
+	}
 
-		bool set_root_from_fname( const std::string& file );
-		std::string get_full_path( int path_id, const std::string& filename );
-
-	private:
-		static std::string root_;
-	};
+	metro_model_translator model_trans;
+	return model_trans.read( model );
 }
 
-#endif // __M2033_FILE_SYSTEM_H__
+MPxFileTranslator::MFileKind metro_mesh_translator::identifyFile(const MFileObject &file, const char *buffer, short size) const
+{
+	MString name = file.name();
+	MString ext = name.substring( name.rindex( '.' ), name.length() ).toLowerCase();
+	if( ext != MString( ".mesh" ) )
+		return MPxFileTranslator::kNotMyFileType;
+
+	return MPxFileTranslator::kIsMyFileType;
+}

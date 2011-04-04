@@ -32,11 +32,31 @@ THE SOFTWARE.
 #include <vector>
 #include <deque>
 #include <list>
+#include <sstream>
+#include <stack>
 
 #include <assert.h>
 #include <math.h>
 
 #include "shared_ptr.h"
+
+#if defined(_MSC_VER)
+
+#define NOMINMAX
+#include <basetsd.h>
+
+typedef UINT64		uint64_t;
+typedef INT64		int64_t;
+typedef UINT32		uint32_t;
+typedef INT32		int32_t;
+typedef UINT16		uint16_t;
+typedef INT16		int16_t;
+typedef UINT8		uint8_t;
+typedef INT8		int8_t;
+typedef	UINT_PTR	uintptr_t;
+typedef	INT_PTR		intptr_t;
+
+#endif
 
 namespace m2033
 {

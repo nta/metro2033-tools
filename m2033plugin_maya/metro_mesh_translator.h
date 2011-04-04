@@ -23,34 +23,28 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ******************************************************************************/
 
-#ifndef __M2033_FILE_SYSTEM_H__
-#define __M2033_FILE_SYSTEM_H__
+#ifndef __MAYA_METRO_MESH_TRANSLATOR_H__
+#define __MAYA_METRO_MESH_TRANSLATOR_H__
 
-#include "prerequisites.h"
-
-namespace m2033
+namespace m2033_maya
 {
-	class file_system
+	class metro_mesh_translator : public MPxFileTranslator
 	{
 	public:
-		enum
-		{
-			ROOT,
-			MESHES,
-			TEXTURES,
-		};
+		metro_mesh_translator() {}
+		~metro_mesh_translator() {}
 
-		reader open_reader( const std::string& name );
+		static void* creator() { return new metro_mesh_translator(); }
 
-		inline void set_root_dir( const std::string& root ) { root_ = root; }
-		inline const std::string& get_root_dir() { return root_; }
+		MStatus  reader(const MFileObject &file, const MString &optionsString, FileAccessMode mode);
 
-		bool set_root_from_fname( const std::string& file );
-		std::string get_full_path( int path_id, const std::string& filename );
+		bool  haveReadMethod() const { return true; }
+		MString  defaultExtension() const { return "mesh"; }
+		MString  filter() const { return "*.me*"; }
+		bool  canBeOpened () const { return true; }
 
-	private:
-		static std::string root_;
+		MPxFileTranslator::MFileKind identifyFile(const MFileObject &file, const char *buffer, short size) const;
 	};
 }
 
-#endif // __M2033_FILE_SYSTEM_H__
+#endif // __MAYA_METRO_MESH_TRANSLATOR_H__

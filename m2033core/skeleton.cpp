@@ -18,24 +18,22 @@ bool skeleton::load( reader &r )
 	// read number of bones
 	r.open_chunk( BONES_CHUNK_ID );
 	r.advance( 4 );
-	r.read_data( &count, 2 );
+	count = r.r_u16();
 
 	// read bones
 	for( int i = 0; i < count; i++ )
 	{
-		r.read_string( name );
-		r.read_string( parent_name );
-		r.read_data( orientation, 12 );
-		r.read_data( position, 12 );
-		r.read_data( &id, 2 );
+		r.r_sz( name, 255 );
+		r.r_sz( parent_name, 255 );
+		r.r_data( orientation, 12 );
+		r.r_data( position, 12 );
+		r.r_data( &id, 2 );
 
 		pos = vec3( position[0], position[1], position[2] );
 		rot = vec3( orientation[0], orientation[1], orientation[2] );
 
 		add_bone( name, parent_name, pos, rot );
 	}
-
-	r.clear();
 
 	return 1;
 }

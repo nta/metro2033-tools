@@ -32,22 +32,27 @@ THE SOFTWARE.
 
 using namespace m2033;
 
-bool level::load( reader &r )
+bool level::load( const std::string &path )
 {
+	file_system fs;
+	size_t pos = path.find_last_of( "." );
+	std::string ln = path.substr( 0, pos );
+	reader r = fs.open_reader( ln );
+
 	if( r.open_chunk( LEVEL_PARTS_CHUNK_ID ) ) {
 		while( r.elapsed() > 0 ) {
 			r.open_chunk();
 			if( r.open_chunk( 0x15 ) ) {
 				r.advance( 4 );
 				part p;
-				r.read_data( &p.vb_offset, 4 );
-				r.read_data( &p.vb_size, 4 );
-				r.read_data( &p.ib_offset, 4 );
-				r.read_data( &p.ib_size, 4 );
+				p.vb_offset = r.r_u32();
+				p.vb_size = r.r_u32();
+				p.ib_offset = r.r_u32();
+				p.ib_size = r.r_u32();
 				r.close_chunk();
 				r.open_chunk( 0x01 );
 				r.advance( 2 );
-				r.read_data( &p.texture_id, 2 );
+				p.texture_id = r.r_u16();
 				m_parts.push_back( p );
 				r.close_chunk();
 			}
@@ -57,29 +62,28 @@ bool level::load( reader &r )
 	}
 
 	if( r.open_chunk( LEVEL_TEXTURES_CHUNK_ID ) ) {
-		short k;
-		r.read_data( &k, 2 );
-		for( int i = 0; i < k; i++ ) {
+		uint16_t k;
+		k = r.r_u16();
+		for( uint32_t i = 0; i < k; i++ ) {
 			char buf[255];
-			r.read_string( buf );
-			r.read_string( buf );
+			r.r_sz( buf, 255 );
+			r.r_sz( buf, 255 );
 			m_textures.push_back( buf );
-			r.read_string( buf );
+			r.r_sz( buf, 255 );
 			r.advance( 4 );
 		}
 		r.close_chunk();
 	}
 
-	std::string gf = r.get_full_name() + std::string( ".geom_pc" );
-	file_system fs;
+	std::string gf = path;
 	reader s = fs.open_reader( gf );
-	if( s.is_empty() )
+	if( s.size() == 0 )
 		return 0;
 
 	if( s.open_chunk( LEVEL_VB_CHUNK_ID ) ) {
 		for( unsigned i = 0; i < m_parts.size(); i++ ) {
 			s.seek( m_parts[i].vb_offset * 32 );
-			unsigned char *vb = s.data();
+			void *vb = s.ptr();
 			m_vbuffers.push_back( vb );
 		}
 		s.close_chunk();
@@ -88,7 +92,7 @@ bool level::load( reader &r )
 	if( s.open_chunk( LEVEL_IB_CHUNK_ID ) ) {
 		for( unsigned i = 0; i < m_parts.size(); i++ ) {
 			s.seek( m_parts[i].ib_offset * 2 );
-			unsigned char *ib = s.data();
+			void *ib = s.ptr();
 			m_ibuffers.push_back( ib );
 		}
 		s.close_chunk();
@@ -106,12 +110,10 @@ bool level::load( reader &r )
 			m_textures[m_parts[i].texture_id] + std::string( ".512" ) ) );
 
 		char buf[255];
-		m.set_name( r.get_name() + std::string( "_" ) + std::string( itoa( i, buf, 10 ) ) );
+		m.set_name( std::string( "level_" ) + std::string( itoa( i, buf, 10 ) ) );
 		m_geom.add_mesh( m );
 	};
 	m_geom.set_type( model::STATIC );
-
-	s.clear();
 
 	m_vbuffers.clear();
 	m_ibuffers.clear();

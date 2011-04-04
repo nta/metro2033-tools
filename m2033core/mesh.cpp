@@ -59,7 +59,7 @@ struct level_geom_vertex
 	unsigned unused; // ?
 };
 
-void mesh::init( int type, void *vertices, unsigned num_vertices, void *indices, unsigned num_indices )
+void mesh::init( uint32_t type, void *vertices, uint32_t num_vertices, void *indices, uint32_t num_indices )
 {
 	assert( vertices );
 	assert( indices );
@@ -72,12 +72,10 @@ void mesh::init( int type, void *vertices, unsigned num_vertices, void *indices,
 
 	clear();
 
-	if( type == mesh::STATIC_MESH )
-	{
+	if( type == mesh::STATIC_MESH ) {
 		static_model_vertex *v = (static_model_vertex*) vertices;
 
-		for( unsigned i = 0; i < num_vertices; i++ )
-		{
+		for( uint32_t i = 0; i < num_vertices; i++ ) {
 			vec3 vert = vec3( v[i].x, v[i].y, v[i].z );
 			vertices_.push_back( vert );
 
@@ -91,12 +89,10 @@ void mesh::init( int type, void *vertices, unsigned num_vertices, void *indices,
 			texcoords_.push_back( tc );
 		}
 	}
-	else if( type == mesh::DYNAMIC_MESH )
-	{
+	else if( type == mesh::DYNAMIC_MESH ) {
 		dynamic_model_vertex *v = (dynamic_model_vertex*) vertices;
 
-		for( unsigned i = 0; i < num_vertices; i++ )
-		{
+		for( uint32_t i = 0; i < num_vertices; i++ ) {
 			vec3 vert = vec3( v[i].x  / 2720.0f, v[i].y / 2720.0f, v[i].z / 2720.0f );
 			vertices_.push_back( vert );
 
@@ -110,12 +106,10 @@ void mesh::init( int type, void *vertices, unsigned num_vertices, void *indices,
 			texcoords_.push_back( tc );
 		}
 	}
-	else if( type == mesh::LEVEL_GEOM )
-	{
+	else if( type == mesh::LEVEL_GEOM ) {
 		level_geom_vertex *v = (level_geom_vertex*) vertices;
 
-		for( unsigned i = 0; i < num_vertices; i++ )
-		{
+		for( uint32_t i = 0; i < num_vertices; i++ ) {
 			vec3 vert = vec3( v[i].x, v[i].y, v[i].z );
 			vertices_.push_back( vert );
 
@@ -125,17 +119,15 @@ void mesh::init( int type, void *vertices, unsigned num_vertices, void *indices,
 
 			normals_.push_back( norm );
 
-			vec2 tc = vec2( v[i].u / 2048.0f, v[i].v / 2048.0f );
+			vec2 tc = vec2( v[i].u / 1024.0f, v[i].v / 1024.0f );
 			texcoords_.push_back( tc );
 		}
 	}
 
-	unsigned short *idx = (unsigned short*) indices;
+	uint16_t *idx = (uint16_t*) indices;
 
-	for( unsigned i = 0; i < num_indices; i++ )
-	{
+	for( uint32_t i = 0; i < num_indices; i++ )
 		indices_.push_back( idx[i] );
-	}
 }
 
 void mesh::clear()
@@ -148,47 +140,55 @@ void mesh::clear()
 	name_.clear();
 }
 
-void mesh::load( reader &r, int type )
+uint32_t mesh::load( reader &r )
 {
 	void *vb, *ib;
-	int size, vnum, inum, i = 0;
-	char n;
+	uint32_t size, vnum, inum, i = 0;
+	uint8_t n;
+	uint32_t type;
 
 	// read vertices
-	if( type == mesh::DYNAMIC_MESH )
-	{
-		r.open_chunk( DYNAMIC_VERTEX_CHUNK_ID );
+	if( r.open_chunk( DYNAMIC_VERTEX_CHUNK_ID ) != 0 ) {
 
 		// skip unused data
-		r.read_data( &n, 1 );
+		n = r.r_u8();
 		size = n * 61;
 		r.advance( size );
 
 		// calculate vertices size
-		r.read_data( &vnum, 4 );
+		vnum = r.r_u32();
 		size = vnum * 32;
+
+		type = DYNAMIC_MESH;
 	}
-	else
-	{
-		r.open_chunk( STATIC_VERTEX_CHUNK_ID );
-		size = r.chunk_size() - 8;
+	else if( r.open_chunk( STATIC_VERTEX_CHUNK_ID ) != 0 ) {
+		size = r.size() - 8;
 		r.advance( 4 );
-		r.read_data( &vnum, 4 );
+		vnum = r.r_u32();
+
+		type = STATIC_MESH;
 	}
+	else {
+		assert(0);
+		return -1;
+	}
+
 	vb = malloc( size );
-	r.read_data( vb, size );
+	r.r_data( vb, size );
 	r.close_chunk();
 
 	// read indices
 	r.open_chunk();
-	size = r.chunk_size() - 4;
-	r.read_data( &inum, 4 );
+	size = r.size() - 4;
+	inum = r.r_u32();
 	ib = malloc( size );
-	r.read_data( ib, size );
+	r.r_data( ib, size );
 	r.close_chunk();
 
 	init( type, vb, vnum, ib, inum );
 
 	free( vb);
 	free( ib );
+
+	return type;
 }

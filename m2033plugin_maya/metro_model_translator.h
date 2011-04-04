@@ -43,7 +43,8 @@ namespace m2033_maya
 		MObject create_material( const std::string &texture, MStatus *status = NULL );
 
 		bool  haveReadMethod() const { return true; }
-		MString  defaultExtension() const { return "mesh"; }
+		MString  defaultExtension() const { return "model"; }
+		MString  filter() const { return "*.mo*"; }
 		bool  canBeOpened () const { return true; }
 
 		MPxFileTranslator::MFileKind identifyFile(const MFileObject &file, const char *buffer, short size) const;

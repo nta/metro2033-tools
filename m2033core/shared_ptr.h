@@ -7,9 +7,16 @@ namespace m2033
 	class shared_ptr
 	{
 	public:
+		enum release_method
+		{
+			RM_NORMAL,
+			RM_ARRAY,
+			RM_FREE
+		};
+
 		inline shared_ptr();
 		inline shared_ptr( const shared_ptr<T> &p );
-		template <class A> explicit inline shared_ptr( A *ptr );
+		template <class A> explicit inline shared_ptr( A *ptr, release_method rm = RM_NORMAL );
 		virtual ~shared_ptr();
 
 		inline shared_ptr<T>& operator = ( const shared_ptr<T> &p );
@@ -25,13 +32,15 @@ namespace m2033
 
 	private:
 
-		T			*ptr_;
-		unsigned	*ref_count_;
+		T				*ptr_;
+		unsigned		*ref_count_;
+
+		release_method	m_release_method;
 	};
 
-	template <class T> inline shared_ptr<T>::shared_ptr() : ptr_(0), ref_count_(0) {}
+	template <class T> inline shared_ptr<T>::shared_ptr() : m_release_method(RM_NORMAL), ptr_(0), ref_count_(0) {}
 	template <class T> inline shared_ptr<T>::shared_ptr( const shared_ptr<T> &p ) { operator=(p); }
-	template <class T> template <class A> inline shared_ptr<T>::shared_ptr( A *ptr ) : ptr_(ptr), ref_count_( ptr ? new unsigned : 0 ) {}
+	template <class T> template <class A> inline shared_ptr<T>::shared_ptr( A *ptr, release_method rm ) : m_release_method(rm), ptr_(ptr), ref_count_( ptr ? new unsigned : 0 ) {}
 	template <class T> shared_ptr<T>::~shared_ptr() { release(); }
 	template <class T> inline T* shared_ptr<T>::operator*() const { assert(ptr_); return ptr_; }
 	template <class T> inline T* shared_ptr<T>::operator->() const { assert(ptr_); return ptr_; }
@@ -58,7 +67,16 @@ namespace m2033
 			if( --(*ref_count_) == 0 )
 			{
 				delete ref_count_;
-				delete ptr_;
+
+				switch( m_release_method )
+				{
+				case RM_NORMAL:
+					delete ptr_;
+				case RM_ARRAY:
+					delete [] ptr_;
+				case RM_FREE:
+					free(static_cast<void*>(ptr_));
+				}
 			}
 			ref_count_ = 0;
 			ptr_ = 0;

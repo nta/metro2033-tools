@@ -31,14 +31,12 @@ using namespace m2033_maya;
 MStatus  metro_model_translator::reader(const MFileObject &file, const MString &optionsString, FileAccessMode mode)
 {
 	m2033::file_system fs;
-	m2033::reader r;
 	m2033::model model;
 	bool res = MStatus::kFailure;
 
 	fs.set_root_from_fname( file.expandedFullName().asChar() );
-	r = fs.open_reader( file.expandedFullName().asChar() );
 
-	res = model.load( r );
+	res = model.load( file.expandedFullName().asChar() );
 	if( !res ) {
 		return MStatus::kFailure;
 	}
@@ -214,7 +212,7 @@ MPxFileTranslator::MFileKind metro_model_translator::identifyFile(const MFileObj
 {
 	MString name = file.name();
 	MString ext = name.substring( name.rindex( '.' ), name.length() ).toLowerCase();
-	if( ext != MString( ".model" ) && ext != MString( ".mesh" ) )
+	if( ext != MString( ".model" ) )
 		return MPxFileTranslator::kNotMyFileType;
 
 	return MPxFileTranslator::kIsMyFileType;

@@ -31,21 +31,15 @@ using namespace m2033_3dsmax;
 
 int level_import::DoImport( const TCHAR *name, ImpInterface *ii, Interface *i, BOOL suppressPrompts )
 {
-	char lname[255];
-	strcpy( lname, name );
-	char* ch = (char*) strrchr( lname, '.' );
-	*ch = '\0';
-
 	m2033::file_system fs;
 	fs.set_root_from_fname( name );
-	m2033::reader r = fs.open_reader( lname );
-	if( r.is_empty() )
-		return IMPEXP_FAIL;
 
 	m2033::level lvl;
-	lvl.load( r );
-	m2033::model model = lvl.get_geometry();
+	bool res = lvl.load( name );
+	if( !res )
+		return IMPEXP_FAIL;
 
+	m2033::model model = lvl.get_geometry();
 	model_import model_imp;
 	return model_imp.import( model );
 }

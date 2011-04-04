@@ -41,6 +41,7 @@ namespace m2033_maya
 
 		bool  haveReadMethod() const { return true; }
 		MString  defaultExtension() const { return "geom_pc"; }
+		MString  filter() const { return "*.ge*"; }
 		bool  canBeOpened () const { return true; }
 	};
 }

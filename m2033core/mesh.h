@@ -48,10 +48,10 @@ namespace m2033
 		inline mesh();
 		inline ~mesh();
 
-		void load( reader &r, int type );
+		uint32_t load( reader &r );
 
-		void init( int type, void *vertices,
-			unsigned num_vertices, void *indices, unsigned num_indices );
+		void init( uint32_t type, void *vertices,
+			uint32_t num_vertices, void *indices, uint32_t num_indices );
 		void clear();
 
 		inline void set_name( const std::string &name );

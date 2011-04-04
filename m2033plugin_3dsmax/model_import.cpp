@@ -41,13 +41,10 @@ int model_import::DoImport( const TCHAR *name, ImpInterface *ii, Interface *ifac
 	m2033::model model;
 	m2033::mesh m;
 	bool res = 0;
-	m2033::reader r;
 	m2033::file_system fs;
 
 	fs.set_root_from_fname( name );
-
-	r = fs.open_reader( name );
-	res = model.load( r );
+	res = model.load( name );
 	if( !res )
 		return IMPEXP_FAIL;
 

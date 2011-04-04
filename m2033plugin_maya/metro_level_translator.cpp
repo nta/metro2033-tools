@@ -31,21 +31,12 @@ using namespace m2033_maya;
 
 MStatus  metro_level_translator::reader(const MFileObject &file, const MString &optionsString, FileAccessMode mode)
 {
-	char name[255];
-	strcpy( name, file.expandedFullName().asChar() );
-	char* ch = (char*) strrchr( name, '.' );
-	*ch = '\0';
-
-	m2033::file_system fs;
-	fs.set_root_from_fname( name );
-	m2033::reader r = fs.open_reader( name );
-	if( r.is_empty() )
+	m2033::level lvl;
+	bool res = lvl.load( file.expandedFullName().asChar() );
+	if( !res )
 		return MS::kFailure;
 
-	m2033::level lvl;
-	lvl.load( r );
 	m2033::model model = lvl.get_geometry();
-
 	metro_model_translator model_trans;
 	return model_trans.read( model );
 }
