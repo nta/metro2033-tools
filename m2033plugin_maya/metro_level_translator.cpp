@@ -31,6 +31,8 @@ using namespace m2033_maya;
 
 MStatus  metro_level_translator::reader(const MFileObject &file, const MString &optionsString, FileAccessMode mode)
 {
+	m2033::file_system fs;
+	fs.set_root_from_fname( file.expandedFullName().asChar() );
 	m2033::level lvl;
 	bool res = lvl.load( file.expandedFullName().asChar() );
 	if( !res )
