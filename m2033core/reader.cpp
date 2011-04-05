@@ -61,7 +61,7 @@ reader reader::decompress_chunk( uint32_t id )
 	else {
 		uint8_t *data = new uint8_t[size()];
 		memcpy( data, m_ptr, size() );
-		return reader( data_ptr( m_ptr, data_ptr::RM_ARRAY ), size() );
+		return reader( data_ptr( m_ptr ), size() );
 	}
 	return reader();
 }

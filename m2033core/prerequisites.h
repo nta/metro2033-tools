@@ -34,11 +34,10 @@ THE SOFTWARE.
 #include <list>
 #include <sstream>
 #include <stack>
+#include <memory>
 
 #include <assert.h>
 #include <math.h>
-
-#include "shared_ptr.h"
 
 #if defined(_MSC_VER)
 
@@ -57,6 +56,8 @@ typedef	UINT_PTR	uintptr_t;
 typedef	INT_PTR		intptr_t;
 
 #endif
+
+#include "shared_ptr.h"
 
 namespace m2033
 {

@@ -30,6 +30,11 @@ using namespace m2033;
 
 std::string file_system::root_;
 
+void reader_data_deleter( uint8_t *p )
+{
+	delete [] p;
+}
+
 bool file_system::set_root_from_fname( const std::string& file )
 {
 	int size;
@@ -84,6 +89,6 @@ reader file_system::open_reader( const std::string& name )
 	fread( data, 1, size, file );
 	fclose( file );
 
-	reader r( reader::data_ptr( data, reader::data_ptr::RM_ARRAY ), size );
+	reader r( reader::data_ptr( data, reader_data_deleter ), size );
 	return r;
 }
