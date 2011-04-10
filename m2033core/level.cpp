@@ -109,7 +109,7 @@ bool level::load( const std::string &path )
 		mesh m;
 		m.init( mesh::LEVEL_GEOM, vb, vnum, ib, inum );
 		m.set_texture_name( fs.get_full_path( file_system::TEXTURES,
-			m_textures[m_parts[i].texture_id] + std::string( ".512" ) ) );
+			m_textures[m_parts[i].texture_id] ) );
 
 		char buf[255];
 		m.set_name( std::string( "level_" ) + std::string( itoa( i, buf, 10 ) ) );
