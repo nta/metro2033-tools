@@ -48,7 +48,7 @@ namespace m2033
 		inline mesh();
 		inline ~mesh();
 
-		uint32_t load( reader &r );
+		uint32_t load( reader_ptr r );
 
 		void init( uint32_t type, void *vertices,
 			uint32_t num_vertices, void *indices, uint32_t num_indices );
@@ -59,6 +59,7 @@ namespace m2033
 
 		inline std::string get_name() const;
 		inline std::string get_texture_name() const;
+		inline std::string get_dds_texture_name() const;
 		inline vertices get_vertices() const;
 		inline normals get_normals() const;
 		inline texcoords get_tex_coords() const;
@@ -81,7 +82,8 @@ namespace m2033
 	inline void mesh::set_texture_name( const std::string &name ) { texname_ = name; }
 
 	inline std::string mesh::get_name() const { return name_; }
-	inline std::string mesh::get_texture_name() const { return texname_; }
+	inline std::string mesh::get_texture_name() const { return texname_ + std::string(".512"); }
+	inline std::string mesh::get_dds_texture_name() const { return texname_ + std::string(".dds"); }
 	inline mesh::vertices mesh::get_vertices() const { return vertices_; }
 	inline mesh::normals mesh::get_normals() const { return normals_; }
 	inline mesh::texcoords mesh::get_tex_coords() const { return texcoords_; }

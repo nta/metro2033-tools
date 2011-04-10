@@ -10,15 +10,13 @@ namespace m2033
 	public:
 		enum {COMPRESSED_CHUNK = 0x80000000 };
 
-		typedef shared_ptr<uint8_t> data_ptr;
-
 		reader();
-		reader( data_ptr data, size_t size );
+		reader( void *data, size_t size );
 		~reader();
 
 		size_t open_chunk( bool *compressed = 0 );
 		size_t open_chunk( uint32_t id, bool *compressed = 0 );
-		reader decompress_chunk( uint32_t id );
+		reader_ptr decompress_chunk( uint32_t id );
 		void close_chunk();
 		void close_all_chunks();
 
@@ -66,8 +64,6 @@ namespace m2033
 		};
 
 		std::stack<chunk> m_chunks;
-
-		data_ptr	m_data;
 
 		uint8_t		*m_begin;
 		uint8_t		*m_end;

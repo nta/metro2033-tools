@@ -140,7 +140,7 @@ void mesh::clear()
 	name_.clear();
 }
 
-uint32_t mesh::load( reader &r )
+uint32_t mesh::load( reader_ptr r )
 {
 	void *vb, *ib;
 	uint32_t size, vnum, inum, i = 0;
@@ -148,23 +148,23 @@ uint32_t mesh::load( reader &r )
 	uint32_t type;
 
 	// read vertices
-	if( r.open_chunk( DYNAMIC_VERTEX_CHUNK_ID ) != 0 ) {
+	if( r->open_chunk( DYNAMIC_VERTEX_CHUNK_ID ) != 0 ) {
 
 		// skip unused data
-		n = r.r_u8();
+		n = r->r_u8();
 		size = n * 61;
-		r.advance( size );
+		r->advance( size );
 
 		// calculate vertices size
-		vnum = r.r_u32();
+		vnum = r->r_u32();
 		size = vnum * 32;
 
 		type = DYNAMIC_MESH;
 	}
-	else if( r.open_chunk( STATIC_VERTEX_CHUNK_ID ) != 0 ) {
-		size = r.size() - 8;
-		r.advance( 4 );
-		vnum = r.r_u32();
+	else if( r->open_chunk( STATIC_VERTEX_CHUNK_ID ) != 0 ) {
+		size = r->size() - 8;
+		r->advance( 4 );
+		vnum = r->r_u32();
 
 		type = STATIC_MESH;
 	}
@@ -174,16 +174,16 @@ uint32_t mesh::load( reader &r )
 	}
 
 	vb = malloc( size );
-	r.r_data( vb, size );
-	r.close_chunk();
+	r->r_data( vb, size );
+	r->close_chunk();
 
 	// read indices
-	r.open_chunk();
-	size = r.size() - 4;
-	inum = r.r_u32();
+	r->open_chunk();
+	size = r->size() - 4;
+	inum = r->r_u32();
 	ib = malloc( size );
-	r.r_data( ib, size );
-	r.close_chunk();
+	r->r_data( ib, size );
+	r->close_chunk();
 
 	init( type, vb, vnum, ib, inum );
 

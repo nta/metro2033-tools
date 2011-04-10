@@ -54,7 +54,7 @@ private:
 
 private:
 	Modifier* create_skin_modifier( INode* node );
-	void create_material( INode *node, const std::string &texture );
+	void create_material( INode *node, m2033::mesh_ptr m );
 	void set_mesh( Mesh &m1, m2033::mesh_ptr &m2 );
 	void build_skeleton( m2033::skeleton_ptr s );
 	void update_bone_length( const m2033::skeleton::bone& b );

@@ -40,13 +40,15 @@ namespace m2033
 			TEXTURES,
 		};
 
-		reader open_reader( const std::string& name );
+		reader_ptr open_reader( const std::string& name );
 
 		inline void set_root_dir( const std::string& root ) { root_ = root; }
 		inline const std::string& get_root_dir() { return root_; }
 
 		bool set_root_from_fname( const std::string& file );
 		std::string get_full_path( int path_id, const std::string& filename );
+
+		bool file_exists( const std::string &path );
 
 	private:
 		static std::string root_;

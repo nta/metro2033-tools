@@ -66,7 +66,7 @@ int model_import::import( m2033::model &m )
 		INode *node = iface->CreateObjectNode( object );
 		node->SetName( (char*)p->get_name().c_str() );
 
-		create_material( node, p->get_texture_name() );
+		create_material( node, p );
 	}
 
 	if( m.get_type() == m2033::model::DYNAMIC )
@@ -304,16 +304,22 @@ void model_import::build_bone_obj( INode* bone_node, float length, float side )
 	obj->UpdateMesh(0);
 }
 
-void model_import::create_material( INode *node, const std::string &texture )
+void model_import::create_material( INode *node, m2033::mesh_ptr m )
 {
 	StdMat *mat;
 	BitmapTex *tex;
 	BitmapInfo bi;
-	std::string name;
 	size_t size, off;
 	mtl_map::iterator it;
+	m2033::file_system fs;
 
-	name = texture;
+	std::string texture;
+	if( fs.file_exists( m->get_dds_texture_name() ) )
+		texture = m->get_dds_texture_name();
+	else
+		texture = m->get_texture_name();
+
+	std::string name = texture;
 	off = texture.find( "\\" );
 	if( off != std::string::npos )
 	{

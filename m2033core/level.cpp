@@ -37,65 +37,67 @@ bool level::load( const std::string &path )
 	file_system fs;
 	size_t pos = path.find_last_of( "." );
 	std::string ln = path.substr( 0, pos );
-	reader r = fs.open_reader( ln );
+	reader_ptr r = fs.open_reader( ln );
+	if( r.is_null() )
+		return 0;
 
-	if( r.open_chunk( LEVEL_PARTS_CHUNK_ID ) ) {
-		while( r.elapsed() > 0 ) {
-			r.open_chunk();
-			if( r.open_chunk( 0x15 ) ) {
-				r.advance( 4 );
+	if( r->open_chunk( LEVEL_PARTS_CHUNK_ID ) ) {
+		while( r->elapsed() > 0 ) {
+			r->open_chunk();
+			if( r->open_chunk( 0x15 ) ) {
+				r->advance( 4 );
 				part p;
-				p.vb_offset = r.r_u32();
-				p.vb_size = r.r_u32();
-				p.ib_offset = r.r_u32();
-				p.ib_size = r.r_u32();
-				r.close_chunk();
-				r.open_chunk( 0x01 );
-				r.advance( 2 );
-				p.texture_id = r.r_u16();
+				p.vb_offset = r->r_u32();
+				p.vb_size = r->r_u32();
+				p.ib_offset = r->r_u32();
+				p.ib_size = r->r_u32();
+				r->close_chunk();
+				r->open_chunk( 0x01 );
+				r->advance( 2 );
+				p.texture_id = r->r_u16();
 				m_parts.push_back( p );
-				r.close_chunk();
+				r->close_chunk();
 			}
-			r.close_chunk();
+			r->close_chunk();
 		}
-		r.close_chunk();
+		r->close_chunk();
 	}
 
-	if( r.open_chunk( LEVEL_TEXTURES_CHUNK_ID ) ) {
+	if( r->open_chunk( LEVEL_TEXTURES_CHUNK_ID ) ) {
 		uint16_t k;
-		k = r.r_u16();
+		k = r->r_u16();
 		for( uint32_t i = 0; i < k; i++ ) {
 			char buf[255];
-			r.r_sz( buf, 255 );
-			r.r_sz( buf, 255 );
+			r->r_sz( buf, 255 );
+			r->r_sz( buf, 255 );
 			m_textures.push_back( buf );
-			r.r_sz( buf, 255 );
-			r.advance( 4 );
+			r->r_sz( buf, 255 );
+			r->advance( 4 );
 		}
-		r.close_chunk();
+		r->close_chunk();
 	}
 
 	std::string gf = path;
-	reader s = fs.open_reader( gf );
-	if( s.size() == 0 )
+	reader_ptr s = fs.open_reader( gf );
+	if( s.is_null() )
 		return 0;
 
-	if( s.open_chunk( LEVEL_VB_CHUNK_ID ) ) {
+	if( s->open_chunk( LEVEL_VB_CHUNK_ID ) ) {
 		for( unsigned i = 0; i < m_parts.size(); i++ ) {
-			s.seek( m_parts[i].vb_offset * 32 );
-			void *vb = s.ptr();
+			s->seek( m_parts[i].vb_offset * 32 );
+			void *vb = s->ptr();
 			m_vbuffers.push_back( vb );
 		}
-		s.close_chunk();
+		s->close_chunk();
 	}
 
-	if( s.open_chunk( LEVEL_IB_CHUNK_ID ) ) {
+	if( s->open_chunk( LEVEL_IB_CHUNK_ID ) ) {
 		for( unsigned i = 0; i < m_parts.size(); i++ ) {
-			s.seek( m_parts[i].ib_offset * 2 );
-			void *ib = s.ptr();
+			s->seek( m_parts[i].ib_offset * 2 );
+			void *ib = s->ptr();
 			m_ibuffers.push_back( ib );
 		}
-		s.close_chunk();
+		s->close_chunk();
 	}
 
 	for( unsigned i = 0; i < m_parts.size(); i++ ) {

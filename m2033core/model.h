@@ -57,7 +57,7 @@ namespace m2033
 	private:
 		void split_string( const std::string& string, char splitter, string_list& result );
 
-		uint32_t load_meshes( reader &r );
+		uint32_t load_meshes( reader_ptr r );
 
 		mesh_vector		meshes_;
 		skeleton_ptr	skeleton_;

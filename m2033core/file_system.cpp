@@ -30,11 +30,6 @@ using namespace m2033;
 
 std::string file_system::root_;
 
-void reader_data_deleter( uint8_t *p )
-{
-	delete [] p;
-}
-
 bool file_system::set_root_from_fname( const std::string& file )
 {
 	int size;
@@ -70,7 +65,7 @@ std::string file_system::get_full_path( int path_id, const std::string& filename
 	}
 }
 
-reader file_system::open_reader( const std::string& name )
+reader_ptr file_system::open_reader( const std::string& name )
 {
 	FILE* file;
 	uint8_t *data;
@@ -79,7 +74,7 @@ reader file_system::open_reader( const std::string& name )
 	file = fopen( name.c_str(), "rb" );
 	if( !file )
 	{
-		return reader();
+		return reader_ptr();
 	}
 
 	fseek( file, 0, SEEK_END );
@@ -89,6 +84,16 @@ reader file_system::open_reader( const std::string& name )
 	fread( data, 1, size, file );
 	fclose( file );
 
-	reader r( reader::data_ptr( data, reader_data_deleter ), size );
-	return r;
+	reader *r = new reader( data, size );
+
+	return reader_ptr( r );
+}
+
+bool file_system::file_exists( const std::string &path )
+{
+	FILE *f = fopen( path.c_str(), "r" );
+	bool result = (f != 0);
+	if( result )
+		fclose(f);
+	return result;
 }

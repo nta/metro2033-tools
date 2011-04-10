@@ -4,8 +4,13 @@
 using namespace m2033;
 
 reader::reader() : m_begin(0), m_end(0), m_ptr(0) {}
-reader::reader( data_ptr data, size_t sz ) : m_data(data), m_begin(data.ptr()), m_end(data.ptr() + sz), m_ptr(data.ptr()) {}
-reader::~reader() { m_data.release(); }
+
+reader::reader( void *data, size_t sz ) : m_begin(static_cast<uint8_t*>(data)),
+											m_end(static_cast<uint8_t*>(data) + sz),
+											m_ptr(static_cast<uint8_t*>(data))
+{}
+
+reader::~reader() { delete [] m_begin; }
 
 size_t reader::open_chunk( bool *compressed )
 {
@@ -48,12 +53,12 @@ size_t reader::open_chunk( uint32_t id, bool *compressed )
 	return 0;
 }
 
-reader reader::decompress_chunk( uint32_t id )
+reader_ptr reader::decompress_chunk( uint32_t id )
 {
 	bool compressed;
 	size_t sz = open_chunk( id, &compressed );
 	if( sz == 0 )
-		return reader();
+		return reader_ptr();
 
 	if( compressed ) {
 		// FIXME: add decompression code here
@@ -61,9 +66,10 @@ reader reader::decompress_chunk( uint32_t id )
 	else {
 		uint8_t *data = new uint8_t[size()];
 		memcpy( data, m_ptr, size() );
-		return reader( data_ptr( m_ptr ), size() );
+		reader *r = new reader( m_ptr, size() );
+		return reader_ptr(r);
 	}
-	return reader();
+	return reader_ptr();
 }
 
 void reader::close_chunk()

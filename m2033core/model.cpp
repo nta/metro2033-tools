@@ -17,11 +17,11 @@ bool model::load( const std::string & path )
 
 	meshes_.clear();
 
-	reader &r = fs.open_reader( path );
-	if( r.size() == 0 )
+	reader_ptr r = fs.open_reader( path );
+	if( r.is_null() )
 		return 0;
 
-	if( r.open_chunk( MODEL_CHUNK_ID ) != 0 ) {
+	if( r->open_chunk( MODEL_CHUNK_ID ) != 0 ) {
 		meshes_.clear();
 		uint32_t type = load_meshes( r );
 		if( type == mesh::STATIC_MESH )
@@ -30,36 +30,38 @@ bool model::load( const std::string & path )
 			set_type( DYNAMIC );
 		return 1;
 	}
-	else if( r.open_chunk( SKELETON_NAME_CHUNK_ID ) != 0 ) {
+	else if( r->open_chunk( SKELETON_NAME_CHUNK_ID ) != 0 ) {
 
 		// read skeleton
-		size = r.size();
-		r.r_data( buffer, size );
+		size = r->size();
+		r->r_data( buffer, size );
 		name = fs.get_full_path( file_system::MESHES, std::string( buffer ) + std::string( ".skeleton" ) );
-		reader sr = fs.open_reader( name );
+		reader_ptr sr = fs.open_reader( name );
+		if( sr.is_null() )
+			return 0;
 		skeleton s;
 		s.load( sr );
 		set_skeleton( s );
-		r.close_chunk();
+		r->close_chunk();
 
-		if( r.open_chunk( MESH_NAMES_CHUNK_ID ) == 0 )
+		if( r->open_chunk( MESH_NAMES_CHUNK_ID ) == 0 )
 			return 0;
 
-		size = r.size() - 4;
+		size = r->size() - 4;
 		assert( size < 1024 );
-		r.advance( 4 );
-		r.r_data( buffer, size );
+		r->advance( 4 );
+		r->r_data( buffer, size );
 		split_string( buffer, ',', names );
 
 		meshes_.clear();
 		for( it = names.begin(); it != names.end(); it++ ) {
 			name = (*it);
 			name = fs.get_full_path( file_system::MESHES, name + std::string( ".mesh" ) );
-			reader mr = fs.open_reader( name );
-			if( mr.size() == 0 )
+			reader_ptr mr = fs.open_reader( name );
+			if( mr->size() == 0 )
 				return 0;
 
-			if( mr.open_chunk( MODEL_CHUNK_ID ) == 0 )
+			if( mr->open_chunk( MODEL_CHUNK_ID ) == 0 )
 				return 0;
 
 			load_meshes( mr );
@@ -95,7 +97,7 @@ void model::split_string( const std::string& string, char splitter, string_list&
 	}
 }
 
-uint32_t model::load_meshes( reader &r )
+uint32_t model::load_meshes( reader_ptr r )
 {
 	mesh m;
 	char texname[255];
@@ -105,16 +107,16 @@ uint32_t model::load_meshes( reader &r )
 
 	do
 	{
-		r.open_chunk();
+		r->open_chunk();
 
 		// get texture string
-		r.open_chunk( TEXTURE_NAME_CHUNK_ID );
-		size = r.size();
+		r->open_chunk( TEXTURE_NAME_CHUNK_ID );
+		size = r->size();
 		assert( size < 255 );
-		r.r_data( texname, size );
-		r.close_chunk();
+		r->r_data( texname, size );
+		r->close_chunk();
 
-		tname = fs.get_full_path( file_system::TEXTURES, std::string( texname ) + std::string( ".512" ) );
+		tname = fs.get_full_path( file_system::TEXTURES, std::string( texname ) );
 		name = texname;
 		size = name.find_last_of( "\\" );
 		if( size != 0 )
@@ -126,11 +128,11 @@ uint32_t model::load_meshes( reader &r )
 		meshes_.push_back( mesh_ptr( new mesh( m ) ) );
 		m.clear();
 
-		r.close_chunk();
+		r->close_chunk();
 
 		i++;
 	}
-	while( r.elapsed() > 64 );
+	while( r->elapsed() > 64 );
 
 	return type;
 }

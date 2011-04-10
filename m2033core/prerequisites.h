@@ -89,6 +89,7 @@ namespace m2033
 	typedef shared_ptr<model> model_ptr;
 	typedef shared_ptr<skeleton> skeleton_ptr;
 	typedef shared_ptr<mesh> mesh_ptr;
+	typedef shared_ptr<reader> reader_ptr;
 	typedef std::vector<model_ptr> model_vector;
 	typedef std::vector<mesh_ptr> mesh_vector;
 }
