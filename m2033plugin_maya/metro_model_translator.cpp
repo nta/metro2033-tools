@@ -108,7 +108,7 @@ MStatus metro_model_translator::create_shape( const m2033::mesh_ptr m )
 	}
 	meshFn.setVertexNormals( norm, idx );
 
-	MObject mat = create_material( m, &s );
+	MObject mat = create_material( m->get_texture_name(), &s );
 	if( !s ) {
 		return s;
 	}
@@ -118,15 +118,8 @@ MStatus metro_model_translator::create_shape( const m2033::mesh_ptr m )
 	return MS::kSuccess;
 }
 
-MObject metro_model_translator::create_material( m2033::mesh_ptr m, MStatus *status )
+MObject metro_model_translator::create_material( const std::string texture, MStatus *status )
 {
-	m2033::file_system fs;
-	std::string texture;
-	if( fs.file_exists( m->get_dds_texture_name() ) )
-		texture = m->get_dds_texture_name();
-	else
-		texture = m->get_texture_name();
-
 	MString tex_name;
 	size_t off = texture.find_last_of( "\\" );
 	if( off != std::string::npos ) {

@@ -40,7 +40,7 @@ namespace m2033_maya
 		MStatus	read( m2033::model &m );
 
 		MStatus create_shape( const m2033::mesh_ptr m );
-		MObject create_material( m2033::mesh_ptr m, MStatus *status = NULL );
+		MObject create_material( const std::string texture, MStatus *status = NULL );
 
 		bool  haveReadMethod() const { return true; }
 		MString  defaultExtension() const { return "model"; }

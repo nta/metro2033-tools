@@ -66,7 +66,7 @@ int model_import::import( m2033::model &m )
 		INode *node = iface->CreateObjectNode( object );
 		node->SetName( (char*)p->get_name().c_str() );
 
-		create_material( node, p );
+		create_material( node, p->get_texture_name() );
 	}
 
 	if( m.get_type() == m2033::model::DYNAMIC )
@@ -80,7 +80,7 @@ int model_import::import( m2033::model &m )
 	return IMPEXP_SUCCESS;
 }
 
-void model_import::set_mesh( Mesh &m1, m2033::mesh_ptr &m2 )
+void model_import::set_mesh( Mesh &m1, m2033::mesh_ptr m2 )
 {
 	m2033::mesh::vertices v = m2->get_vertices();
 	m2033::mesh::indices idx = m2->get_indices();
@@ -304,7 +304,7 @@ void model_import::build_bone_obj( INode* bone_node, float length, float side )
 	obj->UpdateMesh(0);
 }
 
-void model_import::create_material( INode *node, m2033::mesh_ptr m )
+void model_import::create_material( INode *node, const std::string& texture )
 {
 	StdMat *mat;
 	BitmapTex *tex;
@@ -312,12 +312,6 @@ void model_import::create_material( INode *node, m2033::mesh_ptr m )
 	size_t size, off;
 	mtl_map::iterator it;
 	m2033::file_system fs;
-
-	std::string texture;
-	if( fs.file_exists( m->get_dds_texture_name() ) )
-		texture = m->get_dds_texture_name();
-	else
-		texture = m->get_texture_name();
 
 	std::string name = texture;
 	off = texture.find( "\\" );
