@@ -194,13 +194,13 @@ uint32_t mesh::load( reader_ptr r )
 	return type;
 }
 
-std::string mesh::get_texture_name() const
+void mesh::set_texture_name( const std::string &name )
 {
 	file_system fs;
-	std::string dds_texture = texname_ + std::string(".dds");
-	std::string native_texture = texname_  + std::string(".512");
+	std::string dds_texture = name + std::string(".dds");
+	std::string native_texture = name  + std::string(".512");
 	if( fs.file_exists(dds_texture) )
-		return dds_texture;
+		texname_ = dds_texture;
 	else
-		return native_texture;
+		texname_ = native_texture;
 }

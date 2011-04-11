@@ -78,9 +78,9 @@ namespace m2033
 	inline mesh::~mesh() {}
 
 	inline void mesh::set_name( const std::string &name ) { name_ = name; }
-	inline void mesh::set_texture_name( const std::string &name ) { texname_ = name; }
 
 	inline std::string mesh::get_name() const { return name_; }
+	inline std::string mesh::get_texture_name() const { return texname_; }
 	inline mesh::vertices mesh::get_vertices() const { return vertices_; }
 	inline mesh::normals mesh::get_normals() const { return normals_; }
 	inline mesh::texcoords mesh::get_tex_coords() const { return texcoords_; }
