@@ -28,6 +28,17 @@ THE SOFTWARE.
 
 using namespace m2033;
 
+static inline void fix_slashes( std::string &s )
+{
+	uint32_t i = 0;
+	size_t len = s.length();
+	while( len-- != 0 ) {
+		if( s[i] == '\\' )
+			s[i] = '/';
+		i++;
+	}
+}
+
 std::string file_system::root_;
 
 bool file_system::set_root_from_fname( const std::string& file )
@@ -36,6 +47,7 @@ bool file_system::set_root_from_fname( const std::string& file )
 	std::string file_name;
 
 	file_name = file;
+	fix_slashes( file_name );
 	size = file_name.rfind( "content" ) + 7;
 	if( size == std::string::npos )
 	{
@@ -49,16 +61,18 @@ bool file_system::set_root_from_fname( const std::string& file )
 
 std::string file_system::get_full_path( int path_id, const std::string& filename )
 {
+	std::string path = filename;
+	fix_slashes(path);
 	switch( path_id )
 	{
 	case ROOT:
-		return root_ + std::string( "\\" ) + filename;
+		return root_ + std::string( "/" ) + path;
 		break;
 	case MESHES:
-		return root_ + std::string( "\\meshes\\" ) + filename;
+		return root_ + std::string( "/meshes/" ) + path;
 		break;
 	case TEXTURES:
-		return root_ + std::string( "\\textures\\" ) + filename;
+		return root_ + std::string( "/textures/" ) + path;
 		break;
 	default:
 		return "";

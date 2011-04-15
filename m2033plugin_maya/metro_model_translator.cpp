@@ -80,9 +80,9 @@ MStatus metro_model_translator::create_shape( const m2033::mesh_ptr m )
 	}
 
 	for( unsigned i = 0; i < mi.size() / 3; i++ ) {
-		idx.append( mi[i*3] );
-		idx.append( mi[i*3+1] );
 		idx.append( mi[i*3+2] );
+		idx.append( mi[i*3+1] );
+		idx.append( mi[i*3] );
 		p.append( 3 );
 	}
 
