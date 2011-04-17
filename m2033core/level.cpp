@@ -64,8 +64,7 @@ bool level::load( const std::string &path )
 	}
 
 	if( r->open_chunk( LEVEL_TEXTURES_CHUNK_ID ) ) {
-		uint16_t k;
-		k = r->r_u16();
+		uint16_t k = r->r_u16();
 		for( uint32_t i = 0; i < k; i++ ) {
 			char buf[255];
 			r->r_sz( buf, 255 );

@@ -121,7 +121,7 @@ MStatus metro_model_translator::create_shape( const m2033::mesh_ptr m )
 MObject metro_model_translator::create_material( const std::string texture, MStatus *status )
 {
 	MString tex_name;
-	size_t off = texture.find_last_of( "\\" );
+	size_t off = texture.find_last_of( "/" );
 	if( off != std::string::npos ) {
 		size_t len = texture.length() - ++off;
 		tex_name = texture.substr( off, len ).c_str();

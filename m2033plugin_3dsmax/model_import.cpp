@@ -311,7 +311,6 @@ void model_import::create_material( INode *node, const std::string& texture )
 	BitmapInfo bi;
 	size_t size, off;
 	mtl_map::iterator it;
-	m2033::file_system fs;
 
 	std::string name = texture;
 	off = texture.find( "\\" );

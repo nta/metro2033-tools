@@ -45,9 +45,7 @@ size_t reader::open_chunk( bool *compressed )
 		id = r_u32();
 		sz = r_u32();
 
-		assert( sz < size() );
-		if( sz >= size() )
-			return 0;
+		assert( sz <= size() );
 
 		chunk c;
 		c.begin = m_ptr;
