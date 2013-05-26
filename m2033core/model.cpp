@@ -31,17 +31,16 @@ bool model::load( const std::string & path )
 		return 1;
 	}
 	else if( r->open_chunk( SKELETON_NAME_CHUNK_ID ) != 0 ) {
-
 		// read skeleton
 		size = r->size();
 		r->r_data( buffer, size );
-		name = fs.get_full_path( file_system::MESHES, std::string( buffer ) + std::string( ".skeleton" ) );
-		reader_ptr sr = fs.open_reader( name );
-		if( sr.is_null() )
-			return 0;
-		skeleton s;
-		s.load( sr );
-		set_skeleton( s );
+//		name = fs.get_full_path( file_system::MESHES, std::string( buffer ) + std::string( ".skeleton" ) );
+//		reader_ptr sr = fs.open_reader( name );
+//		if( sr.is_null() )
+//			return 0;
+//		skeleton s;
+//		s.load( sr );
+//		set_skeleton( s );
 		r->close_chunk();
 
 		if( r->open_chunk( MESH_NAMES_CHUNK_ID ) == 0 )

@@ -181,7 +181,8 @@ uint32_t mesh::load( reader_ptr r )
 	// read indices
 	r->open_chunk();
 	size = r->size() - 4;
-	inum = r->r_u32();
+	inum = size / sizeof(uint16_t);
+	r->advance(4);
 	ib = malloc( size );
 	r->r_data( ib, size );
 	r->close_chunk();
