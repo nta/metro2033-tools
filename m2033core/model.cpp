@@ -67,6 +67,14 @@ bool model::load( const std::string & path )
 		}
 
 		set_type( DYNAMIC );
+	} else if (r->open_chunk( 0x0f ) != 0){
+		r->open_chunk();
+		r->open_chunk();
+		if( r->open_chunk( MODEL_CHUNK_ID ) != 0 ) {
+			meshes_.clear();
+			int type = load_meshes( r );
+			set_type( type );
+		}
 	}
 	return 1;
 }
