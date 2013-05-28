@@ -38,6 +38,7 @@ THE SOFTWARE.
 
 #include <assert.h>
 #include <math.h>
+#include <assert.h>
 
 #if defined(_MSC_VER)
 

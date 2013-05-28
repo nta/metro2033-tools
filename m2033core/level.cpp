@@ -106,7 +106,7 @@ bool level::load( const std::string &path )
 		size_t inum = m_parts[i].ib_size;
 
 		mesh m;
-		m.init( mesh::LEVEL_GEOM, vb, vnum, ib, inum );
+		m.init( mesh::LEVEL_GEOM, vb, vnum, ib, inum, 0 );
 		m.set_texture_name( fs.get_full_path( file_system::TEXTURES,
 			m_textures[m_parts[i].texture_id] ) );
 
