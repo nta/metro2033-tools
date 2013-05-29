@@ -64,9 +64,7 @@ public:
 		}
 	}
 
-	BitmapStorage*  Load( BitmapInfo *bi, Bitmap *map, BMMRES *status );
-
-	BOOL LoadConfigure(void *ptr, DWORD piDataSize) { return TRUE; }
+	BitmapStorage*  Load( BitmapInfo *bi, Bitmap *map, BMMRES *status ); 
 };
 }
 

@@ -43,15 +43,15 @@ namespace m2033
 		typedef std::vector<vec3> vertices;
 		typedef std::vector<vec3> normals;
 		typedef std::vector<vec2> texcoords;
-		typedef std::vector<uint16_t> indices;
+		typedef std::vector<short> indices;
 
 		mesh();
 		~mesh();
 
 		uint32_t load( reader_ptr r );
 
-		void init( uint32_t type, void *vertices, uint32_t num_vertices,
-			void *indices, uint32_t num_indices_1, uint32_t num_indices_2 );
+		void init( uint32_t type, void *vertices,
+			uint32_t num_vertices, void *indices, uint32_t num_indices );
 		void clear();
 
 		void set_name( const std::string &name );
@@ -62,13 +62,13 @@ namespace m2033
 		vertices get_vertices() const;
 		normals get_normals() const;
 		texcoords get_tex_coords() const;
-		indices get_indices(int i) const;
+		indices get_indices() const;
 
 	private:
 		vertices	vertices_;
 		normals		normals_;
 		texcoords	texcoords_;
-		indices		indices_[2];
+		indices		indices_;
 
 		std::string	texname_;
 		std::string	name_;
@@ -84,7 +84,7 @@ namespace m2033
 	inline mesh::vertices mesh::get_vertices() const { return vertices_; }
 	inline mesh::normals mesh::get_normals() const { return normals_; }
 	inline mesh::texcoords mesh::get_tex_coords() const { return texcoords_; }
-	inline mesh::indices mesh::get_indices(int i) const { assert(i < 2); return indices_[i]; }
+	inline mesh::indices mesh::get_indices() const { return indices_; }
 }
 
 #endif // __M2033_MESH_H__

@@ -60,13 +60,13 @@ struct level_geom_vertex
 	unsigned unused; // ?
 };
 
-void mesh::init( uint32_t type, void *vertices, uint32_t num_vertices, void *indices, uint32_t num_indices_1, uint32_t num_indices_2 )
+void mesh::init( uint32_t type, void *vertices, uint32_t num_vertices, void *indices, uint32_t num_indices )
 {
 	assert( vertices );
 	assert( indices );
 	assert( num_vertices );
-	assert( num_indices_1 );
-	if( vertices == 0 || indices == 0 || num_vertices == 0 || num_indices_1 == 0 )
+	assert( num_indices );
+	if( vertices == 0 || indices == 0 || num_vertices == 0 || num_indices == 0 )
 	{
 		return;
 	}
@@ -125,14 +125,10 @@ void mesh::init( uint32_t type, void *vertices, uint32_t num_vertices, void *ind
 		}
 	}
 
-	uint16_t *first = (uint16_t*) indices;
-	uint16_t *last = first + num_indices_1 - 1;
-	indices_[0].assign(first, last);
-	if (num_indices_2) {
-		first = last;
-		last = first + num_indices_2 - 1;
-		indices_[1].assign(first, last);
-	}
+	uint16_t *idx = (uint16_t*) indices;
+
+	for( uint32_t i = 0; i < num_indices; i++ )
+		indices_.push_back( idx[i] );
 }
 
 void mesh::clear()
@@ -140,8 +136,7 @@ void mesh::clear()
 	vertices_.clear();
 	normals_.clear();
 	texcoords_.clear();
-	indices_[0].clear();
-	indices_[1].clear();
+	indices_.clear();
 	texname_.clear();
 	name_.clear();
 }
@@ -192,14 +187,8 @@ uint32_t mesh::load( reader_ptr r )
 	r->r_data( ib, size );
 	r->close_chunk();
 
-	if (inum2) {
-		inum1 *= 3;
-		inum2 *= 3;
-	}
-
-	assert(inum1 + inum2 == size / 2);
-
-	init( type, vb, vnum, ib, inum1, inum2 );
+	inum1 = inum2 ? inum1 *3 : inum1;
+	init( type, vb, vnum, ib, inum1 );
 
 	free( vb);
 	free( ib );

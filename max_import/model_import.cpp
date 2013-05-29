@@ -57,58 +57,16 @@ int model_import::import( m2033::model &m )
 
 	for( unsigned i = 0; i < m.get_num_meshes(); i++ )
 	{
+		TriObject *object = CreateNewTriObject();
+		Mesh& mesh = object->GetMesh();
 		m2033::mesh_ptr p = m.get_mesh( i );
 
-		m2033::mesh::vertices v = p->get_vertices();
-		m2033::mesh::texcoords t = p->get_tex_coords();
-		m2033::mesh::indices idx1 = p->get_indices(0);
-		m2033::mesh::indices idx2 = p->get_indices(1);
+		set_mesh( mesh, p );
 
-		if (!idx2.empty()) {
-			m2033::mesh::vertices v1;
-			m2033::mesh::indices i1;
-			m2033::mesh::texcoords t1;
+		INode *node = iface->CreateObjectNode( object );
+		node->SetName( (char*)p->get_name().c_str() );
 
-			std::map<int,int> indices;
-			for (int i = 0; i < idx1.size(); i++) {
-				int idx = idx1[i];
-
-				std::map<int,int>::iterator it = indices.find(idx);
-				if (it == indices.end()) {
-					indices[idx] = v1.size();
-					i1.push_back(v1.size());
-				} else
-					i1.push_back(it->second);
-
-				v1.push_back(v[idx]);
-				t1.push_back(t[idx]);
-			}
-
-			create_mesh(v1, t1, i1, p->get_texture_name());
-
-			v1.clear();
-			i1.clear();
-			t1.clear();
-			indices.clear();
-
-			for (int i = 0; i < idx2.size(); i++) {
-				int idx = idx2[i];
-				
-				std::map<int,int>::iterator it = indices.find(idx);
-				if (it == indices.end()) {
-					indices[idx] = v1.size();
-					i1.push_back(v1.size());
-				} else
-					i1.push_back(it->second);
-
-				v1.push_back(v[idx]);
-				t1.push_back(t[idx]);
-			}
-
-//			create_mesh(v1, t1, i1, p->get_texture_name());
-
-		} else
-			create_mesh(v, t, idx1, p->get_texture_name());
+		create_material( node, p->get_texture_name() );
 	}
 
 	if( m.get_type() == m2033::model::DYNAMIC )
@@ -122,34 +80,30 @@ int model_import::import( m2033::model &m )
 	return IMPEXP_SUCCESS;
 }
 
-void model_import::create_mesh(const m2033::mesh::vertices &v,
-	const m2033::mesh::texcoords &tc, const m2033::mesh::indices &idx, const std::string &texture)
+void model_import::set_mesh( Mesh &m1, m2033::mesh_ptr m2 )
 {
-	TriObject *object = CreateNewTriObject();
-	Mesh& mesh = object->GetMesh();
+	m2033::mesh::vertices v = m2->get_vertices();
+	m2033::mesh::indices idx = m2->get_indices();
+	m2033::mesh::texcoords tc = m2->get_tex_coords();
 
-	mesh.setNumVerts( v.size() );
-	mesh.setNumTVerts( tc.size() );
-	mesh.setNumFaces( idx.size() / 3 );
-	mesh.setNumTVFaces( idx.size() / 3 );
+	m1.setNumVerts( v.size() );
+	m1.setNumTVerts( tc.size() );
+	m1.setNumFaces( idx.size() / 3 );
+	m1.setNumTVFaces( idx.size() / 3 );
 
 	for( unsigned i = 0; i < v.size(); i++ )
 	{
-		mesh.setVert( i, -v[i].x, -v[i].z, v[i].y );
-		mesh.setTVert( i, tc[i].x, -tc[i].y, 0 );
+		m1.setVert( i, -v[i].x, -v[i].z, v[i].y );
+		m1.setTVert( i, tc[i].x, -tc[i].y, 0 );
 	}
 
 	for( unsigned i = 0; i < idx.size() / 3; i++ )
 	{
-		mesh.faces[i].setVerts( idx[i*3+2], idx[i*3+1], idx[i*3] );
-		mesh.tvFace[i].setTVerts( idx[i*3+2], idx[i*3+1], idx[i*3] );
-		mesh.faces[i].setSmGroup( 1 );
-		mesh.faces[i].setEdgeVisFlags( 1, 1, 1 );
+		m1.faces[i].setVerts( idx[i*3+2], idx[i*3+1], idx[i*3] );
+		m1.tvFace[i].setTVerts( idx[i*3+2], idx[i*3+1], idx[i*3] );
+		m1.faces[i].setSmGroup( 1 );
+		m1.faces[i].setEdgeVisFlags( 1, 1, 1 );
 	}
-
-	INode *node = GetCOREInterface()->CreateObjectNode( object );
-
-	create_material( node, texture );
 }
 
 void model_import::ShowAbout( HWND hwnd )
