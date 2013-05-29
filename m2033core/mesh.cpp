@@ -126,11 +126,11 @@ void mesh::init( uint32_t type, void *vertices, uint32_t num_vertices, void *ind
 	}
 
 	uint16_t *first = (uint16_t*) indices;
-	uint16_t *last = first + num_indices_1 - 1;
+	uint16_t *last = first + num_indices_1;
 	indices_[0].assign(first, last);
 	if (num_indices_2) {
-		first = last + 1;
-		last = first + num_indices_2 - 1;
+		first = last;
+		last = first + num_indices_2;
 		indices_[1].assign(first, last);
 	}
 }
