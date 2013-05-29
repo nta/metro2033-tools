@@ -105,7 +105,7 @@ int model_import::import( m2033::model &m )
 				t1.push_back(t[idx]);
 			}
 
-			create_mesh(v1, t1, i1, p->get_texture_name());
+//			create_mesh(v1, t1, i1, p->get_texture_name());
 
 		} else
 			create_mesh(v, t, idx1, p->get_texture_name());
