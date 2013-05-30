@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="core"
+	Name="m2033core"
 	ProjectGUID="{AB983738-94F1-4975-9ABC-6D4A3137E170}"
 	RootNamespace="m2033core"
 	TargetFrameworkVersion="196613"
@@ -164,8 +164,9 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="0"
+				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				FavorSizeOrSpeed="1"
 				RuntimeLibrary="2"
 				WarningLevel="3"
 				DebugInformationFormat="3"
@@ -225,8 +226,9 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="0"
+				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				FavorSizeOrSpeed="1"
 				RuntimeLibrary="2"
 				WarningLevel="3"
 				DebugInformationFormat="3"

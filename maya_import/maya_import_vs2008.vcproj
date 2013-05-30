@@ -46,6 +46,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
+				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="&quot;$(ADSK_MAYA_SDK_85)\win32\include&quot;;..\;..\dependencies\libsquish"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;NT_PLUGIN"
 				RuntimeLibrary="2"
@@ -69,9 +70,11 @@
 				AdditionalDependencies="Foundation.lib OpenMaya.lib OpenMayaUI.lib OpenMayaAnim.lib OpenMayaFX.lib OpenMayaRender.lib Image.lib squish.lib"
 				OutputFile="$(OutDir)\$(ProjectName)\$(ConfigurationName)\m2033_import.mll"
 				AdditionalLibraryDirectories="&quot;$(ADSK_MAYA_SDK_85)\win32\lib&quot;;..\dependencies\libsquish\lib"
-				GenerateDebugInformation="true"
+				GenerateDebugInformation="false"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				OptimizeForWindows98="0"
+				LinkTimeCodeGeneration="1"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -125,6 +128,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
+				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="&quot;$(ADSK_MAYA_SDK_85)\win64\include&quot;;..\;..\dependencies\libsquish"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;NT_PLUGIN"
 				RuntimeLibrary="2"
@@ -146,9 +150,11 @@
 				AdditionalDependencies="Foundation.lib OpenMaya.lib OpenMayaUI.lib OpenMayaAnim.lib OpenMayaFX.lib OpenMayaRender.lib Image.lib squish.lib"
 				OutputFile="$(OutDir)\$(ProjectName)\$(ConfigurationName)\m2033_import.mll"
 				AdditionalLibraryDirectories="&quot;$(ADSK_MAYA_SDK_85)\win64\lib&quot;;..\dependencies\libsquish\lib64"
-				GenerateDebugInformation="true"
+				GenerateDebugInformation="false"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				OptimizeForWindows98="0"
+				LinkTimeCodeGeneration="1"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -201,6 +207,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
+				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="&quot;$(ADSK_MAYA_SDK_2008)\win32\include&quot;;..\;..\dependencies\libsquish"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;NT_PLUGIN"
 				RuntimeLibrary="2"
@@ -224,9 +231,11 @@
 				AdditionalDependencies="Foundation.lib OpenMaya.lib OpenMayaUI.lib OpenMayaAnim.lib OpenMayaFX.lib OpenMayaRender.lib Image.lib squish.lib"
 				OutputFile="$(OutDir)\$(ProjectName)\$(ConfigurationName)\m2033_import.mll"
 				AdditionalLibraryDirectories="&quot;$(ADSK_MAYA_SDK_2008)\win32\lib&quot;;..\dependencies\libsquish\lib"
-				GenerateDebugInformation="true"
+				GenerateDebugInformation="false"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				OptimizeForWindows98="0"
+				LinkTimeCodeGeneration="1"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -280,6 +289,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
+				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="&quot;$(ADSK_MAYA_SDK_2008)\win64\include&quot;;..\;..\dependencies\libsquish"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;NT_PLUGIN"
 				RuntimeLibrary="2"
@@ -301,9 +311,11 @@
 				AdditionalDependencies="Foundation.lib OpenMaya.lib OpenMayaUI.lib OpenMayaAnim.lib OpenMayaFX.lib OpenMayaRender.lib Image.lib squish.lib"
 				OutputFile="$(OutDir)\$(ProjectName)\$(ConfigurationName)\m2033_import.mll"
 				AdditionalLibraryDirectories="&quot;$(ADSK_MAYA_SDK_2008)\win64\lib&quot;;..\dependencies\libsquish\lib64"
-				GenerateDebugInformation="true"
+				GenerateDebugInformation="false"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				OptimizeForWindows98="0"
+				LinkTimeCodeGeneration="1"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -356,6 +368,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
+				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="&quot;$(ADSK_MAYA_SDK_2009)\win32\include&quot;;..\;..\dependencies\libsquish"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;NT_PLUGIN"
 				RuntimeLibrary="2"
@@ -379,9 +392,11 @@
 				AdditionalDependencies="Foundation.lib OpenMaya.lib OpenMayaUI.lib OpenMayaAnim.lib OpenMayaFX.lib OpenMayaRender.lib Image.lib squish.lib"
 				OutputFile="$(OutDir)\$(ProjectName)\$(ConfigurationName)\m2033_import.mll"
 				AdditionalLibraryDirectories="&quot;$(ADSK_MAYA_SDK_2009)\win32\lib&quot;;..\dependencies\libsquish\lib"
-				GenerateDebugInformation="true"
+				GenerateDebugInformation="false"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				OptimizeForWindows98="0"
+				LinkTimeCodeGeneration="1"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -435,6 +450,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
+				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="&quot;$(ADSK_MAYA_SDK_2009)\win64\include&quot;;..\;..\dependencies\libsquish"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;NT_PLUGIN"
 				RuntimeLibrary="2"
@@ -456,9 +472,11 @@
 				AdditionalDependencies="Foundation.lib OpenMaya.lib OpenMayaUI.lib OpenMayaAnim.lib OpenMayaFX.lib OpenMayaRender.lib Image.lib squish.lib"
 				OutputFile="$(OutDir)\$(ProjectName)\$(ConfigurationName)\m2033_import.mll"
 				AdditionalLibraryDirectories="&quot;$(ADSK_MAYA_SDK_2009)\win64\lib&quot;;..\dependencies\libsquish\lib64"
-				GenerateDebugInformation="true"
+				GenerateDebugInformation="false"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				OptimizeForWindows98="0"
+				LinkTimeCodeGeneration="1"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -511,6 +529,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
+				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="&quot;$(ADSK_MAYA_SDK_2010)\win32\include&quot;;..\;..\dependencies\libsquish"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;NT_PLUGIN"
 				RuntimeLibrary="2"
@@ -534,9 +553,11 @@
 				AdditionalDependencies="Foundation.lib OpenMaya.lib OpenMayaUI.lib OpenMayaAnim.lib OpenMayaFX.lib OpenMayaRender.lib Image.lib squish.lib"
 				OutputFile="$(OutDir)\$(ProjectName)\$(ConfigurationName)\m2033_import.mll"
 				AdditionalLibraryDirectories="&quot;$(ADSK_MAYA_SDK_2010)\win32\lib&quot;;..\dependencies\libsquish\lib"
-				GenerateDebugInformation="true"
+				GenerateDebugInformation="false"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				OptimizeForWindows98="0"
+				LinkTimeCodeGeneration="1"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -590,6 +611,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
+				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="&quot;$(ADSK_MAYA_SDK_2010)\win64\include&quot;;..\;..\dependencies\libsquish"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;NT_PLUGIN"
 				RuntimeLibrary="2"
@@ -611,9 +633,11 @@
 				AdditionalDependencies="Foundation.lib OpenMaya.lib OpenMayaUI.lib OpenMayaAnim.lib OpenMayaFX.lib OpenMayaRender.lib Image.lib squish.lib"
 				OutputFile="$(OutDir)\$(ProjectName)\$(ConfigurationName)\m2033_import.mll"
 				AdditionalLibraryDirectories="&quot;$(ADSK_MAYA_SDK_2010)\win64\lib&quot;;..\dependencies\libsquish\lib64"
-				GenerateDebugInformation="true"
+				GenerateDebugInformation="false"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				OptimizeForWindows98="0"
+				LinkTimeCodeGeneration="1"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -666,6 +690,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
+				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="&quot;$(ADSK_MAYA_SDK_2011)\win32\include&quot;;..\;..\dependencies\libsquish"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;NT_PLUGIN"
 				RuntimeLibrary="2"
@@ -689,9 +714,11 @@
 				AdditionalDependencies="Foundation.lib OpenMaya.lib OpenMayaUI.lib OpenMayaAnim.lib OpenMayaFX.lib OpenMayaRender.lib Image.lib squish.lib"
 				OutputFile="$(OutDir)\$(ProjectName)\$(ConfigurationName)\m2033_import.mll"
 				AdditionalLibraryDirectories="&quot;$(ADSK_MAYA_SDK_2011)\win32\lib&quot;;..\dependencies\libsquish\lib"
-				GenerateDebugInformation="true"
+				GenerateDebugInformation="false"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				OptimizeForWindows98="0"
+				LinkTimeCodeGeneration="1"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -745,6 +772,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
+				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="&quot;$(ADSK_MAYA_SDK_2011)\win64\include&quot;;..\;..\dependencies\libsquish"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;NT_PLUGIN"
 				RuntimeLibrary="2"
@@ -766,9 +794,11 @@
 				AdditionalDependencies="Foundation.lib OpenMaya.lib OpenMayaUI.lib OpenMayaAnim.lib OpenMayaFX.lib OpenMayaRender.lib Image.lib squish.lib"
 				OutputFile="$(OutDir)\$(ProjectName)\$(ConfigurationName)\m2033_import.mll"
 				AdditionalLibraryDirectories="&quot;$(ADSK_MAYA_SDK_2011)\win64\lib&quot;;..\dependencies\libsquish\lib64"
-				GenerateDebugInformation="true"
+				GenerateDebugInformation="false"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				OptimizeForWindows98="0"
+				LinkTimeCodeGeneration="1"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -821,6 +851,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
+				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="&quot;$(ADSK_MAYA_SDK_2012)\win32\include&quot;;..\;..\dependencies\libsquish"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;NT_PLUGIN"
 				RuntimeLibrary="2"
@@ -844,9 +875,11 @@
 				AdditionalDependencies="Foundation.lib OpenMaya.lib OpenMayaUI.lib OpenMayaAnim.lib OpenMayaFX.lib OpenMayaRender.lib Image.lib squish.lib"
 				OutputFile="$(OutDir)\$(ProjectName)\$(ConfigurationName)\m2033_import.mll"
 				AdditionalLibraryDirectories="&quot;$(ADSK_MAYA_SDK_2012)\win32\lib&quot;;..\dependencies\libsquish\lib"
-				GenerateDebugInformation="true"
+				GenerateDebugInformation="false"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				OptimizeForWindows98="0"
+				LinkTimeCodeGeneration="1"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -900,6 +933,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
+				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="&quot;$(ADSK_MAYA_SDK_2012)\win64\include&quot;;..\;..\dependencies\libsquish"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;NT_PLUGIN"
 				RuntimeLibrary="2"
@@ -921,9 +955,11 @@
 				AdditionalDependencies="Foundation.lib OpenMaya.lib OpenMayaUI.lib OpenMayaAnim.lib OpenMayaFX.lib OpenMayaRender.lib Image.lib squish.lib"
 				OutputFile="$(OutDir)\$(ProjectName)\$(ConfigurationName)\m2033_import.mll"
 				AdditionalLibraryDirectories="&quot;$(ADSK_MAYA_SDK_2012)\win64\lib&quot;;..\dependencies\libsquish\lib64"
-				GenerateDebugInformation="true"
+				GenerateDebugInformation="false"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				OptimizeForWindows98="0"
+				LinkTimeCodeGeneration="1"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -976,6 +1012,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
+				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="&quot;$(ADSK_MAYA_SDK_2013)\win32\include&quot;;..\;..\dependencies\libsquish"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;NT_PLUGIN"
 				RuntimeLibrary="2"
@@ -999,9 +1036,11 @@
 				AdditionalDependencies="Foundation.lib OpenMaya.lib OpenMayaUI.lib OpenMayaAnim.lib OpenMayaFX.lib OpenMayaRender.lib Image.lib squish.lib"
 				OutputFile="$(OutDir)\$(ProjectName)\$(ConfigurationName)\m2033_import.mll"
 				AdditionalLibraryDirectories="&quot;$(ADSK_MAYA_SDK_2013)\win32\lib&quot;;..\dependencies\libsquish\lib"
-				GenerateDebugInformation="true"
+				GenerateDebugInformation="false"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				OptimizeForWindows98="0"
+				LinkTimeCodeGeneration="1"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -1055,6 +1094,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
+				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="&quot;$(ADSK_MAYA_SDK_2013)\win64\include&quot;;..\;..\dependencies\libsquish"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;NT_PLUGIN"
 				RuntimeLibrary="2"
@@ -1076,9 +1116,11 @@
 				AdditionalDependencies="Foundation.lib OpenMaya.lib OpenMayaUI.lib OpenMayaAnim.lib OpenMayaFX.lib OpenMayaRender.lib Image.lib squish.lib"
 				OutputFile="$(OutDir)\$(ProjectName)\$(ConfigurationName)\m2033_import.mll"
 				AdditionalLibraryDirectories="&quot;$(ADSK_MAYA_SDK_2013)\win64\lib&quot;;..\dependencies\libsquish\lib64"
-				GenerateDebugInformation="true"
+				GenerateDebugInformation="false"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				OptimizeForWindows98="0"
+				LinkTimeCodeGeneration="1"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -1105,6 +1147,8 @@
 		</Configuration>
 		<Configuration
 			Name="Maya_2014|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			>
 			<Tool
@@ -1124,6 +1168,10 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				Optimization="2"
+				EnableIntrinsicFunctions="true"
+				FavorSizeOrSpeed="1"
+				WholeProgramOptimization="true"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -1136,6 +1184,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				GenerateDebugInformation="false"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				OptimizeForWindows98="0"
+				LinkTimeCodeGeneration="1"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -1188,6 +1241,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
+				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="&quot;$(ADSK_MAYA_SDK_2014)\win64\include&quot;;..\;..\dependencies\libsquish"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;NT_PLUGIN"
 				RuntimeLibrary="2"
@@ -1209,9 +1263,11 @@
 				AdditionalDependencies="Foundation.lib OpenMaya.lib OpenMayaUI.lib OpenMayaAnim.lib OpenMayaFX.lib OpenMayaRender.lib Image.lib squish.lib"
 				OutputFile="$(OutDir)\$(ProjectName)\$(ConfigurationName)\m2033_import.mll"
 				AdditionalLibraryDirectories="&quot;$(ADSK_MAYA_SDK_2014)\win64\lib&quot;;..\dependencies\libsquish\lib64"
-				GenerateDebugInformation="true"
+				GenerateDebugInformation="false"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				OptimizeForWindows98="0"
+				LinkTimeCodeGeneration="1"
 				TargetMachine="17"
 			/>
 			<Tool

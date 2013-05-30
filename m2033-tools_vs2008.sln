@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "core", "m2033core\m2033core_vs2008.vcproj", "{AB983738-94F1-4975-9ABC-6D4A3137E170}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "m2033core", "m2033core\m2033core_vs2008.vcproj", "{AB983738-94F1-4975-9ABC-6D4A3137E170}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "max_import", "max_import\max_import_vs2008.vcproj", "{6D454517-99DB-453B-8949-DFF679AE7B91}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -645,7 +645,7 @@ Global
 		{18755926-789E-4A1C-B753-5A42CA825FDB}.Maya_2013|x64.Build.0 = Maya_2013|x64
 		{18755926-789E-4A1C-B753-5A42CA825FDB}.Maya_2014|Mixed Platforms.ActiveCfg = Maya_8.5|x64
 		{18755926-789E-4A1C-B753-5A42CA825FDB}.Maya_2014|Mixed Platforms.Build.0 = Maya_8.5|x64
-		{18755926-789E-4A1C-B753-5A42CA825FDB}.Maya_2014|Win32.ActiveCfg = Maya_8.5|Win32
+		{18755926-789E-4A1C-B753-5A42CA825FDB}.Maya_2014|Win32.ActiveCfg = Maya_2014|Win32
 		{18755926-789E-4A1C-B753-5A42CA825FDB}.Maya_2014|x64.ActiveCfg = Maya_2014|x64
 		{18755926-789E-4A1C-B753-5A42CA825FDB}.Maya_2014|x64.Build.0 = Maya_2014|x64
 		{18755926-789E-4A1C-B753-5A42CA825FDB}.Maya_8.5|Mixed Platforms.ActiveCfg = Maya_8.5|x64
