@@ -21,53 +21,78 @@ bool model::load( const std::string & path )
 	if( r.is_null() )
 		return 0;
 
-	if( r->open_chunk( MODEL_CHUNK_ID ) != 0 ) {
-		meshes_.clear();
-		uint32_t type = load_meshes( r );
-		if( type == mesh::STATIC_MESH )
-			set_type( STATIC );
-		else if( type == mesh::DYNAMIC_MESH )
+	bool repeat;
+	int i = 0, j = 0;
+
+	do {
+		if( r->open_chunk( MODEL_CHUNK_ID ) != 0 ) {
+			meshes_.clear();
+			uint32_t type = load_meshes( r );
+			if( type == mesh::STATIC_MESH )
+				set_type( STATIC );
+			else if( type == mesh::DYNAMIC_MESH )
+				set_type( DYNAMIC );
+			r->close_chunk();
+			r->close_chunk();
+		}
+		else if( r->open_chunk( SKELETON_NAME_CHUNK_ID ) != 0 ) {
+			// read skeleton
+			size = r->size();
+			r->r_data( buffer, size );
+//			name = fs.get_full_path( file_system::MESHES, std::string( buffer ) + std::string( ".skeleton" ) );
+//			reader_ptr sr = fs.open_reader( name );
+//			if( sr.is_null() )
+//				return 0;
+//			skeleton s;
+//			s.load( sr );
+//			set_skeleton( s );
+			r->close_chunk();
+
+			if( r->open_chunk( MESH_NAMES_CHUNK_ID ) == 0 )
+				return 0;
+
+			size = r->size() - 4;
+			assert( size < 1024 );
+			r->advance( 4 );
+			r->r_data( buffer, size );
+			split_string( buffer, ',', names );
+
+			meshes_.clear();
+			for( it = names.begin(); it != names.end(); it++ ) {
+				name = (*it);
+				name = fs.get_full_path( file_system::MESHES, name + std::string( ".mesh" ) );
+				reader_ptr mr = fs.open_reader( name );
+				if( mr->size() == 0 )
+					return 0;
+
+				if( mr->open_chunk( MODEL_CHUNK_ID ) == 0 )
+					return 0;
+
+				load_meshes( mr );
+			}
+
+			r->close_chunk();
+			r->close_chunk();;
+
 			set_type( DYNAMIC );
-		return 1;
-	}
-	else if( r->open_chunk( SKELETON_NAME_CHUNK_ID ) != 0 ) {
-		// read skeleton
-		size = r->size();
-		r->r_data( buffer, size );
-//		name = fs.get_full_path( file_system::MESHES, std::string( buffer ) + std::string( ".skeleton" ) );
-//		reader_ptr sr = fs.open_reader( name );
-//		if( sr.is_null() )
-//			return 0;
-//		skeleton s;
-//		s.load( sr );
-//		set_skeleton( s );
-		r->close_chunk();
-
-		if( r->open_chunk( MESH_NAMES_CHUNK_ID ) == 0 )
-			return 0;
-
-		size = r->size() - 4;
-		assert( size < 1024 );
-		r->advance( 4 );
-		r->r_data( buffer, size );
-		split_string( buffer, ',', names );
-
-		meshes_.clear();
-		for( it = names.begin(); it != names.end(); it++ ) {
-			name = (*it);
-			name = fs.get_full_path( file_system::MESHES, name + std::string( ".mesh" ) );
-			reader_ptr mr = fs.open_reader( name );
-			if( mr->size() == 0 )
-				return 0;
-
-			if( mr->open_chunk( MODEL_CHUNK_ID ) == 0 )
-				return 0;
-
-			load_meshes( mr );
 		}
 
-		set_type( DYNAMIC );
-	}
+		if (repeat) {
+			r->close_chunk();
+			r->close_chunk();
+		}
+
+		repeat = false;
+		if (r->open_chunk(0x0f)) {
+			if (r->open_chunk(i)) {
+				if (!r->open_chunk(j++))
+					i++;
+				repeat = true;
+			}
+		}
+ 
+	} while (repeat);
+
 	return 1;
 }
 
