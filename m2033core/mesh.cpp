@@ -187,7 +187,7 @@ uint32_t mesh::load( reader_ptr r )
 	r->r_data( ib, size );
 	r->close_chunk();
 
-	inum1 = inum2 ? inum1 *3 : inum1;
+	inum1 = inum2 ? inum1 *3 : size / 2;
 	init( type, vb, vnum, ib, inum1 );
 
 	free( vb);
