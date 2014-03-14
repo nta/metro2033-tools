@@ -1,0 +1,35 @@
+Primitive level viewer for Metro 2033
+=====================================
+
+Install
+-------
+
+Install perl if needed ( strawberryperl.com for windows is good ).
+From command line run CPAN installation tool:
+
+$ cpan
+cpan shell -- CPAN exploration and modules installation (v1.9800)
+Enter 'h' for help.
+cpan>
+
+
+from there, install prerequisite modules by typing:
+
+install Moose
+install Prima
+install OpenGL
+install Prima::OpenGL
+
+Unpack level data
+-----------------
+
+m2033unp.exe content.vfs0 c:\m2033data
+
+Run the viewer
+--------------
+
+perl level-view.pl c:\m2033data\content\maps\l05_lost_tunnel
+
+Enjoy!
+
+Dmitry Karasik <dmitry@karasik.eu.org>
