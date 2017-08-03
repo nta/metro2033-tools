@@ -4,6 +4,8 @@
 #include "mesh.h"
 #include "skeleton.h"
 
+#include <windows.h>
+
 using namespace m2033;
 
 bool model::load( const std::string & path )
@@ -39,13 +41,13 @@ bool model::load( const std::string & path )
 			// read skeleton
 			size = r->size();
 			r->r_data( buffer, size );
-//			name = fs.get_full_path( file_system::MESHES, std::string( buffer ) + std::string( ".skeleton" ) );
-//			reader_ptr sr = fs.open_reader( name );
-//			if( sr.is_null() )
-//				return 0;
-//			skeleton s;
-//			s.load( sr );
-//			set_skeleton( s );
+			/*name = fs.get_full_path( file_system::MESHES, std::string( buffer ) + std::string( ".skeleton" ) );
+			reader_ptr sr = fs.open_reader( name );
+			if( sr.is_null() )
+				return 0;
+			skeleton s;
+			s.load( sr );
+			set_skeleton( s );*/
 			r->close_chunk();
 
 			if( r->open_chunk( MESH_NAMES_CHUNK_ID ) == 0 )
@@ -62,13 +64,21 @@ bool model::load( const std::string & path )
 				name = (*it);
 				name = fs.get_full_path( file_system::MESHES, name + std::string( ".mesh" ) );
 				reader_ptr mr = fs.open_reader( name );
-				if( mr->size() == 0 )
-					return 0;
 
-				if( mr->open_chunk( MODEL_CHUNK_ID ) == 0 )
-					return 0;
+				if (!mr.is_null())
+				{
+					if (mr->size() == 0)
+						return 0;
 
-				load_meshes( mr );
+					if (mr->open_chunk(MODEL_CHUNK_ID) == 0)
+						return 0;
+
+					load_meshes(mr);
+				}
+				else
+				{
+					MessageBoxA(nullptr, name.c_str(), "Couldn't find file", MB_OK);
+				}
 			}
 
 			r->close_chunk();
